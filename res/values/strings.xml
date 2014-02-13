@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Beacon</string>
+    <string name="action_settings">Settings</string>
+    
+    <!-- Button text -->
+    <string name="setup">Setup</string>
+    <string name="fire">FIRE!</string>
+    
+    <!-- Error Message -->
+    <string name="error_phone_number_required">Need to supply a phone number</string>
+</resources>
