@@ -1,9 +1,9 @@
-package com.therabbitmage.android.beacon.ui;
+package com.therabbitmage.android.beacon.ui.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 
-public class HistoryActivity extends Activity {
+public class EmergencyActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

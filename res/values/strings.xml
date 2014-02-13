@@ -7,7 +7,19 @@
     <!-- Button text -->
     <string name="setup">Setup</string>
     <string name="fire">FIRE!</string>
+    <string name="dial911">Dial 911</string>
+    <string name="cancel">Cancel</string>
+    <string name="next">Next</string>
+    
+    <!-- Button text tester -->
+    <string name="login_google">Login into Google</string>
+    <string name="login_facebook">Login into Facebook</string>
+    <string name="login_twitter">Login into Twitter</string>
+
+    
+    <string name="social_question">Do you wish to add your social networks?</string>
     
     <!-- Error Message -->
     <string name="error_phone_number_required">Need to supply a phone number</string>
+    <string name="error_message_required">Need a message to send. Don\'t send empty text messages!</string>
 </resources>

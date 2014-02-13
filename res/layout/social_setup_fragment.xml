@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@android:color/white"
+    android:layout_height="match_parent" >
+    <TextView 
+        android:id="@+id/social_question_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:padding="10dp"
+        android:text="@string/social_question"/>
+    
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/social_question_tv"
+        android:gravity="center" >
+        <Button 
+            android:id="@+id/google_login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/LargeButton"
+            android:text="@string/login_google"/>
+        <Button
+            android:id="@+id/facebook_login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/LargeButton"
+            android:text="@string/login_facebook" />
+        <Button
+            android:id="@+id/twitter_login_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/LargeButton"
+            android:text="@string/login_twitter" />
+    </LinearLayout>
+    
+
+</RelativeLayout>

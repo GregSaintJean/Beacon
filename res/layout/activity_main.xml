@@ -8,17 +8,46 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
-    <!-- TODO Need to remove the text on the button and make it so it changes -->
-    <Button
-        android:id="@+id/mainbtn"
+    <TextView 
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/setup"
-        android:textSize="18sp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:textSize="24sp"
+        android:text="@string/app_name"/>
+    <Button
+        android:id="@+id/mainbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/LargeButton"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_centerInParent="true"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true">
+        <Button 
+            android:id="@+id/alt_setup_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/LargeButton"
+            android:text="@string/setup"
+            android:visibility="gone"/>
+        <Button
+            android:id="@+id/nine_one_one_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/LargeButton"
+            android:text="@string/dial911"/>        
+    </LinearLayout>
+    
+    
 
 </RelativeLayout>
