@@ -1,9 +1,15 @@
 package com.therabbitmage.android.beacon.utils;
 
+import org.apache.http.protocol.HTTP;
+
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
+
+import com.therabbitmage.android.beacon.R;
 
 public final class AndroidUtils {
 	
@@ -14,6 +20,32 @@ public final class AndroidUtils {
 		
 		return networkInfo != null && networkInfo.isConnected();
 	}
+	
+	public final static void sendSMS(Context ctx, String number, String message){
+		if(number == null){
+			throw new NullPointerException(ctx.getString(R.string.error_phone_number_required));
+		}
+		
+		assert(message != null);
+		
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setData(Uri.parse("sms:" + number));
+		intent.setType(HTTP.PLAIN_TEXT_TYPE);
+		intent.putExtra("sms_body", message);
+		if(intent.resolveActivity(ctx.getPackageManager()) != null){
+			ctx.startActivity(intent);
+		}
+	}
+	
+	public static final void dialNumber(Context ctx, String number){
+		Intent intent = new Intent(Intent.ACTION_DIAL);
+	    intent.setData(Uri.parse("tel:" + number));
+	    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    if (intent.resolveActivity(ctx.getPackageManager()) != null) {
+	        ctx.startActivity(intent);
+	    }
+	}
+
 	
 	//SDK 9 Version 2.3
 	public final static boolean gingerbreadOfBetter(){

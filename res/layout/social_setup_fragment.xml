@@ -20,18 +20,15 @@
         android:orientation="vertical"
         android:layout_below="@id/social_question_tv"
         android:gravity="center" >
-        <Button 
+        <com.google.android.gms.common.SignInButton
             android:id="@+id/google_login_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/LargeButton"
-            android:text="@string/login_google"/>
-        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.facebook.widget.LoginButton
             android:id="@+id/facebook_login_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/LargeButton"
-            android:text="@string/login_facebook" />
+            android:layout_gravity="center_horizontal" />
         <Button
             android:id="@+id/twitter_login_btn"
             android:layout_width="match_parent"

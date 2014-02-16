@@ -3,6 +3,7 @@
 
     <string name="app_name">Beacon</string>
     <string name="action_settings">Settings</string>
+    <string name="facebook_id">473923909380536</string>
     
     <!-- Button text -->
     <string name="setup">Setup</string>
