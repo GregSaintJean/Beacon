@@ -28,13 +28,17 @@
             android:id="@+id/facebook_login_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:text="@string/sign_in" />
         <Button
             android:id="@+id/twitter_login_btn"
-            android:layout_width="match_parent"
+            android:background="@drawable/twitter_button_bg"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/LargeButton"
-            android:text="@string/login_twitter" />
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:padding="10dp"
+            android:text="@string/sign_in" />
     </LinearLayout>
     
 

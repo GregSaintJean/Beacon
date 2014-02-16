@@ -13,9 +13,10 @@
     <string name="next">Next</string>
     
     <!-- Button text tester -->
+    <string name="sign_in">Sign in</string>
     <string name="login_google">Login into Google</string>
     <string name="login_facebook">Login into Facebook</string>
-    <string name="login_twitter">Login into Twitter</string>
+    <string name="login_twitter">Log in with Twitter</string>
 
     
     <string name="social_question">Do you wish to add your social networks?</string>

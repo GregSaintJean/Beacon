@@ -26,7 +26,7 @@ import com.google.android.gms.plus.Plus;
 import com.therabbitmage.android.beacon.R;
 
 public class SocialSetupFragment extends Fragment implements OnClickListener, ConnectionCallbacks, OnConnectionFailedListener{
-	private static final String TAG = "SocialSetupFragment";
+	private static final String TAG = SocialSetupFragment.class.getSimpleName();
 	
 	private View mRoot;
 	private SignInButton mGoogleLoginButton;
@@ -34,6 +34,11 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	private Button mTwitterLoginButton;
 	
 	private ConnectionResult mConnectionResult;
+	
+	private static final int STATE_DEFAULT = 0;
+	private static final int STATE_SIGN_IN = 1;
+	private static final int STATE_IN_PROGRESS = 2;
+	
 	/* Request code used to invoke sign in user interactions. */
 	  private static final int RC_SIGN_IN = 0;
 
@@ -51,6 +56,7 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		//Google Plus setup
 		mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
         .addConnectionCallbacks(this)
         .addOnConnectionFailedListener(this)
@@ -70,7 +76,8 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 		mGoogleLoginButton.setOnClickListener(this);
 		mFacebookLoginButton.setOnClickListener(this);
 		mTwitterLoginButton.setOnClickListener(this);
-		
+
+		//Facebook setup
 		Settings.addLoggingBehavior(LoggingBehavior.INCLUDE_ACCESS_TOKENS);
 		Session session = Session.getActiveSession();
 		if(session == null){
@@ -112,8 +119,11 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		//Facebook setup
 		Session session = Session.getActiveSession();
 		Session.saveSession(session, outState);
+		
+		//Google Plus setup
 	}
 
 	@Override
@@ -143,11 +153,14 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		//Google Plus setup
 		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 		Log.d(TAG, "onActivityResult is called.");
 		if (requestCode == RC_SIGN_IN) {
 			if (resultCode != Activity.RESULT_OK) {
 			      mSignInClicked = false;
+			} else{
+				Log.d(TAG, "onActivityResult is reporting a resultCode of \"canceled\"");
 			}
 			
 			mIntentInProgress = false;
@@ -155,12 +168,13 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 		    if (!mGoogleApiClient.isConnecting()) {
 		      mGoogleApiClient.connect();
 		    }
-		  }
+		}
 	}
 
 	@Override
 	public void onConnected(Bundle bundle) {
 		Log.d(TAG, "onConnected called");
+		//Google Plus setup
 		mSignInClicked = false;
 		Toast.makeText(getActivity(), "User is connected!", Toast.LENGTH_LONG).show();
 		
@@ -189,6 +203,7 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 
 	@Override
 	public void onConnectionFailed(ConnectionResult result) {
+		//Google Plus setup
 		Log.d(TAG, "onConnectionFailed called");
 		mConnectionResult = result;
 		if (!mIntentInProgress) {
@@ -206,6 +221,7 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 
 	@Override
 	public void onConnectionSuspended(int arg0) {
+		//Google Plus setup
 		Log.d(TAG, "onConnectionSuspended called");
 		mGoogleApiClient.connect();
 	}

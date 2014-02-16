@@ -2,6 +2,7 @@ package com.therabbitmage.android.beacon;
 
 import android.app.Application;
 
+import com.therabbitmage.android.beacon.constants.Twitter;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
 public class BeaconApp extends Application {
@@ -9,6 +10,7 @@ public class BeaconApp extends Application {
 	private boolean mHasNetworkLocationProvider;
 	private boolean mHasGPSLocationProvider;
 	private boolean isConnected;
+	private static Twitter mTwitter;
 	
 	private static final String US_EMERGENCY_NUMBER = "911";
 
