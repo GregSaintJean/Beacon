@@ -1,8 +1,17 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -11,6 +20,7 @@ import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.R;
 
 public class MainActivity extends Activity implements OnClickListener{
+	private static final String TAG = MainActivity.class.getSimpleName();
 	
 	private Button mMainButton;
 	private Button m911Button; 
@@ -22,6 +32,23 @@ public class MainActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setupUI();
+		
+		// Add code to print out the key hash
+	    try {
+	        PackageInfo info = getPackageManager().getPackageInfo(
+	                "com.therabbitmage.android.beacon", 
+	                PackageManager.GET_SIGNATURES);
+	        for (Signature signature : info.signatures) {
+	            MessageDigest md = MessageDigest.getInstance("SHA");
+	            md.update(signature.toByteArray());
+	            Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+	            }
+	    } catch (NameNotFoundException e) {
+	    	Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
+
+	    } catch (NoSuchAlgorithmException e) {
+	    	Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
+	    }
 	}
 	
 	private void setupUI(){

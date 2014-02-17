@@ -1,8 +1,14 @@
 package com.therabbitmage.android.beacon.ui.fragment;
 
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -32,6 +38,7 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	private SignInButton mGoogleLoginButton;
 	private Button mFacebookLoginButton;
 	private Button mTwitterLoginButton;
+	private Twitter mTwitter;
 	
 	private ConnectionResult mConnectionResult;
 	
@@ -95,6 +102,8 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 			}
 		}
 		
+		//new TwitterSetup().execute();
+		
 		//TODO find out what to do here.
 		
 		return mRoot;
@@ -153,8 +162,8 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		//Google Plus setup
 		Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
+		//Google Plus setup
 		Log.d(TAG, "onActivityResult is called.");
 		if (requestCode == RC_SIGN_IN) {
 			if (resultCode != Activity.RESULT_OK) {
@@ -229,14 +238,55 @@ public class SocialSetupFragment extends Fragment implements OnClickListener, Co
 	private class SessionStatusCallback implements Session.StatusCallback {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
-        	Session active = Session.getActiveSession();
-        	if(active.isOpened()){
-        		Log.d(TAG, "Application ID: " + active.getApplicationId());
-        		Log.d(TAG, "Access Token: " + active.getAccessToken());
-        		Log.d(TAG, "Expiration Date: " + active.getExpirationDate().toString());
-        		active.closeAndClearTokenInformation();
+        	if(session.isOpened()){
+        		Log.d(TAG, "Application ID: " + session.getApplicationId());
+        		Log.d(TAG, "Access Token: " + session.getAccessToken());
+        		Log.d(TAG, "Expiration Date: " + session.getExpirationDate().toString());
+        		session.closeAndClearTokenInformation();
+        	} else if (exception != null){
+        		Log.e(TAG + exception.getStackTrace()[0].getLineNumber(), exception.toString());
         	}
         }
     }
+	
+	private class TwitterSetup extends AsyncTask<Void, Void, Void>{
+		RequestToken requestToken = null;
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			
+			ConfigurationBuilder builder = new ConfigurationBuilder();
+			builder
+			.setOAuthConsumerKey(com.therabbitmage.android.beacon.constants.Twitter.CONSUMER_KEY)
+			.setOAuthConsumerSecret(com.therabbitmage.android.beacon.constants.Twitter.CONSUMER_SECRET);
+			
+			mTwitter = new TwitterFactory(builder.build()).getInstance();
+			
+		}
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			try {
+				requestToken = mTwitter.getOAuthRequestToken();
+			} catch (TwitterException e) {
+				Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
+			}
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			if(requestToken != null){
+				Log.d(TAG, "Got request token");
+				Log.d(TAG, "Request Token: " + requestToken.getToken());
+				Log.d(TAG, "Request Token secret: " + requestToken.getTokenSecret());
+			} else {
+				Log.d(TAG, "Failure to receive request token!");
+			}
+		}
+		
+	}
 
 }
