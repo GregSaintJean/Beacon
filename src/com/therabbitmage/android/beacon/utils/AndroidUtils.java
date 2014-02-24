@@ -2,12 +2,14 @@ package com.therabbitmage.android.beacon.utils;
 
 import org.apache.http.protocol.HTTP;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.StrictMode;
 
 import com.therabbitmage.android.beacon.R;
 
@@ -45,6 +47,33 @@ public final class AndroidUtils {
 	        ctx.startActivity(intent);
 	    }
 	}
+	
+	/**
+     * Enables strict mode. This should only be called when debugging the application and is useful
+     * for finding some potential bugs or best practice violations.
+     */
+    @TargetApi(11)
+    public static void enableStrictMode() {
+        // Strict mode is only available on gingerbread or later
+        if (gingerbreadOfBetter()) {
+
+            // Enable all thread strict mode policies
+            StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
+                    new StrictMode.ThreadPolicy.Builder()
+                            .detectAll()
+                            .penaltyLog();
+
+            // Enable all VM strict mode policies
+            StrictMode.VmPolicy.Builder vmPolicyBuilder =
+                    new StrictMode.VmPolicy.Builder()
+                            .detectAll()
+                            .penaltyLog();
+
+            // Use builders to enable strict mode policies
+            StrictMode.setThreadPolicy(threadPolicyBuilder.build());
+            StrictMode.setVmPolicy(vmPolicyBuilder.build());
+        }
+    }
 
 	
 	//SDK 9 Version 2.3

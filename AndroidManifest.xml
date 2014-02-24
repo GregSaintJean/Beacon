@@ -41,13 +41,23 @@
         </activity>
         
         <activity 
-            android:name=".ui.activity.SetupActivity"
+            android:name=".ui.activity.PhoneSetupActivity"
+            android:label="@string/app_name"/>
+        <activity 
+            android:name=".ui.activity.SocialSetupActivity"
+            android:label="@string/app_name"/>
+        <activity 
+            android:name=".ui.activity.HistoryActivity"
             android:label="@string/app_name"/>
         <activity 
             android:name=".ui.activity.EmergencyActivity"
             android:label="@string/app_name"/>
-        <service android:name=".service.TwitterIntentService"/>
-        <activity android:name=".ui.activity.TwitterPinActivity"/>
+        <service 
+            android:name=".service.TwitterIntentService"
+            android:exported="false"/>
+        <activity 
+            android:name=".ui.activity.TwitterPinActivity"
+            android:label="@string/app_name"/>
         <provider 
             android:name=".provider.BeaconProvider"
             android:authorities="com.therabbitmage.android.beacon.provider"

@@ -12,5 +12,13 @@
     <ListView 
         android:id="@+id/contact_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+    <!-- TODO The text for the view below needs to be bigger -->
+    <TextView 
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/no_contacts"/>
 </LinearLayout>

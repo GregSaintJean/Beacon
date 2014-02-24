@@ -1,6 +1,5 @@
 package com.therabbitmage.android.beacon.ui.fragment;
 
-import twitter4j.Twitter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,7 +29,6 @@ public class SocialSetupFragment extends Fragment implements OnClickListener,
 	private SignInButton mGoogleLoginButton;
 	private Button mFacebookLoginButton;
 	private Button mTwitterLoginButton;
-	private Twitter mTwitter;
 
 	private ConnectionResult mConnectionResult;
 

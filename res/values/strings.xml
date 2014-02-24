@@ -4,19 +4,6 @@
     <string name="app_name">Beacon</string>
     <string name="action_settings">Settings</string>
     
-    <!-- Preferences -->
-    <string name="beacon_pref">beacon</string>
-    <string name="is_setup_done">is_setup_done</string>
-    <string name="first_time_run">first_time_run</string>
-    <string name="facebook_pref">facebook</string>
-    <string name="facebook_access_token_key">facebook_access_token</string>
-    <string name="twitter_pref">twitter</string>
-    <string name="twitter_request_token">twitter_request_token</string>
-    <string name="twitter_request_secret_token">twitter_request_secret_token</string>
-    <string name="twitter_access_token">twitter_access_token</string>
-    <string name="twitter_access_token_secret">twitter_access_token_secret</string>
-    <string name="twitter_user_id">twitter_user_id</string>
-    
     <!-- Button text -->
     <string name="setup">Setup</string>
     <string name="fire">FIRE!</string>
@@ -35,6 +22,8 @@
 
     
     <string name="social_question">Do you wish to add your social networks?</string>
+    <string name="no_contacts">No Contacts Added</string>
+    <string name="placeholder">Placeholder</string>
     
     <!-- Error Message -->
     <string name="error_phone_number_required">Need to supply a phone number</string>

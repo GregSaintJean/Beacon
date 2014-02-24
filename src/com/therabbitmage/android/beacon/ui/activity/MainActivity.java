@@ -67,7 +67,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private void startSetupActivity() {
-		Intent intent = new Intent(this, SetupActivity.class);
+		Intent intent = new Intent(this, PhoneSetupActivity.class);
 		startActivity(intent);
 	}
 
