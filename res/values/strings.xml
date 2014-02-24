@@ -3,7 +3,19 @@
 
     <string name="app_name">Beacon</string>
     <string name="action_settings">Settings</string>
-    <string name="facebook_id">473923909380536</string>
+    
+    <!-- Preferences -->
+    <string name="beacon_pref">beacon</string>
+    <string name="is_setup_done">is_setup_done</string>
+    <string name="first_time_run">first_time_run</string>
+    <string name="facebook_pref">facebook</string>
+    <string name="facebook_access_token_key">facebook_access_token</string>
+    <string name="twitter_pref">twitter</string>
+    <string name="twitter_request_token">twitter_request_token</string>
+    <string name="twitter_request_secret_token">twitter_request_secret_token</string>
+    <string name="twitter_access_token">twitter_access_token</string>
+    <string name="twitter_access_token_secret">twitter_access_token_secret</string>
+    <string name="twitter_user_id">twitter_user_id</string>
     
     <!-- Button text -->
     <string name="setup">Setup</string>
@@ -11,12 +23,15 @@
     <string name="dial911">Dial 911</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
+    <string name="testing_google_plus">Testing Google Plus</string>
+    <string name="add_contact">Add Contact</string>
     
     <!-- Button text tester -->
     <string name="sign_in">Sign in</string>
     <string name="login_google">Login into Google</string>
     <string name="login_facebook">Login into Facebook</string>
     <string name="login_twitter">Log in with Twitter</string>
+    <string name="twitter_input_pin">Input Pin</string>
 
     
     <string name="social_question">Do you wish to add your social networks?</string>

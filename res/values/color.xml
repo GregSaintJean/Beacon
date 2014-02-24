@@ -4,4 +4,6 @@
     <color name="twitter_blue_lighter">#91CBEE</color>
     <color name="facebook_blue">#3B5998</color>
     <color name="google_plus_red">#DD4B39</color>
+    <color name="transparent_white">#11FFFFFF</color>
+    <color name="transparent_black">#AA000000</color>
 </resources>

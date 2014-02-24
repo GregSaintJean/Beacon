@@ -1,8 +1,9 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
-import com.therabbitmage.android.beacon.R;
 import android.app.Activity;
 import android.os.Bundle;
+
+import com.therabbitmage.android.beacon.R;
 
 public class StatusActivity extends Activity {
 

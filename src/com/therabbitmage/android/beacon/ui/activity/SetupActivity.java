@@ -13,8 +13,8 @@ import android.widget.Button;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.ui.fragment.SocialSetupFragment;
 
-public class SetupActivity extends FragmentActivity implements OnClickListener{
-	
+public class SetupActivity extends FragmentActivity implements OnClickListener {
+
 	private Button mNextButton;
 	private Button mCancelButton;
 	private FragmentManager mFragManager;
@@ -24,16 +24,16 @@ public class SetupActivity extends FragmentActivity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 		setupUI();
 	}
-	
-	public void setupUI(){
+
+	public void setupUI() {
 		setContentView(R.layout.setup_activity);
 		mFragManager = getSupportFragmentManager();
-		mNextButton = (Button)findViewById(R.id.next_btn);
-		mCancelButton = (Button)findViewById(R.id.cancel_btn);
-		
+		mNextButton = (Button) findViewById(R.id.next_btn);
+		mCancelButton = (Button) findViewById(R.id.cancel_btn);
+
 		mNextButton.setOnClickListener(this);
 		mCancelButton.setOnClickListener(this);
-		
+
 		SocialSetupFragment fragment = new SocialSetupFragment();
 		FragmentTransaction transaction = mFragManager.beginTransaction();
 		transaction.add(R.id.content_container, fragment);
@@ -42,24 +42,24 @@ public class SetupActivity extends FragmentActivity implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		
-		if(v == mNextButton){
-			
+
+		if (v == mNextButton) {
+
 		}
-		
-		if(v == mCancelButton){
+
+		if (v == mCancelButton) {
 			startMainActivity();
 		}
-		
+
 	}
-	
-	private void replaceFragment(Fragment fragment){
+
+	private void replaceFragment(Fragment fragment) {
 		FragmentTransaction transaction = mFragManager.beginTransaction();
 		transaction.replace(R.id.content_container, fragment);
 		transaction.commit();
 	}
-	
-	private void startMainActivity(){
+
+	private void startMainActivity() {
 		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
