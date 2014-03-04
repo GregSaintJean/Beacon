@@ -3,6 +3,7 @@ package com.therabbitmage.android.beacon;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.therabbitmage.android.beacon.R;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,8 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
 public class BeaconApp extends Application {
@@ -29,11 +32,17 @@ public class BeaconApp extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		if(BuildConfig.DEBUG){
+			printDebugKeyHash();
+		}
 
-		// TODO Delete before app release
+	}
+	
+	public final void printDebugKeyHash(){
 		try {
 			PackageInfo info = getPackageManager().getPackageInfo(
-					"com.therabbitmage.android.beacon",
+					BeaconApp.class.getPackage().getName(),
 					PackageManager.GET_SIGNATURES);
 			for (Signature signature : info.signatures) {
 				MessageDigest md = MessageDigest.getInstance("SHA");
@@ -47,7 +56,6 @@ public class BeaconApp extends Application {
 		} catch (NoSuchAlgorithmException e) {
 			Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
 		}
-
 	}
 
 	public LocationManager getLocationManager() {
@@ -63,15 +71,15 @@ public class BeaconApp extends Application {
 		AndroidUtils.dialNumber(this, US_EMERGENCY_NUMBER);
 	}
 
+	public final boolean hasFacebookLogin() {
+		return !TextUtils.isEmpty(getFacebookAccessToken());
+	}
+	
 	public final String getFacebookAccessToken() {
 		SharedPreferences sharedPref = getSharedPreferences(
 				getString(R.string.facebook_pref), Context.MODE_PRIVATE);
 		return sharedPref.getString(
 				getString(R.string.facebook_access_token_key), "");
-	}
-
-	public final boolean hasFacebookLogin() {
-		return !TextUtils.isEmpty(getFacebookAccessToken());
 	}
 
 	public final void setFacebookAccessToken(String token) {
@@ -130,6 +138,10 @@ public class BeaconApp extends Application {
 		editor.remove(getString(R.string.twitter_request_secret_token));
 		editor.commit();
 	}
+	
+	public final boolean hasTwitterLogin(){
+		return hasTwitterAccessToken() && hasTwitterAccessTokenSecret();
+	}
 
 	public final boolean hasTwitterAccessToken() {
 		return !TextUtils.isEmpty(getTwitterAccessToken());
@@ -139,19 +151,26 @@ public class BeaconApp extends Application {
 		return !TextUtils.isEmpty(getTwitterAccessTokenSecret());
 	}
 
+	public final String getTwitterAccessToken() {
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(getString(R.string.twitter_access_token),
+				"");
+	}
+	
+	public final String getTwitterAccessTokenSecret() {
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(
+				getString(R.string.twitter_access_token_secret), "");
+	}
+	
 	public final void setTwitterAccessToken(String token) {
 		SharedPreferences sharedPref = getSharedPreferences(
 				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString(getString(R.string.twitter_access_token), token);
 		editor.commit();
-	}
-
-	public final String getTwitterAccessToken() {
-		SharedPreferences sharedPref = getSharedPreferences(
-				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(getString(R.string.twitter_access_token),
-				"");
 	}
 
 	public final void setTwitterAccessTokenSecret(String token) {
@@ -162,14 +181,7 @@ public class BeaconApp extends Application {
 		editor.commit();
 	}
 
-	public final String getTwitterAccessTokenSecret() {
-		SharedPreferences sharedPref = getSharedPreferences(
-				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(
-				getString(R.string.twitter_access_token_secret), "");
-	}
-
-	public final void clearAccessTokenAndSecret() {
+	public final void clearTwitterAccessTokenAndSecret() {
 		SharedPreferences sharedPref = getSharedPreferences(
 				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -177,16 +189,18 @@ public class BeaconApp extends Application {
 		editor.commit();
 		editor.remove(getString(R.string.twitter_access_token_secret));
 		editor.commit();
-	}
-
-	public final int getTwitterUserId() {
-		SharedPreferences sharedPref = getSharedPreferences(
-				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getInt(getString(R.string.twitter_user_id), NO_ID);
+		editor.remove(getString(R.string.twitter_user_id));
+		editor.commit();
 	}
 
 	public final boolean hasTwitterUserId() {
 		return getTwitterUserId() >= 0;
+	}
+	
+	public final int getTwitterUserId() {
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getInt(getString(R.string.twitter_user_id), NO_ID);
 	}
 
 	public final void setTwitterUserId(int userId) {
@@ -194,6 +208,20 @@ public class BeaconApp extends Application {
 				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putInt(getString(R.string.twitter_user_id), userId);
+		editor.commit();
+	}
+	
+	public final String getTwitterScreenName() {
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(getString(R.string.twitter_username), "");
+	}
+
+	public final void setTwitterScreenName(String userName) {
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putString(getString(R.string.twitter_username), userName);
 		editor.commit();
 	}
 
@@ -212,12 +240,9 @@ public class BeaconApp extends Application {
 	}
 
 	public final boolean isSetupDone() {
-		return true;
-		// SharedPreferences sharedPref =
-		// getSharedPreferences(getString(R.string.beacon_pref),
-		// Context.MODE_PRIVATE);
-		// return sharedPref.getBoolean(getString(R.string.is_setup_done),
-		// false);
+		SharedPreferences sharedPref = getSharedPreferences(getString(R.string.beacon_pref), 
+				Context.MODE_PRIVATE);
+		return sharedPref.getBoolean(getString(R.string.is_setup_done), false);
 	}
 
 	public final void setIsSetupDone(boolean isSetupDone) {
@@ -226,6 +251,29 @@ public class BeaconApp extends Application {
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putBoolean(getString(R.string.is_setup_done), isSetupDone);
 		editor.commit();
+	}
+	
+	public final boolean isTablet(){
+		return getResources().getBoolean(R.bool.isTablet);
+	}
+	
+	public final boolean isGoogleServicesAvailable(){
+		// Check that Google Play services is available
+        int resultCode =
+                GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d(TAG, getString(R.string.play_services_available));
+
+            // Continue
+            return true;
+        // Google Play services was not available for some reason
+        } else {
+           Log.d(TAG, getString(R.string.play_services_unavailable));
+            return false;
+        }
 	}
 
 	// TODO I may not need the stuff below

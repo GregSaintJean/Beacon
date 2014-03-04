@@ -10,7 +10,13 @@ import com.therabbitmage.android.beacon.R;
 public final class TwitterBeacon {
 
 	private static Twitter sTwitter;
-
+ 
+	/**
+	 * Generates a Twitter object from the Twitter4J library. The Singleton Pattern prevents the consumer key and secret
+	 * from being placed into the twitter object twice on creation.
+	 * @param ctx any context that will use the twitter object
+	 * @return Twitter4J object
+	 */
 	public static Twitter getTwitter(Context ctx) {
 
 		if (sTwitter == null) {
@@ -24,6 +30,13 @@ public final class TwitterBeacon {
 		}
 
 		return sTwitter;
+	}
+	/**
+	 * Clears the Twitter object from the Twitter4J library and setups it null
+	 */
+	public static void clearTwitter(){
+		sTwitter.shutdown();
+		sTwitter = null;
 	}
 
 	private TwitterBeacon() {

@@ -8,8 +8,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.therabbitmage.android.beacon.BuildConfig;
 import com.therabbitmage.android.beacon.R;
+import com.therabbitmage.android.beacon.ui.fragment.PhoneContactListFragment;
 import com.therabbitmage.android.beacon.ui.fragment.PhoneSetupFragment;
+import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
 public class PhoneSetupActivity extends FragmentActivity implements OnClickListener {
 
@@ -18,6 +21,9 @@ public class PhoneSetupActivity extends FragmentActivity implements OnClickListe
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		if(BuildConfig.DEBUG){
+			AndroidUtils.enableStrictMode();
+		}
 		super.onCreate(savedInstanceState);
 		setupUI();
 	}
@@ -30,6 +36,7 @@ public class PhoneSetupActivity extends FragmentActivity implements OnClickListe
 		mNextButton.setOnClickListener(this);
 		mCancelButton.setOnClickListener(this);
 
+		//TODO Support Two Pane setup
 		PhoneSetupFragment fragment = new PhoneSetupFragment();
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.content_container, fragment);
@@ -40,17 +47,25 @@ public class PhoneSetupActivity extends FragmentActivity implements OnClickListe
 	public void onClick(View view) {
 
 		if (view.getId() == R.id.next_btn) {
-
+			startSocialSetupActivity();
 		}
 
 		if (view.getId() == R.id.cancel_btn) {
-			startMainActivity();
+			onBackPressed();
 		}
 
 	}
-
-	private void startMainActivity() {
-		Intent intent = new Intent(this, MainActivity.class);
+	
+	public void showPhoneContactListFragment(){
+		PhoneContactListFragment fragment = new PhoneContactListFragment();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.content_container, fragment);
+		transaction.addToBackStack(fragment.getClass().getSimpleName());
+		transaction.commit();
+	}
+	
+	private void startSocialSetupActivity(){
+		Intent intent = new Intent(this, SocialSetupActivity.class);
 		startActivity(intent);
 	}
 

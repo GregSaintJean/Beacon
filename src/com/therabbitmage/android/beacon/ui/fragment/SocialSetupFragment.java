@@ -58,7 +58,7 @@ public class SocialSetupFragment extends Fragment implements OnClickListener,
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		mRoot = inflater.inflate(R.layout.social_setup_fragment, container,
+		mRoot = inflater.inflate(R.layout.social_setup_activity, container,
 				false);
 		mFacebookLoginButton = (Button) mRoot
 				.findViewById(R.id.facebook_login_btn);

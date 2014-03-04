@@ -18,4 +18,6 @@
     <string name="twitter_access_token">twitter_access_token</string>
     <string name="twitter_access_token_secret">twitter_access_token_secret</string>
     <string name="twitter_user_id">twitter_user_id</string>
+    <string name="twitter_username">twitter_username</string>
+    <string name="twitter_expiration">twitter_expiration</string>
 </resources>

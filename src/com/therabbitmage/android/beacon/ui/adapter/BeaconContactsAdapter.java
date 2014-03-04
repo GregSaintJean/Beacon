@@ -23,8 +23,7 @@ public class BeaconContactsAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		final ViewHolder holder = (ViewHolder)view.getTag();
-		holder.text.setText(cursor.getString(cursor.getColumnIndex(Beacon.BeaconContacts.CN_FIRST_NAME))
-				+ " " + cursor.getString(cursor.getColumnIndex(Beacon.BeaconContacts.CN_LAST_NAME)));
+		holder.text.setText(cursor.getString(cursor.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME)));
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public final class AndroidUtils {
     @TargetApi(11)
     public static void enableStrictMode() {
         // Strict mode is only available on gingerbread or later
-        if (gingerbreadOfBetter()) {
+        if (gingerbreadOrBetter()) {
 
             // Enable all thread strict mode policies
             StrictMode.ThreadPolicy.Builder threadPolicyBuilder =
@@ -77,7 +77,7 @@ public final class AndroidUtils {
 
 	
 	//SDK 9 Version 2.3
-	public final static boolean gingerbreadOfBetter(){
+	public final static boolean gingerbreadOrBetter(){
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
 	}
 	

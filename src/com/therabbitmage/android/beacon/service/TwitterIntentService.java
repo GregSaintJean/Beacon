@@ -6,9 +6,11 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.BuildConfig;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
 import com.therabbitmage.android.beacon.ui.activity.TwitterPinActivity;
 
@@ -19,6 +21,9 @@ public class TwitterIntentService extends IntentService {
 	public static final String ACTION_AUTH = "action_twitter_auth";
 	public static final String ACTION_GET_ACCESS_TOKEN = "action_get_access_token";
 	public static final String ACTION_LOGOUT = "action_logout";
+	
+	public static final String BROADCAST_LOGIN_SUCCESSFUL = "login_successful";
+	public static final String BROADCAST_LOGOUT_SUCCESSFUL = "logout_successful";
 
 	public static final String EXTRA_PIN = "extra_pin";
 
@@ -38,19 +43,13 @@ public class TwitterIntentService extends IntentService {
 			assert (pin != null);
 			getAccessToken(pin);
 		}
-
-		if (intent.getAction().equals(ACTION_LOGOUT)) {
+		
+		if(intent.getAction().equals(ACTION_LOGOUT)){
 			logout();
 		}
 
 	}
-
-	private void logout() {
-		// TODO Check with twitter to see how to revoke the accesstoken and
-		// secret
-		((BeaconApp) getApplicationContext()).clearAccessTokenAndSecret();
-	}
-
+	
 	private void authenticate() {
 
 		BeaconApp app = (BeaconApp) getApplicationContext();
@@ -70,13 +69,19 @@ public class TwitterIntentService extends IntentService {
 			}
 		}
 
-		Log.d(TAG, "Request Token = " + requestToken.getToken());
+		
+		if(BuildConfig.DEBUG){
+			Log.d(TAG, "Request Token = " + requestToken.getToken());
+			Log.d(TAG, "Request Token Secret = " + requestToken.getTokenSecret());
+			
+		}
 		app.setTwitterRequestToken(requestToken.getToken());
-		Log.d(TAG, "Request Token Secret = " + requestToken.getTokenSecret());
 		app.setTwitterRequestSecretToken(requestToken.getTokenSecret());
 
 		String url = requestToken.getAuthorizationURL();
-		Log.d(TAG, "AuthorizationUrl = " + url);
+		if(BuildConfig.DEBUG){
+			Log.d(TAG, "AuthorizationUrl = " + url);
+		}
 
 		Intent intent = new Intent(this, TwitterPinActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -100,17 +105,36 @@ public class TwitterIntentService extends IntentService {
 				return;
 			}
 
-			Log.d(TAG, "Access Token = " + accessToken.getToken());
-			Log.d(TAG, "Access Token Secret = " + accessToken.getTokenSecret());
-			Log.d(TAG, "Screen Name = " + accessToken.getScreenName());
-			Log.d(TAG, "User ID = " + accessToken.getUserId());
+			if(BuildConfig.DEBUG){
+				Log.d(TAG, "Access Token = " + accessToken.getToken());
+				Log.d(TAG, "Access Token Secret = " + accessToken.getTokenSecret());
+				Log.d(TAG, "Screen Name = " + accessToken.getScreenName());
+				Log.d(TAG, "User ID = " + accessToken.getUserId());
+			}
+			
 			app.setTwitterAccessToken(accessToken.getToken());
 			app.setTwitterAccessTokenSecret(accessToken.getTokenSecret());
-			app.clearTwitterRequestTokenAndSecret();
-			// Broadcast that twitter login was successful
+			app.setTwitterUserId((int)accessToken.getUserId());
+			app.setTwitterScreenName(accessToken.getScreenName());
+			
+			LocalBroadcastManager mMgr = LocalBroadcastManager.getInstance(this);
+			Intent intent = new Intent();
+			intent.setAction(BROADCAST_LOGIN_SUCCESSFUL);
+			mMgr.sendBroadcast(intent);
 		} else {
 			authenticate();
 		}
+	}
+	
+	private void logout(){
+		BeaconApp app = (BeaconApp)getApplicationContext();
+		app.clearTwitterAccessTokenAndSecret();
+		app.clearTwitterRequestTokenAndSecret();
+		TwitterBeacon.clearTwitter();
+		LocalBroadcastManager mMgr = LocalBroadcastManager.getInstance(this);
+		Intent intent = new Intent();
+		intent.setAction(BROADCAST_LOGOUT_SUCCESSFUL);
+		mMgr.sendBroadcast(intent);
 	}
 
 }

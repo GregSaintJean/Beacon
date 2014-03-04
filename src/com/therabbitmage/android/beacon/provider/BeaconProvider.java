@@ -20,7 +20,7 @@ public class BeaconProvider extends ContentProvider {
 	private static final String TAG = BeaconProvider.class.getSimpleName();
 	
 	private static final String DATABASE_NAME = "beacon.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	
 	private static final int Beacon_Contact_List = 0;
 	private static final int Beacon_Contact_Detail_List = 1;
@@ -28,8 +28,8 @@ public class BeaconProvider extends ContentProvider {
 	private static final int Beacon_Contact_ID = 3;
 	private static final int Beacon_Contact_Detail_ID = 4;
 	
-	private static HashMap<String, String> sBeaconContactProjectionMap;
-	private static HashMap<String, String> sBeaconContactDetailsProjectionMap;
+	public static HashMap<String, String> sBeaconContactProjectionMap;
+	public static HashMap<String, String> sBeaconContactDetailsProjectionMap;
 	
 	private SQLiteOpenHelper mOpenHelper;
 	private static final UriMatcher sUriMatcher;
@@ -46,7 +46,7 @@ public class BeaconProvider extends ContentProvider {
 				count = db.delete(Beacon.BeaconContacts.TABLE_NAME, selection, selectionArgs);
 				break;
 			case Beacon_Contact_Detail_List:
-				count = db.delete(Beacon.BeaconContactDetails.TABLE_NAME, selection, selectionArgs);
+				count = db.delete(Beacon.BeaconMobileContactDetails.TABLE_NAME, selection, selectionArgs);
 				break;
 			case Beacon_Contact_ID:
 				segment = uri.getPathSegments().get(1);
@@ -56,7 +56,7 @@ public class BeaconProvider extends ContentProvider {
 				break;
 			case Beacon_Contact_Detail_ID:
 				segment = uri.getPathSegments().get(1);
-				count = db.delete(Beacon.BeaconContactDetails.TABLE_NAME, Beacon.BeaconContactDetails._ID+"="+segment+
+				count = db.delete(Beacon.BeaconMobileContactDetails.TABLE_NAME, Beacon.BeaconMobileContactDetails._ID+"="+segment+
 						(!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), 
 						selectionArgs);
 				break;
@@ -76,11 +76,11 @@ public class BeaconProvider extends ContentProvider {
 			case Beacon_Contact_List:
 				return Beacon.BeaconContacts.CONTENT_TYPE;
 			case Beacon_Contact_Detail_List:
-				return Beacon.BeaconContactDetails.CONTENT_TYPE;
+				return Beacon.BeaconMobileContactDetails.CONTENT_TYPE;
 			case Beacon_Contact_ID:
 				return Beacon.BeaconContacts.CONTENT_ITEM_TYPE;
 			case Beacon_Contact_Detail_ID:
-				return Beacon.BeaconContactDetails.CONTENT_ITEM_TYPE;
+				return Beacon.BeaconMobileContactDetails.CONTENT_ITEM_TYPE;
 			default:
 				throw new IllegalArgumentException("Unknown URI:" + uri);
 		}
@@ -102,9 +102,9 @@ public class BeaconProvider extends ContentProvider {
 				}
 				break;
 			case Beacon_Contact_Detail_List:
-				rowId = db.insert(Beacon.BeaconContactDetails.TABLE_NAME, null, initialValues);
+				rowId = db.insert(Beacon.BeaconMobileContactDetails.TABLE_NAME, null, initialValues);
 				if(rowId >= 0){
-					Uri insertUri = ContentUris.withAppendedId(Beacon.BeaconContactDetails.CONTENT_URI, rowId);
+					Uri insertUri = ContentUris.withAppendedId(Beacon.BeaconMobileContactDetails.CONTENT_URI, rowId);
                     getContext().getContentResolver().notifyChange(uri, null, false);
                     return insertUri;
 				}
@@ -118,7 +118,7 @@ public class BeaconProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		mOpenHelper = new DatabaseHelper(getContext());
+		mOpenHelper =new DatabaseHelper(getContext());
 		return true;
 	}
 
@@ -134,9 +134,9 @@ public class BeaconProvider extends ContentProvider {
         		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContacts.DEFAULT_SORT_ORDER);
         		break;
         	case Beacon_Contact_Detail_List:
-        		qb.setTables(Beacon.BeaconContactDetails.TABLE_NAME);
+        		qb.setTables(Beacon.BeaconMobileContactDetails.TABLE_NAME);
         		qb.setProjectionMap(sBeaconContactDetailsProjectionMap);
-        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContactDetails.DEFAULT_SORT_ORDER);
+        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
         		break;
         	case Beacon_Contact_ID:
         		qb.setTables(Beacon.BeaconContacts.TABLE_NAME);
@@ -145,10 +145,10 @@ public class BeaconProvider extends ContentProvider {
         		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContacts.DEFAULT_SORT_ORDER);
         		break;
         	case Beacon_Contact_Detail_ID:
-        		qb.setTables(Beacon.BeaconContactDetails.TABLE_NAME);
+        		qb.setTables(Beacon.BeaconMobileContactDetails.TABLE_NAME);
         		qb.setProjectionMap(sBeaconContactDetailsProjectionMap);
-        		qb.appendWhere(Beacon.BeaconContactDetails._ID+"="+uri.getPathSegments().get(1));
-        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContactDetails.DEFAULT_SORT_ORDER);
+        		qb.appendWhere(Beacon.BeaconMobileContactDetails._ID+"="+uri.getPathSegments().get(1));
+        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
         		break;
 	        default:
 	            throw new IllegalArgumentException("Unknown URI:" + uri);
@@ -180,7 +180,7 @@ public class BeaconProvider extends ContentProvider {
         	case Beacon_Contact_List:
         		count = db.update(Beacon.BeaconContacts.TABLE_NAME, initialValues, selection, selectionArgs);
         	case Beacon_Contact_Detail_List:
-        		count = db.update(Beacon.BeaconContactDetails.TABLE_NAME, initialValues, selection, selectionArgs);
+        		count = db.update(Beacon.BeaconMobileContactDetails.TABLE_NAME, initialValues, selection, selectionArgs);
         	case Beacon_Contact_ID:
         		segment = uri.getPathSegments().get(1);
         		count = db.update(Beacon.BeaconContacts.TABLE_NAME, initialValues, 
@@ -189,8 +189,8 @@ public class BeaconProvider extends ContentProvider {
         		break;
         	case Beacon_Contact_Detail_ID:
         		segment = uri.getPathSegments().get(1);
-        		count = db.update(Beacon.BeaconContactDetails.TABLE_NAME, initialValues, 
-        				Beacon.BeaconContactDetails._ID+"="+segment+(!TextUtils.isEmpty(selection) ? " AND ("+ selection + ")" : ""), 
+        		count = db.update(Beacon.BeaconMobileContactDetails.TABLE_NAME, initialValues, 
+        				Beacon.BeaconMobileContactDetails._ID+"="+segment+(!TextUtils.isEmpty(selection) ? " AND ("+ selection + ")" : ""), 
         				selectionArgs);
         		break;
 	        default:
@@ -201,7 +201,7 @@ public class BeaconProvider extends ContentProvider {
         return count;
 	}
 	
-	private static class DatabaseHelper extends SQLiteOpenHelper{
+	public static class DatabaseHelper extends SQLiteOpenHelper{
 		DatabaseHelper(Context ctx){
             super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
         }
@@ -209,7 +209,7 @@ public class BeaconProvider extends ContentProvider {
 		@Override
 		public void onCreate(SQLiteDatabase db) {
 			db.execSQL(Beacon.BeaconContacts.SQL_CREATE_TABLE);
-			db.execSQL(Beacon.BeaconContactDetails.SQL_CREATE_TABLE);
+			db.execSQL(Beacon.BeaconMobileContactDetails.SQL_CREATE_TABLE);
 		}
 
 		@Override
@@ -217,28 +217,31 @@ public class BeaconProvider extends ContentProvider {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
 			db.execSQL(Beacon.BeaconContacts.SQL_DROP_TABLE);
-			db.execSQL(Beacon.BeaconContactDetails.SQL_DROP_TABLE);
+			db.execSQL(Beacon.BeaconMobileContactDetails.SQL_DROP_TABLE);
 		}
 	}
 	
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContacts.TABLE_NAME, Beacon_Contact_List);
-		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContactDetails.TABLE_NAME, Beacon_Contact_Detail_List);
+		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconMobileContactDetails.TABLE_NAME, Beacon_Contact_Detail_List);
 		
 		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContacts.TABLE_NAME + "/#", Beacon_Contact_ID);
-		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContactDetails.TABLE_NAME + "/#", Beacon_Contact_Detail_ID);
+		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconMobileContactDetails.TABLE_NAME + "/#", Beacon_Contact_Detail_ID);
 		
 		sBeaconContactProjectionMap = new HashMap<String, String>();
 		sBeaconContactProjectionMap.put(Beacon.BeaconContacts._ID, Beacon.BeaconContacts._ID);
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_FIRST_NAME, Beacon.BeaconContacts.CN_FIRST_NAME);
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_LAST_NAME, Beacon.BeaconContacts.CN_LAST_NAME);
+		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_DISPLAY_NAME, Beacon.BeaconContacts.CN_DISPLAY_NAME);
+		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_DELETE_FLAG, Beacon.BeaconContacts.CN_DELETE_FLAG);
+		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_RECORDS, Beacon.BeaconContacts.CN_RECORDS);
 		
 		sBeaconContactDetailsProjectionMap = new HashMap<String, String>();
-		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconContactDetails._ID, Beacon.BeaconContactDetails._ID);
-		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconContactDetails.CN_CONTACT_ID, Beacon.BeaconContactDetails.CN_CONTACT_ID);
-		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconContactDetails.CN_TYPE, Beacon.BeaconContactDetails.CN_TYPE);
-		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconContactDetails.CN_NUMBER, Beacon.BeaconContactDetails.CN_NUMBER);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails._ID, Beacon.BeaconMobileContactDetails._ID);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_BEACON_ID, Beacon.BeaconMobileContactDetails.CN_BEACON_ID);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_CONTACT_ID, Beacon.BeaconMobileContactDetails.CN_CONTACT_ID);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME, Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_DELETE_FLAG, Beacon.BeaconMobileContactDetails.CN_DELETE_FLAG);
+		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_NUMBER, Beacon.BeaconMobileContactDetails.CN_NUMBER);
 	}
 
 }

@@ -2,23 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     android:orientation="vertical" >
     <Button 
         android:id="@+id/add_contact_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/add_contact"/>
-    <ListView 
-        android:id="@+id/contact_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
     <!-- TODO The text for the view below needs to be bigger -->
-    <TextView 
-        android:id="@+id/empty_view"
+    <RelativeLayout
+        android:id="@+id/empty_view_container" 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/no_contacts"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <ListView 
+	        android:id="@+id/contact_list"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:visibility="gone"/>
+        <ProgressBar 
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerInParent="true"/>
+        <TextView 
+            android:id="@+id/empty_view"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity="center"
+	        android:layout_centerInParent="true"
+	        android:text="@string/no_contacts_added"
+	        android:visibility="gone"/>
+    </RelativeLayout>
+    
 </LinearLayout>
