@@ -3,18 +3,14 @@ package com.therabbitmage.android.beacon;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.therabbitmage.android.beacon.R;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.location.LocationManager;
-import android.net.Uri;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -28,6 +24,12 @@ public class BeaconApp extends Application {
 
 	private static final String US_EMERGENCY_NUMBER = "911";
 	private static final int NO_ID = -1;
+	
+	private boolean mIsTablet;
+	private boolean mHasSmsCapability;
+	private boolean mHasLocationCapability;
+	private boolean mHasNetworkLocationCapability;
+	private boolean mHasGpsCapability;
 
 	@Override
 	public void onCreate() {
@@ -36,9 +38,15 @@ public class BeaconApp extends Application {
 		if(BuildConfig.DEBUG){
 			printDebugKeyHash();
 		}
+		
+		mIsTablet = checkIsTablet();
+		mHasSmsCapability = checkSmsCapability();
+		mHasGpsCapability = checkGpsCapability();
+		mHasLocationCapability = checkLocationCapability();
+		mHasNetworkLocationCapability = checkNetworkLocationCapability();
 
 	}
-	
+
 	public final void printDebugKeyHash(){
 		try {
 			PackageInfo info = getPackageManager().getPackageInfo(
@@ -58,36 +66,13 @@ public class BeaconApp extends Application {
 		}
 	}
 
-	public LocationManager getLocationManager() {
-		return (LocationManager) this
+	public static LocationManager getLocationManager(Context ctx) {
+		return (LocationManager) ctx
 				.getSystemService(Context.LOCATION_SERVICE);
 	}
 
-	public final void sms911(String number, String message) {
-		AndroidUtils.sendSMS(this, US_EMERGENCY_NUMBER, message);
-	}
-
 	public final void dial911() {
-		AndroidUtils.dialNumber(this, US_EMERGENCY_NUMBER);
-	}
-
-	public final boolean hasFacebookLogin() {
-		return !TextUtils.isEmpty(getFacebookAccessToken());
-	}
-	
-	public final String getFacebookAccessToken() {
-		SharedPreferences sharedPref = getSharedPreferences(
-				getString(R.string.facebook_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(
-				getString(R.string.facebook_access_token_key), "");
-	}
-
-	public final void setFacebookAccessToken(String token) {
-		SharedPreferences sharedPref = getSharedPreferences(
-				getString(R.string.facebook_pref), Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(getString(R.string.facebook_access_token_key), token);
-		editor.commit();
+		AndroidUtils.callNumber(this, US_EMERGENCY_NUMBER);
 	}
 
 	public final boolean hasTwitterRequestToken() {
@@ -253,8 +238,109 @@ public class BeaconApp extends Application {
 		editor.commit();
 	}
 	
-	public final boolean isTablet(){
+	private final boolean checkIsTablet(){
 		return getResources().getBoolean(R.bool.isTablet);
+	}
+	
+	public final boolean isTablet(){
+		return mIsTablet;
+	}
+	
+	public final void setSmsInactiveTransmissionInterval(long interval){
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putLong(getString(R.string.beacon_sms_inactive_transmission_interval), interval);
+		editor.commit();
+	}
+	
+	public final void setSmsActiveTransmissionInterval(long interval){
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putLong(getString(R.string.beacon_sms_active_transmission_interval), interval);
+		editor.commit();
+	}
+	
+	public final long getSmsInactiveTransmissionInterval(){
+		SharedPreferences sharedPref = getSharedPreferences(getString(R.string.beacon_pref), 
+				Context.MODE_PRIVATE);
+		return sharedPref.getLong(getString(R.string.beacon_sms_inactive_transmission_interval), 
+				getResources().getInteger(R.integer.default_sms_inactive_transmission_interval));
+	}
+	
+	public final long getSmsActiveTransmissionInterval(){
+		SharedPreferences sharedPref = getSharedPreferences(getString(R.string.beacon_pref), 
+				Context.MODE_PRIVATE);
+		return sharedPref.getLong(getString(R.string.beacon_sms_active_transmission_interval), 
+				getResources().getInteger(R.integer.default_sms_active_transmission_interval));
+	}
+	
+	public final void setTwitterInactiveTransmissionInterval(long interval){
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putLong(getString(R.string.beacon_twitter_inactive_transmission_interval), interval);
+		editor.commit();
+	}
+	
+	public final void setTwitterActiveTransmissionInterval(long interval){
+		SharedPreferences sharedPref = getSharedPreferences(
+				getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putLong(getString(R.string.beacon_twitter_active_transmission_interval), interval);
+		editor.commit();
+	}
+	
+	public final long getTwitterInactiveTransmissionInterval(){
+		SharedPreferences sharedPref = getSharedPreferences(getString(R.string.beacon_pref), 
+				Context.MODE_PRIVATE);
+		return sharedPref.getLong(getString(R.string.beacon_twitter_inactive_transmission_interval), 
+				getResources().getInteger(R.integer.default_twitter_inactive_transmission_interval));
+	}
+	
+	public final long getTwitterActiveTransmissionInterval(){
+		SharedPreferences sharedPref = getSharedPreferences(getString(R.string.beacon_pref), 
+				Context.MODE_PRIVATE);
+		return sharedPref.getLong(getString(R.string.beacon_twitter_active_transmission_interval), 
+				getResources().getInteger(R.integer.default_twitter_active_transmission_interval));
+	}
+	
+	private final boolean checkSmsCapability(){
+		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+	}
+	
+	private final boolean checkGpsCapability(){
+		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+	}
+	
+	private final boolean checkLocationCapability(){
+		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION);
+	}
+	
+	private final boolean checkNetworkLocationCapability() {
+		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK);
+	}
+	
+	public final boolean hasSmsCapability(){
+		return mHasSmsCapability;
+	}
+	
+	public final boolean hasGpsCapability(){
+		return mHasGpsCapability;
+	}
+	
+	public final boolean hasLocationCapability(){
+		return mHasLocationCapability;
+	}
+	
+	public final boolean hasNetworkLocationCapability(){
+		return mHasNetworkLocationCapability;
+	}
+	
+	public final boolean isNetworkLocationOnline(){
+		LocationManager lm = (LocationManager)this.getSystemService(LocationManager.GPS_PROVIDER);
+		return lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 	
 	public final boolean isGoogleServicesAvailable(){
@@ -271,43 +357,32 @@ public class BeaconApp extends Application {
             return true;
         // Google Play services was not available for some reason
         } else {
+        	
+        	Log.e(TAG, getString(R.string.error_general));
+        	Log.e(TAG, getString(R.string.result_code) + resultCode);
+        	
+        	switch(resultCode){
+        		case ConnectionResult.SERVICE_MISSING:
+        			Log.e(TAG, getString(R.string.error_service_missing));
+        			break;
+        		case ConnectionResult.SERVICE_INVALID:
+        			Log.e(TAG, getString(R.string.error_service_invalid));
+        			break;
+        		case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+        			Log.e(TAG, getString(R.string.error_requires_updating));
+        			break;
+        		case ConnectionResult.SERVICE_DISABLED:
+        			Log.e(TAG, getString(R.string.error_service_disabled));
+        			break;
+        		case ConnectionResult.DEVELOPER_ERROR:
+        			Log.e(TAG, getString(R.string.error_developer_error));
+        		case ConnectionResult.NETWORK_ERROR:
+        			Log.e(TAG, getString(R.string.error_network_connectivity));
+        	}
+        	
            Log.d(TAG, getString(R.string.play_services_unavailable));
             return false;
         }
 	}
-
-	// TODO I may not need the stuff below
-
-	// http://stackoverflow.com/questions/15426144/turning-on-and-off-gps-programmatically-in-android-4-0-and-above
-	public void turnGPSOn() {
-		Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
-		intent.putExtra("enabled", true);
-		this.sendBroadcast(intent);
-
-		String provider = Settings.Secure.getString(this.getContentResolver(),
-				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-		if (!provider.contains("gps")) { // if gps is disabled
-			final Intent poke = new Intent();
-			poke.setClassName("com.android.settings",
-					"com.android.settings.widget.SettingsAppWidgetProvider");
-			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-			poke.setData(Uri.parse("3"));
-			this.sendBroadcast(poke);
-
-		}
-	}
-
-	// automatic turn off the gps
-	public void turnGPSOff() {
-		String provider = Settings.Secure.getString(this.getContentResolver(),
-				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-		if (provider.contains("gps")) { // if gps is enabled
-			final Intent poke = new Intent();
-			poke.setClassName("com.android.settings",
-					"com.android.settings.widget.SettingsAppWidgetProvider");
-			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-			poke.setData(Uri.parse("3"));
-			this.sendBroadcast(poke);
-		}
-	}
+	
 }

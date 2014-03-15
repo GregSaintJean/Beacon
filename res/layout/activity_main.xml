@@ -14,12 +14,38 @@
         android:layout_height="0dp"
         android:layout_weight="1">
         <TextView 
-        android:background="@android:color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:textSize="24sp"
-        android:text="@string/app_name"/>
+            android:id="@+id/app_title"
+	        android:background="@android:color/white"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginTop="15dp"
+	        android:layout_marginBottom="15dp"
+	        android:textSize="24sp"
+	        android:text="@string/app_name"/>
+        
+        <Button 
+            android:id="@+id/gps_indicator"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/app_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#FFFFFFFF"
+            android:text="@string/gps"
+            android:background="@drawable/gps_indicator"/>
+        <Button 
+            android:layout_centerHorizontal="true"
+            android:id="@+id/network_indicator"
+            android:layout_width="130dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="15dp"
+            android:layout_below="@id/gps_indicator"
+	        android:background="@drawable/network_indicator"
+	        android:text="@string/network"
+	        android:textColor="#FFFFFFFF"/>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -34,26 +60,16 @@
 		        android:layout_marginLeft="5dp"
 		        android:layout_marginRight="5dp"
 		        android:layout_alignParentTop="true"/>
-	        <LinearLayout
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_marginLeft="5dp"
+	        <!-- TODO I should probably turn this into a menu option -->
+	        <Button 
+	            android:id="@+id/alt_setup_btn"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            style="@style/LargeButton"
+	            android:text="@string/setup"
+	            android:visibility="gone"
+	            android:layout_marginLeft="5dp"
 		        android:layout_marginRight="5dp"
-		        android:orientation="vertical"
-		        android:layout_alignParentBottom="true">
-		        <Button 
-		            android:id="@+id/alt_setup_btn"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            style="@style/LargeButton"
-		            android:text="@string/setup"
-		            android:visibility="gone"/>
-		        <Button
-		            android:id="@+id/nine_one_one_btn"
-		            android:layout_width="match_parent"
-		            android:layout_height="wrap_content"
-		            style="@style/LargeButton"
-		            android:text="@string/dial911"/>        
-	    </LinearLayout>
+	            android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 </LinearLayout>

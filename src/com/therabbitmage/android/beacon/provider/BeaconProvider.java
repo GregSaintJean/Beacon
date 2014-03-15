@@ -20,15 +20,11 @@ public class BeaconProvider extends ContentProvider {
 	private static final String TAG = BeaconProvider.class.getSimpleName();
 	
 	private static final String DATABASE_NAME = "beacon.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 1;
 	
-	private static final int Beacon_Contact_List = 0;
-	private static final int Beacon_Contact_Detail_List = 1;
+	private static final int Beacon_Contact_Detail_List = 0;
+	private static final int Beacon_Contact_Detail_ID = 1;
 	
-	private static final int Beacon_Contact_ID = 3;
-	private static final int Beacon_Contact_Detail_ID = 4;
-	
-	public static HashMap<String, String> sBeaconContactProjectionMap;
 	public static HashMap<String, String> sBeaconContactDetailsProjectionMap;
 	
 	private SQLiteOpenHelper mOpenHelper;
@@ -42,17 +38,8 @@ public class BeaconProvider extends ContentProvider {
 		String segment;
 		
 		switch(sUriMatcher.match(uri)){
-			case Beacon_Contact_List:
-				count = db.delete(Beacon.BeaconContacts.TABLE_NAME, selection, selectionArgs);
-				break;
 			case Beacon_Contact_Detail_List:
 				count = db.delete(Beacon.BeaconMobileContactDetails.TABLE_NAME, selection, selectionArgs);
-				break;
-			case Beacon_Contact_ID:
-				segment = uri.getPathSegments().get(1);
-				count = db.delete(Beacon.BeaconContacts.TABLE_NAME, Beacon.BeaconContacts._ID+"="+segment+
-						(!TextUtils.isEmpty(selection) ? " AND (" + selection + ")" : ""), 
-						selectionArgs);
 				break;
 			case Beacon_Contact_Detail_ID:
 				segment = uri.getPathSegments().get(1);
@@ -73,12 +60,8 @@ public class BeaconProvider extends ContentProvider {
 	public String getType(Uri uri) {
 		
 		switch(sUriMatcher.match(uri)){
-			case Beacon_Contact_List:
-				return Beacon.BeaconContacts.CONTENT_TYPE;
 			case Beacon_Contact_Detail_List:
 				return Beacon.BeaconMobileContactDetails.CONTENT_TYPE;
-			case Beacon_Contact_ID:
-				return Beacon.BeaconContacts.CONTENT_ITEM_TYPE;
 			case Beacon_Contact_Detail_ID:
 				return Beacon.BeaconMobileContactDetails.CONTENT_ITEM_TYPE;
 			default:
@@ -93,14 +76,6 @@ public class BeaconProvider extends ContentProvider {
 		final long rowId;
 		
 		switch(sUriMatcher.match(uri)){
-			case Beacon_Contact_List:
-				rowId = db.insert(Beacon.BeaconContacts.TABLE_NAME, null, initialValues);
-				if(rowId >= 0){
-					Uri insertUri = ContentUris.withAppendedId(Beacon.BeaconContacts.CONTENT_URI, rowId);
-                    getContext().getContentResolver().notifyChange(uri, null, false);
-                    return insertUri;
-				}
-				break;
 			case Beacon_Contact_Detail_List:
 				rowId = db.insert(Beacon.BeaconMobileContactDetails.TABLE_NAME, null, initialValues);
 				if(rowId >= 0){
@@ -118,7 +93,7 @@ public class BeaconProvider extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
-		mOpenHelper =new DatabaseHelper(getContext());
+		mOpenHelper = new DatabaseHelper(getContext());
 		return true;
 	}
 
@@ -128,21 +103,10 @@ public class BeaconProvider extends ContentProvider {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         String orderBy = null;
         switch(sUriMatcher.match(uri)){
-        	case Beacon_Contact_List:
-        		qb.setTables(Beacon.BeaconContacts.TABLE_NAME);
-        		qb.setProjectionMap(sBeaconContactProjectionMap);
-        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContacts.DEFAULT_SORT_ORDER);
-        		break;
         	case Beacon_Contact_Detail_List:
         		qb.setTables(Beacon.BeaconMobileContactDetails.TABLE_NAME);
         		qb.setProjectionMap(sBeaconContactDetailsProjectionMap);
         		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
-        		break;
-        	case Beacon_Contact_ID:
-        		qb.setTables(Beacon.BeaconContacts.TABLE_NAME);
-        		qb.setProjectionMap(sBeaconContactProjectionMap);
-        		qb.appendWhere(Beacon.BeaconContacts._ID+"="+uri.getPathSegments().get(1));
-        		orderBy = deriveSortOrder(sortOrder, Beacon.BeaconContacts.DEFAULT_SORT_ORDER);
         		break;
         	case Beacon_Contact_Detail_ID:
         		qb.setTables(Beacon.BeaconMobileContactDetails.TABLE_NAME);
@@ -177,15 +141,8 @@ public class BeaconProvider extends ContentProvider {
         String segment;
         
         switch(sUriMatcher.match(uri)){
-        	case Beacon_Contact_List:
-        		count = db.update(Beacon.BeaconContacts.TABLE_NAME, initialValues, selection, selectionArgs);
         	case Beacon_Contact_Detail_List:
         		count = db.update(Beacon.BeaconMobileContactDetails.TABLE_NAME, initialValues, selection, selectionArgs);
-        	case Beacon_Contact_ID:
-        		segment = uri.getPathSegments().get(1);
-        		count = db.update(Beacon.BeaconContacts.TABLE_NAME, initialValues, 
-        				Beacon.BeaconContacts._ID+"="+segment+(!TextUtils.isEmpty(selection) ? " AND ("+ selection + ")" : ""),
-        				selectionArgs);
         		break;
         	case Beacon_Contact_Detail_ID:
         		segment = uri.getPathSegments().get(1);
@@ -208,7 +165,6 @@ public class BeaconProvider extends ContentProvider {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(Beacon.BeaconContacts.SQL_CREATE_TABLE);
 			db.execSQL(Beacon.BeaconMobileContactDetails.SQL_CREATE_TABLE);
 		}
 
@@ -216,28 +172,17 @@ public class BeaconProvider extends ContentProvider {
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-			db.execSQL(Beacon.BeaconContacts.SQL_DROP_TABLE);
 			db.execSQL(Beacon.BeaconMobileContactDetails.SQL_DROP_TABLE);
 		}
 	}
 	
 	static {
 		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContacts.TABLE_NAME, Beacon_Contact_List);
 		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconMobileContactDetails.TABLE_NAME, Beacon_Contact_Detail_List);
-		
-		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconContacts.TABLE_NAME + "/#", Beacon_Contact_ID);
 		sUriMatcher.addURI(Beacon.AUTHORITY, Beacon.BeaconMobileContactDetails.TABLE_NAME + "/#", Beacon_Contact_Detail_ID);
-		
-		sBeaconContactProjectionMap = new HashMap<String, String>();
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts._ID, Beacon.BeaconContacts._ID);
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_DISPLAY_NAME, Beacon.BeaconContacts.CN_DISPLAY_NAME);
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_DELETE_FLAG, Beacon.BeaconContacts.CN_DELETE_FLAG);
-		sBeaconContactProjectionMap.put(Beacon.BeaconContacts.CN_RECORDS, Beacon.BeaconContacts.CN_RECORDS);
 		
 		sBeaconContactDetailsProjectionMap = new HashMap<String, String>();
 		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails._ID, Beacon.BeaconMobileContactDetails._ID);
-		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_BEACON_ID, Beacon.BeaconMobileContactDetails.CN_BEACON_ID);
 		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_CONTACT_ID, Beacon.BeaconMobileContactDetails.CN_CONTACT_ID);
 		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME, Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME);
 		sBeaconContactDetailsProjectionMap.put(Beacon.BeaconMobileContactDetails.CN_DELETE_FLAG, Beacon.BeaconMobileContactDetails.CN_DELETE_FLAG);

@@ -1,29 +1,92 @@
 package com.therabbitmage.android.beacon.utils;
 
+import java.io.Serializable;
+import java.util.Set;
+
 import org.apache.http.protocol.HTTP;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.therabbitmage.android.beacon.R;
 
 public final class AndroidUtils {
 	
-	public final static boolean hasNetworkConnectivity(Context ctx){
+	public final static void logBundleContents(Context ctx, Bundle bundle, String logTag){
 		
-		ConnectivityManager connMgr = (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if(ctx == null || bundle == null || logTag == null){
+			return;
+		}
+		
+		Set<String> keys = bundle.keySet();
+		
+		if(keys != null){
+			for(String key : keys){
+				
+				Object obj = bundle.get(key);
+				
+				if(obj instanceof Integer){
+					Log.i(logTag, key + ": " + ((Integer)obj));
+					return;
+				}
+				
+				if(obj instanceof Double){
+					Log.i(logTag, key + ": " + ((Double)obj));
+					return;
+				}
+				
+				if(obj instanceof Float){
+					Log.i(logTag, key + ": " + ((Float)obj));
+					return;
+				}
+				
+				if(obj instanceof String){
+					Log.i(logTag, key + ": " + ((String)obj));
+					return;
+				}
+				
+				if(obj instanceof Parcelable){
+					Log.i(logTag, key + " (Parcelable): " + obj.toString());
+				}
+				
+				if(obj instanceof Serializable){
+					Log.i(logTag, key + " (Serializable): " + obj.toString());
+				}
+				
+			}
+		}
+	}
+	
+	public static final boolean hasNetworkConnectivity(Context ctx){
+		
+		if(ctx == null){
+			return false;
+		}
+		
+		ConnectivityManager connMgr = (ConnectivityManager)ctx
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 		
 		return networkInfo != null && networkInfo.isConnected();
 	}
 	
-	public final static void sendSMS(Context ctx, String number, String message){
+	public static final boolean isGpsOnline(Context ctx){
+		LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+		return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+	}
+	
+	//Need to delete
+	public final static void requestSendSMS(Context ctx, String number, String message){
 		if(number == null){
 			throw new NullPointerException(ctx.getString(R.string.error_phone_number_required));
 		}
@@ -31,12 +94,21 @@ public final class AndroidUtils {
 		assert(message != null);
 		
 		Intent intent = new Intent(Intent.ACTION_SEND);
-		intent.setData(Uri.parse("sms:" + number));
+		intent.setData(Uri.parse("smsto:" + number));
 		intent.setType(HTTP.PLAIN_TEXT_TYPE);
 		intent.putExtra("sms_body", message);
 		if(intent.resolveActivity(ctx.getPackageManager()) != null){
 			ctx.startActivity(intent);
 		}
+	}
+	
+	public static final void callNumber(Context ctx, String number){
+		Intent intent = new Intent(Intent.ACTION_CALL);
+	    intent.setData(Uri.parse("tel:" + number));
+	    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    if (intent.resolveActivity(ctx.getPackageManager()) != null) {
+	        ctx.startActivity(intent);
+	    }
 	}
 	
 	public static final void dialNumber(Context ctx, String number){

@@ -35,21 +35,13 @@ public class BeaconManager {
 				Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
 		
 		if(c == null || c.getCount() <= 0){
-			ContentValues values = new ContentValues();
-			values.put(Beacon.BeaconContacts.CN_DISPLAY_NAME, name);
-			values.put(Beacon.BeaconContacts.CN_DELETE_FLAG, 0);
-			values.put(Beacon.BeaconContacts.CN_RECORDS, 1);
-			Uri addedUri = mResolver.insert(Beacon.BeaconContacts.CONTENT_URI, values);
-			Log.d(TAG, "Row URI BeaconContacts= " + addedUri);
-			int id = Integer.parseInt(addedUri.getPathSegments().get(addedUri.getPathSegments().size()-1));
 			
-			values = new ContentValues();
-			values.put(Beacon.BeaconMobileContactDetails.CN_BEACON_ID, id);
+			ContentValues values = new ContentValues();
 			values.put(Beacon.BeaconMobileContactDetails.CN_CONTACT_ID, contactId);
 			values.put(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME, name);
 			values.put(Beacon.BeaconMobileContactDetails.CN_DELETE_FLAG, 0);
 			values.put(Beacon.BeaconMobileContactDetails.CN_NUMBER, number);
-			addedUri = mResolver.insert(Beacon.BeaconMobileContactDetails.CONTENT_URI, values);
+			Uri addedUri = mResolver.insert(Beacon.BeaconMobileContactDetails.CONTENT_URI, values);
 			Log.d(TAG, "Row URI BeaconMobileContactDetails= " + addedUri);
 			return Integer.parseInt(addedUri.getPathSegments().get(addedUri.getPathSegments().size()-1));
 		} else {
@@ -81,38 +73,6 @@ public class BeaconManager {
 				Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
 		
 		if(c != null && c.getCount() > 0 && c.moveToFirst()){
-			Log.d(TAG, "Cursor count = " + c.getCount());
-			int beaconid = c.getInt(c.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_BEACON_ID));
-			String beaconSelection = Beacon.BeaconContacts._ID + "=?";
-			String[] beaconSelectionArgs = new String[]{"" + beaconid};
-			
-			Cursor beaconCursor = mResolver.query(
-					Beacon.BeaconContacts.CONTENT_URI,
-					Beacon.BeaconContacts.sProjection,
-					beaconSelection, 
-					beaconSelectionArgs, 
-					Beacon.BeaconContacts.DEFAULT_SORT_ORDER);
-			
-			if(beaconCursor != null && beaconCursor.getCount() > 0 && beaconCursor.moveToFirst()){
-				int recordCount = beaconCursor.getInt(beaconCursor.getColumnIndex(Beacon.BeaconContacts.CN_RECORDS));
-				String beaconChangeSelection = Beacon.BeaconContacts._ID + "=?";
-				String[] beaconChangeSelectionArgs = new String[]{"" + beaconid};
-				if(recordCount == 1){
-					int rowsDeleted = mResolver.delete(Beacon.BeaconContacts.CONTENT_URI, beaconChangeSelection, beaconChangeSelectionArgs);
-					Log.d(TAG, "Number of rows deleted = " + rowsDeleted);
-				} else if(recordCount > 1){
-					ContentValues values = new ContentValues();
-					values.put(Beacon.BeaconContacts.CN_RECORDS, recordCount-1);
-					int rowsUpdated = mResolver.update(
-							Beacon.BeaconContacts.CONTENT_URI,
-							values,
-							beaconChangeSelection,
-							beaconChangeSelectionArgs);
-					Log.d(TAG, "Number of rows updated = " + rowsUpdated);
-				}
-				beaconCursor.close();
-			}
-			
 			int rows = mResolver.delete(
 					Beacon.BeaconMobileContactDetails.CONTENT_URI, 
 					selection, 

@@ -10,14 +10,25 @@
     <string name="beacon_pref">beacon</string>
     <string name="is_setup_done">is_setup_done</string>
     <string name="first_time_run">first_time_run</string>
-    <string name="facebook_pref">facebook</string>
-    <string name="facebook_access_token_key">facebook_access_token</string>
     <string name="twitter_pref">twitter</string>
     <string name="twitter_request_token">twitter_request_token</string>
     <string name="twitter_request_secret_token">twitter_request_secret_token</string>
+    <string name="twitter_status_or_direct">status_or_direct</string>
     <string name="twitter_access_token">twitter_access_token</string>
     <string name="twitter_access_token_secret">twitter_access_token_secret</string>
     <string name="twitter_user_id">twitter_user_id</string>
     <string name="twitter_username">twitter_username</string>
     <string name="twitter_expiration">twitter_expiration</string>
+    
+    <string name="beacon_sms_inactive_transmission_interval">sms_inactive_transmission_interval</string>
+    <string name="beacon_sms_active_transmission_interval">sms_active_transmission_interval</string>
+    <string name="beacon_twitter_inactive_transmission_interval">twitter_inactive_transmission_interval</string>
+    <string name="beacon_twitter_active_transmission_interval">twitter_active_transmission_interval</string>
+    
+    
+    <!-- integer name="default_inactive_transmission_interval">300000</integer--><!-- 5 minutes -->
+    <integer name="default_sms_inactive_transmission_interval">15000</integer><!-- 15 seconds -->
+    <integer name="default_sms_active_transmission_interval">60000</integer><!-- 1 minutes -->
+    <integer name="default_twitter_inactive_transmission_interval">15000</integer><!-- 15 seconds -->
+    <integer name="default_twitter_active_transmission_interval">60000</integer><!-- 1 minutes -->
 </resources>

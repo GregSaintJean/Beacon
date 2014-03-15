@@ -6,11 +6,13 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.BuildConfig;
+import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
 import com.therabbitmage.android.beacon.ui.activity.TwitterPinActivity;
 
@@ -21,14 +23,27 @@ public class TwitterIntentService extends IntentService {
 	public static final String ACTION_AUTH = "action_twitter_auth";
 	public static final String ACTION_GET_ACCESS_TOKEN = "action_get_access_token";
 	public static final String ACTION_LOGOUT = "action_logout";
+	public static final String ACTION_UPDATE_STATUS = "action_update_status";
+	
+	public static final String EXTRA_MESSAGE = "extra_message";
 	
 	public static final String BROADCAST_LOGIN_SUCCESSFUL = "login_successful";
 	public static final String BROADCAST_LOGOUT_SUCCESSFUL = "logout_successful";
+	public static final String BROADCAST_TWITTER_LOG_MESSAGE = "broadcast_twitter_log_message";
+	public static final String BROADCAST_TWITTER_SERVICE_ERROR = "broadcast_error";
 
 	public static final String EXTRA_PIN = "extra_pin";
+	
+	private LocalBroadcastManager mLocalBMgr;
+	
+	private BeaconApp mBeaconApp;
+	private Twitter mTwitter;
 
 	public TwitterIntentService() {
 		super(TwitterIntentService.class.getSimpleName());
+		mBeaconApp = (BeaconApp)getApplicationContext();
+		mTwitter = TwitterBeacon.getTwitter(mBeaconApp);
+		mLocalBMgr = LocalBroadcastManager.getInstance(this);
 	}
 
 	@Override
@@ -47,13 +62,25 @@ public class TwitterIntentService extends IntentService {
 		if(intent.getAction().equals(ACTION_LOGOUT)){
 			logout();
 		}
+		
+		if(intent.getAction().equals(ACTION_UPDATE_STATUS)){
+			
+			Bundle args = intent.getExtras();
+			
+			if(!args.containsKey(EXTRA_MESSAGE)){
+				//TODO Broadcast error message
+			}
+			
+			String message = args.getString(EXTRA_MESSAGE);
+			updateStatus(message);
+			
+		}
 
 	}
 	
 	private void authenticate() {
 
 		BeaconApp app = (BeaconApp) getApplicationContext();
-		Twitter twitter = TwitterBeacon.getTwitter(this);
 		RequestToken requestToken = null;
 
 		if (app.hasTwitterRequestToken()) {
@@ -61,7 +88,7 @@ public class TwitterIntentService extends IntentService {
 					app.getTwitterRequestSecretToken());
 		} else {
 			try {
-				requestToken = twitter.getOAuthRequestToken();
+				requestToken = mTwitter.getOAuthRequestToken();
 			} catch (TwitterException e) {
 				Log.e(TAG + "[" + e.getStackTrace()[0].getLineNumber() + "]",
 						e.toString());
@@ -92,13 +119,12 @@ public class TwitterIntentService extends IntentService {
 	private void getAccessToken(String pin) {
 		BeaconApp app = (BeaconApp) getApplicationContext();
 		if (app.hasTwitterRequestToken()) {
-			Twitter twitter = TwitterBeacon.getTwitter(this);
 			RequestToken requestToken = new RequestToken(
 					app.getTwitterRequestToken(),
 					app.getTwitterRequestSecretToken());
 			AccessToken accessToken = null;
 			try {
-				accessToken = twitter.getOAuthAccessToken(requestToken, pin);
+				accessToken = mTwitter.getOAuthAccessToken(requestToken, pin);
 			} catch (TwitterException e) {
 				Log.e(TAG + "[" + e.getStackTrace()[0].getLineNumber() + "]",
 						e.toString());
@@ -135,6 +161,32 @@ public class TwitterIntentService extends IntentService {
 		Intent intent = new Intent();
 		intent.setAction(BROADCAST_LOGOUT_SUCCESSFUL);
 		mMgr.sendBroadcast(intent);
+	}
+	
+	private void updateStatus(String message){
+		
+		if(!mBeaconApp.hasTwitterAccessToken() || !mBeaconApp.hasTwitterAccessTokenSecret()){
+			
+			Intent broadcastIntent = new Intent(BROADCAST_TWITTER_SERVICE_ERROR);
+			broadcastIntent.putExtra(EXTRA_MESSAGE, getString(R.string.error_no_access_token));
+			mLocalBMgr.sendBroadcast(broadcastIntent);
+			return;
+			
+		}
+		AccessToken accessToken = new AccessToken(mBeaconApp.getTwitterAccessToken(), mBeaconApp.getTwitterAccessTokenSecret());
+		mTwitter.setOAuthAccessToken(accessToken);
+		
+		try {
+			mTwitter.updateStatus("This is a developer testing his app. plz ignore." +
+					"If this is annoying, please tweet back kindly telling the developer to stfu.");
+		} catch (TwitterException e) {
+			Log.e(TAG, e.toString());
+			//TODO Broadcast error message
+		}
+		
+		Intent broadcast = new Intent(BROADCAST_TWITTER_LOG_MESSAGE);
+		broadcast.putExtra(BROADCAST_TWITTER_LOG_MESSAGE, getString(R.string.tweet_sent) + "Message: " + message);
+		mLocalBMgr.sendBroadcast(broadcast);
 	}
 
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SOS Messages -->
+    <string name="first_tranmission">#SOS #emergency Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list!</string>
+    <string name="sos_message">#SOS #emergency This message is an SOS! Someone you know is in desperate need!</string>
+    <string name="end_transmission">#EndSOS The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe.</string>
+    <string name="first_tranmission_location">#SOS #emergency Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list! There current location in latitude and longitude is </string>
+    <string name="sos_message_location">#SOS #emergency This message is an SOS! Someone you know is in desperate need! Their current location in latitude and longitude is </string>
+    <string name="end_transmission_location">#EndSOS The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe.  Their current location in latitude and longitude is </string>
+    <string name="transmission_test">Testing&#8230; Please ignore.</string>
+    
+    <!-- Log messages -->
+    <string name="tweet_sent">Tweet sent!</string>
+    
+    <!-- Error Messages -->
+    <string name="error_no_access_token">No access token. User must login and obtain access tokens.</string>
+    <string name="error_extra_missing"></string>
+    
+</resources>

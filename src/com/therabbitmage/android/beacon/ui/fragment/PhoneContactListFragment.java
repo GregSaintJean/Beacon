@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.provider.Beacon.BeaconMobileContactDetails;
+import com.therabbitmage.android.beacon.provider.BeaconMobileQuery;
 import com.therabbitmage.android.beacon.ui.activity.PhoneSetupActivity;
 import com.therabbitmage.android.beacon.ui.adapter.PhoneContactsAdapter;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
@@ -167,18 +168,5 @@ public class PhoneContactListFragment extends Fragment implements AdapterView.On
 		final static String SORT_ORDER = AndroidUtils.honeycombOrBetter() ? Phone.DISPLAY_NAME_PRIMARY : Phone.DISPLAY_NAME;
 		
 	}
-	
-	public interface BeaconMobileQuery{
-		
-		final static int BEACON_QUERY_ID = 0;
-		
-		final static Uri CONTENT_URI = BeaconMobileContactDetails.CONTENT_URI;
-		
-		final static String[] PROJECTION = BeaconMobileContactDetails.sProjection;
-		
-		final static String SORT_ORDER = BeaconMobileContactDetails.DEFAULT_SORT_ORDER;
-	}
-	
-	
 
 }

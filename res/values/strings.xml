@@ -7,13 +7,15 @@
     <!-- Button text -->
     <string name="setup">Setup</string>
     <string name="fire">FIRE!</string>
-    <string name="dial911">Dial 911</string>
+    <string name="call911">Call 911</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
     <string name="testing_google_plus">Testing Google Plus</string>
     <string name="add_contact">Add Contact</string>
     <string name="phone">Phone #</string>
     <string name="finish">Finish</string>
+    <string name="lock">Lock</string>
+    <string name="shutdown">Shutdown</string>
     
     <!-- Button text tester -->
     <string name="sign_in">Sign in</string>
@@ -29,6 +31,8 @@
     <string name="no_contacts">No Contacts</string>
     <string name="placeholder">Placeholder</string>
     <string name="all_done">All Done!</string>
+    <string name="gps">GPS</string>
+    <string name="network">Network</string>
     
     <!-- Error Message -->
     <string name="error_phone_number_required">Need to supply a phone number</string>

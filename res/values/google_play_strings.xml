@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="result_code">"Result code = "</string>
+    
+    <!-- Error strings -->
+    <string name="error_service_missing">Google play SDK service missing.</string>
+    <string name="error_service_invalid">Google play SDK service invalid.</string>
+    <string name="error_requires_updating">Google play SDK service requires updating.</string>
+    <string name="error_service_disabled">Google play SDK service disabled.</string>
+    <string name="error_developer_error">Google play SDK service developer error.</string>
+    <string name="error_network_connectivity">Google play SDK is experiencing network connectivity problems</string>
+    <string name="error_general">There was an error with checking with Google Play Services.</string>
+</resources>
