@@ -69,8 +69,8 @@ public class TwitterPinActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		mBeaconApp.clearTwitterAccessTokenAndSecret();
-		mBeaconApp.clearTwitterRequestTokenAndSecret();
+		mApp.clearTwitterAccessTokenAndSecret();
+		mApp.clearTwitterRequestTokenAndSecret();
 		TwitterBeacon.clearTwitter();
 		super.onBackPressed();
 	}

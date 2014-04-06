@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 
 import com.therabbitmage.android.beacon.BeaconApp;
@@ -35,7 +36,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Button mAltSetupButton;
 	private Button mNetworkIndicator;
 	private Button mGpsIndicator;
-	private BeaconApp mBeaconApp;
+	private BeaconApp mApp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +46,10 @@ public class MainActivity extends Activity implements OnClickListener {
 		}*/
 		super.onCreate(savedInstanceState);
 		
-		mBeaconApp = ((BeaconApp) getApplicationContext());
-		if(mBeaconApp.isFirstRun()){
+		mApp = BeaconApp.getInstance();
+		if(mApp.isFirstRun()){
 			Log.d(TAG, "first run executed");
-			mBeaconApp.firstRunExecuted();
+			mApp.firstRunExecuted();
 		}
 		setupUI();
 		registerReceivers();
@@ -82,13 +83,14 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 
 	private void setupUI() {
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		mMainButton = (Button) findViewById(R.id.mainbtn);
 		mAltSetupButton = (Button) findViewById(R.id.alt_setup_btn);
 		mNetworkIndicator = (Button)findViewById(R.id.network_indicator);
 		mGpsIndicator = (Button)findViewById(R.id.gps_indicator);
 		
-		if (mBeaconApp.isSetupDone()) {
+		if (mApp.isSetupDone()) {
 			mMainButton.setText(R.string.fire);
 			mAltSetupButton.setVisibility(View.VISIBLE);
 		} else {
@@ -109,8 +111,14 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		if (v.getId() == R.id.mainbtn) {
 
-			if (mBeaconApp.isSetupDone()) {
-				startActivity(new Intent(this, EmergencyActivity.class));
+			if (mApp.isSetupDone()) {
+				
+				try{
+					startActivity(new Intent(this, EmergencyActivity.class));
+				} finally{
+					finish();
+				}
+				
 			} else {
 				startSetupActivity();
 			}

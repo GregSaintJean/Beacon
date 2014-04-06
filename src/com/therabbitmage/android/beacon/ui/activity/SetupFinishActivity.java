@@ -17,7 +17,7 @@ public class SetupFinishActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.setup_finish_activity);
 		
-		mBeaconApp.setIsSetupDone(true);
+		mApp.setIsSetupDone(true);
 		
 		mFinishButton = (Button)findViewById(R.id.finish_btn);
 		mFinishButton.setOnClickListener(new OnClickListener(){
@@ -37,7 +37,7 @@ public class SetupFinishActivity extends BaseActivity {
 	}
 
 	private void headBackToMainActivity(){
-		Intent intent = new Intent(this, MainActivity.class);
+		Intent intent = new Intent(this, NewMainActivity.class);
 		startActivity(intent);
 	}
 

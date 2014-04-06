@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- SOS Messages -->
-    <string name="first_tranmission_status">#SOS #emergency Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list!</string>
-    <string name="sos_message_status">#SOS #emergency This message is an SOS! Someone you know is in desperate need!</string>
+    <string name="first_tranmission_status">#SOSBeacon Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list!</string>
+    <string name="sos_message_status">#SOSBeacon #emergency This message is an SOS! Someone you know is in desperate need!</string>
     <string name="end_transmission_status">#EndSOS The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe.</string>
-    <string name="first_tranmission_location_status">#SOS #emergency Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list! There current location in latitude and longitude is </string>
-    <string name="sos_message_location_status">#SOS #emergency This message is an SOS! Someone you know is in desperate need! Their current location in latitude and longitude is </string>
+    <string name="first_tranmission_location_status">#SOS Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list! There current location in latitude and longitude is </string>
+    <string name="sos_message_location_status">#SOS This message is an SOS! Someone you know is in desperate need! Their current location in latitude and longitude is </string>
     <string name="end_transmission_location_status">#EndSOS The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe.  Their current location in latitude and longitude is </string>
     
     <!-- Test strings -->

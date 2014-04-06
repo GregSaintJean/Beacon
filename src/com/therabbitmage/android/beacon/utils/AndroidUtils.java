@@ -1,13 +1,16 @@
 package com.therabbitmage.android.beacon.utils;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.http.protocol.HTTP;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -16,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.StrictMode;
+import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.therabbitmage.android.beacon.R;
@@ -85,7 +89,16 @@ public final class AndroidUtils {
 		return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	}
 	
-	//Need to delete
+	public final static void sendSms(Context ctx, String number, String message,
+			PendingIntent sentIntent, PendingIntent deliveryIntent){
+		SmsManager smsManager = SmsManager.getDefault();
+		List<String> messages = smsManager.divideMessage(message);
+		for(int i = 0; i < messages.size(); i++){
+			smsManager.sendTextMessage(number, null, messages.get(i), sentIntent, deliveryIntent);
+		}
+	}
+	
+	
 	public final static void requestSendSMS(Context ctx, String number, String message){
 		if(number == null){
 			throw new NullPointerException(ctx.getString(R.string.error_phone_number_required));
@@ -210,6 +223,32 @@ public final class AndroidUtils {
 		if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO){
 			System.setProperty("http.keepAlive", "false");
 		}
+	}
+	
+	public static final boolean checkPhoneAndSmsCapability(Context ctx){
+		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+	}
+	
+	public static final boolean checkGpsCapability(Context ctx){
+		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+	}
+	
+	public static final boolean checkLocationCapability(Context ctx){
+		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION);
+	}
+	
+	public static final boolean checkNetworkLocationCapability(Context ctx) {
+		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK);
+	}
+	
+	public static final boolean isNetworkLocationOnline(Context ctx){
+		LocationManager lm = (LocationManager)ctx.getSystemService(LocationManager.GPS_PROVIDER);
+		return lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+	}
+	
+	public static final LocationManager getLocationManager(Context ctx) {
+		return (LocationManager) ctx
+				.getSystemService(Context.LOCATION_SERVICE);
 	}
 		
 	private AndroidUtils(){}

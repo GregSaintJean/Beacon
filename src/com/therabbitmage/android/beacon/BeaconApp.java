@@ -10,7 +10,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.location.LocationManager;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -21,30 +20,63 @@ import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
 public class BeaconApp extends Application {
 	private static final String TAG = BeaconApp.class.getSimpleName();
+	
+	private static BeaconApp sBeacon;
 
 	private static final String US_EMERGENCY_NUMBER = "911";
 	private static final int NO_ID = -1;
 	
-	private boolean mIsTablet;
-	private boolean mHasSmsCapability;
-	private boolean mHasLocationCapability;
-	private boolean mHasNetworkLocationCapability;
-	private boolean mHasGpsCapability;
+	//Should Beacon be online?
+	private static boolean sIsBeaconOnline;
+	
+	//Is Beacon currently transmitting?
+	private static boolean isBeaconActive;
+	
+	private static boolean sHasNetworkConnectivity;
+	private static boolean sIsGpsOnline;
+	
+	private static boolean mIsTablet;
+	private static boolean mHasSmsCapability;
+	private static boolean mHasLocationCapability;
+	private static boolean mHasNetworkLocationCapability;
+	private static boolean mHasGpsCapability;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		sBeacon = this;
 		
 		if(BuildConfig.DEBUG){
 			printDebugKeyHash();
 		}
 		
 		mIsTablet = checkIsTablet();
-		mHasSmsCapability = checkSmsCapability();
-		mHasGpsCapability = checkGpsCapability();
-		mHasLocationCapability = checkLocationCapability();
-		mHasNetworkLocationCapability = checkNetworkLocationCapability();
+		mHasSmsCapability = AndroidUtils.checkPhoneAndSmsCapability(this);
+		mHasGpsCapability = AndroidUtils.checkGpsCapability(this);
+		mHasLocationCapability = AndroidUtils.checkLocationCapability(this);
+		mHasNetworkLocationCapability = AndroidUtils.checkNetworkLocationCapability(this);
 
+	}
+	
+	public void setBeaconStatus(boolean isBeaconOnline){
+		sIsBeaconOnline = isBeaconOnline;
+	}
+	
+	public static boolean isBeaconOnline(){
+		return sIsBeaconOnline;
+	}
+	
+	public static boolean isActive() {
+		return isBeaconActive;
+	}
+
+	public void setActive(boolean isActive) {
+		BeaconApp.isBeaconActive = isActive;
+	}
+
+	public static final BeaconApp getInstance(){
+		return sBeacon;
 	}
 
 	public final void printDebugKeyHash(){
@@ -64,11 +96,6 @@ public class BeaconApp extends Application {
 		} catch (NoSuchAlgorithmException e) {
 			Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
 		}
-	}
-
-	public static LocationManager getLocationManager(Context ctx) {
-		return (LocationManager) ctx
-				.getSystemService(Context.LOCATION_SERVICE);
 	}
 
 	public final void dial911() {
@@ -306,22 +333,22 @@ public class BeaconApp extends Application {
 				getResources().getInteger(R.integer.default_twitter_active_transmission_interval));
 	}
 	
-	private final boolean checkSmsCapability(){
-		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
+	public static boolean hasNetworkConnectivity() {
+		return sHasNetworkConnectivity;
+	}
+
+	public void setHasNetworkConnectivity(boolean hasNetworkConnectivity) {
+		sHasNetworkConnectivity = hasNetworkConnectivity;
 	}
 	
-	private final boolean checkGpsCapability(){
-		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS);
+	public static boolean isGpsOnline() {
+		return sIsGpsOnline;
 	}
-	
-	private final boolean checkLocationCapability(){
-		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION);
+
+	public void setGpsOnline(boolean isGpsOnline) {
+		sIsGpsOnline = isGpsOnline;
 	}
-	
-	private final boolean checkNetworkLocationCapability() {
-		return this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK);
-	}
-	
+
 	public final boolean hasSmsCapability(){
 		return mHasSmsCapability;
 	}
@@ -337,12 +364,7 @@ public class BeaconApp extends Application {
 	public final boolean hasNetworkLocationCapability(){
 		return mHasNetworkLocationCapability;
 	}
-	
-	public final boolean isNetworkLocationOnline(){
-		LocationManager lm = (LocationManager)this.getSystemService(LocationManager.GPS_PROVIDER);
-		return lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-	}
-	
+
 	public final boolean isGoogleServicesAvailable(){
 		// Check that Google Play services is available
         int resultCode =

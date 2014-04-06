@@ -10,7 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.Session;
@@ -23,15 +22,17 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.therabbitmage.android.beacon.BeaconApp;
-import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.service.BeaconService;
 import com.therabbitmage.android.beacon.utils.TimeUtils;
+import com.therabbitmage.android.beacon.R;
 
 public class EmergencyActivity extends FragmentActivity implements OnClickListener {
 
 	protected static final String TAG = EmergencyActivity.class.getSimpleName();
 	
 	private Session.StatusCallback mStatusCallback = new SessionStatusCallback();
+	
+	private static final int ZOOM_LEVEL = 13;
 
 	private GoogleMap mGoogleMap;
 	
@@ -45,22 +46,28 @@ public class EmergencyActivity extends FragmentActivity implements OnClickListen
 	
 	private StringBuilder mStatusBuilder;
 	
-	private BeaconApp mBeaconApp;
+	private BeaconApp mApp;
 	
-	private Button m911Button;
-	private Button mShutdownButton;
+	private View m911MapButton;
+	private View mShutdownMapButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		/*if(BuildConfig.DEBUG){
 			AndroidUtils.enableStrictMode();
 		}*/
-		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.emergency_activity);
+		mApp = BeaconApp.getInstance();
+		setupUI();
+		registerReceivers();
+		startBeaconService();
+		uiHelper = new UiLifecycleHelper(this, mStatusCallback);
+	    uiHelper.onCreate(savedInstanceState);
 		
-		mBeaconApp = (BeaconApp)getApplicationContext();
-
+	}
+	
+	private void setupUI(){
+		setContentView(R.layout.emergency_activity);
 		if (mGoogleMap == null) {
 			mGoogleMap = ((SupportMapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map)).getMap();
@@ -71,20 +78,15 @@ public class EmergencyActivity extends FragmentActivity implements OnClickListen
 		}
 		
 		mStatus = (TextView)findViewById(R.id.status);
-		m911Button = (Button)findViewById(R.id.call911_btn);
-		mShutdownButton = (Button)findViewById(R.id.shutdown_btn);
-		m911Button.setOnClickListener(this);
-		mShutdownButton.setOnClickListener(this);
+		m911MapButton = findViewById(R.id.call_emergency);
+		mShutdownMapButton = findViewById(R.id.shutdown_button);
+		m911MapButton.setOnClickListener(this);
+		mShutdownMapButton.setOnClickListener(this);
 		mStatusBuilder = new StringBuilder();
-		mLocalBMgr = LocalBroadcastManager.getInstance(this);
-		registerReceivers();
-		startBeaconService();
-		uiHelper = new UiLifecycleHelper(this, mStatusCallback);
-	    uiHelper.onCreate(savedInstanceState);
-		
 	}
 	
 	private void registerReceivers(){
+		mLocalBMgr = LocalBroadcastManager.getInstance(this);
 		mBeaconReceiver = new BeaconReceiver();
 		mFacebookReceiver = new FacebookReceiver();
 		mCoordinateReceiver = new CoordinateReceiver();
@@ -135,14 +137,18 @@ public class EmergencyActivity extends FragmentActivity implements OnClickListen
 	@Override
 	public void onClick(View v) {
 		
-		if(v.getId() == R.id.call911_btn){
-			mBeaconApp.dial911();
+		if(v.getId() == R.id.call_emergency){
+			mApp.dial911();
 		}
 		
-		if(v.getId() == R.id.shutdown_btn){
-			Intent shutdownIntent = new Intent(this, BeaconService.class);
-			shutdownIntent.setAction(BeaconService.ACTION_STOP);
-			startService(shutdownIntent);
+		if(v.getId() == R.id.shutdown_button){
+			try{
+				Intent shutdownIntent = new Intent(this, BeaconService.class);
+				shutdownIntent.setAction(BeaconService.ACTION_STOP);
+				startService(shutdownIntent);
+			} finally{
+				finish();
+			}
 		}
 	}
 	
@@ -225,7 +231,7 @@ public class EmergencyActivity extends FragmentActivity implements OnClickListen
 			
 			CameraPosition.Builder builder = new CameraPosition.Builder();
 			builder.target(coord);
-			builder.zoom(13);
+			builder.zoom(ZOOM_LEVEL);
 			CameraUpdate update = CameraUpdateFactory.newCameraPosition(builder.build());
 			mGoogleMap.animateCamera(update);
 			

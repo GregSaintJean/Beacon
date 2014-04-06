@@ -134,7 +134,7 @@ public class SocialSetupActivity extends BaseActivity implements OnClickListener
 	}
 	
 	private void updateViewForTwitter(){
-		if(mBeaconApp.hasTwitterLogin()){
+		if(mApp.hasTwitterLogin()){
 			mTwitterButton.setText(R.string.logout);
 			mTwitterButton.setOnClickListener(new OnClickListener(){
 

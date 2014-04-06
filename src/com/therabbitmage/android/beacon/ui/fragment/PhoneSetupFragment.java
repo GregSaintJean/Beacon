@@ -69,7 +69,7 @@ public class PhoneSetupFragment extends Fragment implements OnClickListener, Loa
 		
 		if(view.getId() == R.id.add_contact_btn){
 			
-			if(((BeaconApp)getActivity().getApplicationContext()).isTablet()){
+			if(BeaconApp.getInstance().isTablet()){
 				
 			} else {
 				mActivity.showPhoneContactListFragment();

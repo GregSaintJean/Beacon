@@ -7,6 +7,7 @@
     <!-- Button text -->
     <string name="setup">Setup</string>
     <string name="fire">FIRE!</string>
+    <string name="start">Start!</string>
     <string name="call911">Call 911</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
@@ -16,6 +17,7 @@
     <string name="finish">Finish</string>
     <string name="lock">Lock</string>
     <string name="shutdown">Shutdown</string>
+    <string name="location">Location</string>
     
     <!-- Button text tester -->
     <string name="sign_in">Sign in</string>
@@ -39,4 +41,17 @@
     <string name="error_message_required">Need a message to send. Don\'t send empty text messages!</string>
     <string name="play_services_available">Play Services available</string>
     <string name="play_services_unavailable">Play Services unavailable</string>
+    <string name="error_state_update_interval">Update interval has to be set</string>
+    <string name="error_invalid_update_interval">Update interval can not be lower than 0</string>
+    <string name="error_invalid_priority">Invalid priority</string>
+    
+    <!-- Notification Messages -->
+    <string name="title_beacon_online">Beacon has come online</string>
+    <string name="title_twitter_status_updated">Twitter Status Updated</string>
+    <string name="title_sms_message_sent">SMS Message Sent</string>
+    <string name="title_beacon_offline">Beacon is offline</string>
+    
+    <string name="message_beginning_transmission">Beginning Transmission</string>
+    <string name="message_ending_transmission">Ending Transmission</string>
+    <string name="error_google_map_initialized">Google map has to be initialized</string>
 </resources>

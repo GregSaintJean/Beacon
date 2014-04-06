@@ -3,7 +3,15 @@
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        android:showAsAction="withText"
         android:title="@string/action_settings"/>
+    <item
+        android:id="@+id/contact"
+        android:showAsAction="withText"
+        android:title="@string/call911"/>
+    <item
+        android:id="@+id/shutdown"
+        android:showAsAction="withText"
+        android:title="@string/shutdown"/>
 
 </menu>

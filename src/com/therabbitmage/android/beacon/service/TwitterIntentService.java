@@ -36,13 +36,13 @@ public class TwitterIntentService extends IntentService {
 	
 	private LocalBroadcastManager mLocalBMgr;
 	
-	private BeaconApp mBeaconApp;
+	private BeaconApp mApp;
 	private Twitter mTwitter;
 
 	public TwitterIntentService() {
 		super(TwitterIntentService.class.getSimpleName());
-		mBeaconApp = (BeaconApp)getApplicationContext();
-		mTwitter = TwitterBeacon.getTwitter(mBeaconApp);
+		mApp = BeaconApp.getInstance();
+		mTwitter = TwitterBeacon.getTwitter(mApp);
 		mLocalBMgr = LocalBroadcastManager.getInstance(this);
 	}
 
@@ -80,7 +80,7 @@ public class TwitterIntentService extends IntentService {
 	
 	private void authenticate() {
 
-		BeaconApp app = (BeaconApp) getApplicationContext();
+		BeaconApp app = BeaconApp.getInstance();
 		RequestToken requestToken = null;
 
 		if (app.hasTwitterRequestToken()) {
@@ -117,7 +117,7 @@ public class TwitterIntentService extends IntentService {
 	}
 
 	private void getAccessToken(String pin) {
-		BeaconApp app = (BeaconApp) getApplicationContext();
+		BeaconApp app = BeaconApp.getInstance();
 		if (app.hasTwitterRequestToken()) {
 			RequestToken requestToken = new RequestToken(
 					app.getTwitterRequestToken(),
@@ -153,7 +153,7 @@ public class TwitterIntentService extends IntentService {
 	}
 	
 	private void logout(){
-		BeaconApp app = (BeaconApp)getApplicationContext();
+		BeaconApp app = BeaconApp.getInstance();
 		app.clearTwitterAccessTokenAndSecret();
 		app.clearTwitterRequestTokenAndSecret();
 		TwitterBeacon.clearTwitter();
@@ -165,7 +165,7 @@ public class TwitterIntentService extends IntentService {
 	
 	private void updateStatus(String message){
 		
-		if(!mBeaconApp.hasTwitterAccessToken() || !mBeaconApp.hasTwitterAccessTokenSecret()){
+		if(!mApp.hasTwitterAccessToken() || !mApp.hasTwitterAccessTokenSecret()){
 			
 			Intent broadcastIntent = new Intent(BROADCAST_TWITTER_SERVICE_ERROR);
 			broadcastIntent.putExtra(EXTRA_MESSAGE, getString(R.string.error_no_access_token));
@@ -173,7 +173,7 @@ public class TwitterIntentService extends IntentService {
 			return;
 			
 		}
-		AccessToken accessToken = new AccessToken(mBeaconApp.getTwitterAccessToken(), mBeaconApp.getTwitterAccessTokenSecret());
+		AccessToken accessToken = new AccessToken(mApp.getTwitterAccessToken(), mApp.getTwitterAccessTokenSecret());
 		mTwitter.setOAuthAccessToken(accessToken);
 		
 		try {

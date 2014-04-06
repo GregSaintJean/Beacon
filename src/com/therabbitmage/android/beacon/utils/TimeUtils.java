@@ -23,7 +23,7 @@ public final class TimeUtils {
 		return df.format(new java.util.Date(now.getTimeInMillis()));
 	}
 	
-	public static final String getSQLFormattedTime(){
+	public static final String getCurrentSQLFormattedTime(){
 		Calendar now = Calendar.getInstance();
 		java.sql.Date date = new java.sql.Date(now.getTimeInMillis());
 		return date.toString();
