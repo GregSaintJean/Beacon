@@ -1,13 +1,8 @@
 package com.therabbitmage.android.beacon.ui.fragment;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.Data;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
@@ -24,9 +19,9 @@ import android.widget.TextView;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.provider.Beacon.BeaconMobileContactDetails;
 import com.therabbitmage.android.beacon.provider.BeaconMobileQuery;
+import com.therabbitmage.android.beacon.provider.MobileContactsQuery;
 import com.therabbitmage.android.beacon.ui.activity.PhoneSetupActivity;
 import com.therabbitmage.android.beacon.ui.adapter.PhoneContactsAdapter;
-import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
 public class PhoneContactListFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor>{
 	
@@ -146,27 +141,6 @@ public class PhoneContactListFragment extends Fragment implements AdapterView.On
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 		mAdapter.swapCursor(null);
-	}
-	
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	public interface MobileContactsQuery{
-		
-		final static int MOBILE_QUERY_ID = 1;
-		
-		final static Uri CONTENT_URI = Data.CONTENT_URI;
-		
-		final static String[] PROJECTION = {
-			Data._ID,
-			AndroidUtils.honeycombOrBetter() ? Data.DISPLAY_NAME_PRIMARY : Data.DISPLAY_NAME,
-			Phone.NUMBER,
-			Phone.TYPE,
-			Phone.LABEL
-		};
-		
-		final static String SELECTION = Phone.TYPE + "='" + Phone.TYPE_MOBILE + "' AND " + Data.MIMETYPE + "='" + Phone.CONTENT_ITEM_TYPE + "'";
-		
-		final static String SORT_ORDER = AndroidUtils.honeycombOrBetter() ? Phone.DISPLAY_NAME_PRIMARY : Phone.DISPLAY_NAME;
-		
 	}
 
 }

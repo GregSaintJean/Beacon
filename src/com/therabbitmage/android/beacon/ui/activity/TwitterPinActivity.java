@@ -40,6 +40,7 @@ public class TwitterPinActivity extends BaseActivity {
 		mWebView = (WebView) findViewById(R.id.auth_web);
 		mEditText = (EditText) findViewById(R.id.twitter_pin);
 
+		mWebView.clearCache(true);
 		mWebView.loadUrl(getIntent().getStringExtra(EXTRA_URL));
 		mEditText.setOnEditorActionListener(new OnEditorActionListener() {
 

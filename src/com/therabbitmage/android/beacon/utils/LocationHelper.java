@@ -9,6 +9,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.therabbitmage.android.beacon.R;
 
+//TODO Document
 public class LocationHelper {
 	
 	private Context mCtx;
@@ -17,9 +18,10 @@ public class LocationHelper {
 	private LocationListener mLocationListener;
 	private long mUpdateInterval, mFastestInterval;
 	private int mPriority;
-	private boolean isRequestingLocationUpdates = false;
+	private boolean isRequestingLocationUpdates;
 	private GooglePlayServicesClient.ConnectionCallbacks mConnectionCallbacks;
 	private GooglePlayServicesClient.OnConnectionFailedListener mConnectionFailedListener;
+	private boolean mWaitingForConnection;
 	
 	public LocationHelper(Context ctx, GooglePlayServicesClient.ConnectionCallbacks connectionCallbacks, 
 			GooglePlayServicesClient.OnConnectionFailedListener connectionFailedListener,
@@ -29,6 +31,11 @@ public class LocationHelper {
 		mConnectionFailedListener = connectionFailedListener;
 		mLocationListener = locationListener;
 		mUpdateInterval = mFastestInterval = -1;
+		isRequestingLocationUpdates = mWaitingForConnection = false;
+	}
+	
+	public Context getContext(){
+		return mCtx;
 	}
 	
 	public void setUpdateInterval(long updateInterval){
@@ -109,6 +116,7 @@ public class LocationHelper {
 				&& mLocationClient.isConnected()
 				&& !isRequestingLocationUpdates){
 			requestLocationUpdates();
+			mWaitingForConnection = false;
 		}
 	}
 	
@@ -119,6 +127,7 @@ public class LocationHelper {
 		} else if(mFastestInterval ==  -1 && mUpdateInterval != -1){
 			mFastestInterval = mUpdateInterval;
 		}
+		
 		mLocationClient.requestLocationUpdates(mLocationRequest, mLocationListener);
 		isRequestingLocationUpdates = true;
 	}
@@ -128,12 +137,15 @@ public class LocationHelper {
 		isRequestingLocationUpdates = false;
 	}
 	
-	private void reset(){
-		stopRequestLocationUpdates();
-		mLocationClient.disconnect();
+	public void reset(){
+		if(mLocationClient != null){
+			stopRequestLocationUpdates();
+			mLocationClient.disconnect();
+		}
+		mWaitingForConnection = false;
 		updateClient();
 		mLocationClient.connect();
-		requestLocationUpdates();
+		mWaitingForConnection = true;
 	}
 	
 	public void shutdownLocationHelper(){

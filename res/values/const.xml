@@ -4,7 +4,7 @@
     <string name="facebook_app_id">473923909380536</string>
     <string name="twitter_consumer_key">VIaUqRpMkLw05sfwoB2g</string>
     <string name="twitter_consumer_secret">Y9QZBnbxhDEGdDXOQXJRnerxRp2Q8h233TpgJhp6VI</string>
-    <string name="google_maps_api_key">AIzaSyDC1Sgh1SSTFkilirADcUgBhuzOhSc87V0</string>
+    <string name="google_public_access_api_key">AIzaSyDC1Sgh1SSTFkilirADcUgBhuzOhSc87V0</string>
     
     <!-- Preference Names -->
     <string name="beacon_pref">beacon</string>

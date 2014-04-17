@@ -7,6 +7,7 @@ import twitter4j.auth.RequestToken;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -26,13 +27,16 @@ public class TwitterIntentService extends IntentService {
 	public static final String ACTION_UPDATE_STATUS = "action_update_status";
 	
 	public static final String EXTRA_MESSAGE = "extra_message";
+	public static final String EXTRA_RESULT_RECEIVER = "extra_result_receiver";
+	public static final String EXTRA_PIN = "extra_pin";
 	
 	public static final String BROADCAST_LOGIN_SUCCESSFUL = "login_successful";
 	public static final String BROADCAST_LOGOUT_SUCCESSFUL = "logout_successful";
 	public static final String BROADCAST_TWITTER_LOG_MESSAGE = "broadcast_twitter_log_message";
 	public static final String BROADCAST_TWITTER_SERVICE_ERROR = "broadcast_error";
-
-	public static final String EXTRA_PIN = "extra_pin";
+	
+	public static final int RESULT_CODE_OK = 0;
+	public static final int RESULT_CODE_ERROR = 1;
 	
 	private LocalBroadcastManager mLocalBMgr;
 	
@@ -50,13 +54,13 @@ public class TwitterIntentService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 
 		if (intent.getAction().equals(ACTION_AUTH)) {
-			authenticate();
+			authenticate(intent);
 		}
 
 		if (intent.getAction().equals(ACTION_GET_ACCESS_TOKEN)) {
 			String pin = intent.getStringExtra(EXTRA_PIN);
 			assert (pin != null);
-			getAccessToken(pin);
+			getAccessToken(intent, pin);
 		}
 		
 		if(intent.getAction().equals(ACTION_LOGOUT)){
@@ -72,13 +76,14 @@ public class TwitterIntentService extends IntentService {
 			}
 			
 			String message = args.getString(EXTRA_MESSAGE);
-			updateStatus(message);
+			updateStatus(intent, message);
 			
 		}
 
 	}
 	
-	private void authenticate() {
+	//TODO Error Handling needs to be done here.
+	private void authenticate(Intent startIntent) {
 
 		BeaconApp app = BeaconApp.getInstance();
 		RequestToken requestToken = null;
@@ -90,7 +95,7 @@ public class TwitterIntentService extends IntentService {
 			try {
 				requestToken = mTwitter.getOAuthRequestToken();
 			} catch (TwitterException e) {
-				Log.e(TAG + "[" + e.getStackTrace()[0].getLineNumber() + "]",
+				Log.e(TAG + " [" + e.getStackTrace()[0].getLineNumber() + "]",
 						e.toString());
 				return;
 			}
@@ -109,14 +114,24 @@ public class TwitterIntentService extends IntentService {
 		if(BuildConfig.DEBUG){
 			Log.d(TAG, "AuthorizationUrl = " + url);
 		}
-
-		Intent intent = new Intent(this, TwitterPinActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(TwitterPinActivity.EXTRA_URL, url);
-		startActivity(intent);
+		
+		if(startIntent.getExtras() != null && startIntent.getExtras().containsKey(EXTRA_RESULT_RECEIVER)){
+			Bundle extras = new Bundle();
+			extras.putString(TwitterPinActivity.EXTRA_URL, url);
+			ResultReceiver receiver = (ResultReceiver)startIntent.getExtras().get(EXTRA_RESULT_RECEIVER);
+			receiver.send(RESULT_CODE_OK, extras);
+			return;
+		}
+		
+		Intent exitIntent = new Intent(this, TwitterPinActivity.class);
+		exitIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		exitIntent.putExtra(TwitterPinActivity.EXTRA_URL, url);
+		startActivity(exitIntent);
+		
 	}
 
-	private void getAccessToken(String pin) {
+	//TODO Error Handling needs to be done here.
+	private void getAccessToken(Intent startIntent, String pin) {
 		BeaconApp app = BeaconApp.getInstance();
 		if (app.hasTwitterRequestToken()) {
 			RequestToken requestToken = new RequestToken(
@@ -126,7 +141,7 @@ public class TwitterIntentService extends IntentService {
 			try {
 				accessToken = mTwitter.getOAuthAccessToken(requestToken, pin);
 			} catch (TwitterException e) {
-				Log.e(TAG + "[" + e.getStackTrace()[0].getLineNumber() + "]",
+				Log.e(TAG + " [" + e.getStackTrace()[0].getLineNumber() + "]",
 						e.toString());
 				return;
 			}
@@ -143,12 +158,18 @@ public class TwitterIntentService extends IntentService {
 			app.setTwitterUserId((int)accessToken.getUserId());
 			app.setTwitterScreenName(accessToken.getScreenName());
 			
+			if(startIntent.getExtras() != null && startIntent.getExtras().containsKey(EXTRA_RESULT_RECEIVER)){
+				ResultReceiver receiver = (ResultReceiver)startIntent.getExtras().get(EXTRA_RESULT_RECEIVER);
+				receiver.send(RESULT_CODE_OK, null);
+				return;
+			}
+			
 			LocalBroadcastManager mMgr = LocalBroadcastManager.getInstance(this);
-			Intent intent = new Intent();
-			intent.setAction(BROADCAST_LOGIN_SUCCESSFUL);
-			mMgr.sendBroadcast(intent);
+			Intent exitIntent = new Intent();
+			exitIntent.setAction(BROADCAST_LOGIN_SUCCESSFUL);
+			mMgr.sendBroadcast(exitIntent);
 		} else {
-			authenticate();
+			authenticate(startIntent);
 		}
 	}
 	
@@ -163,7 +184,8 @@ public class TwitterIntentService extends IntentService {
 		mMgr.sendBroadcast(intent);
 	}
 	
-	private void updateStatus(String message){
+	//TODO Implement error handling
+	private void updateStatus(Intent startIntent, String message){
 		
 		if(!mApp.hasTwitterAccessToken() || !mApp.hasTwitterAccessTokenSecret()){
 			
@@ -177,8 +199,7 @@ public class TwitterIntentService extends IntentService {
 		mTwitter.setOAuthAccessToken(accessToken);
 		
 		try {
-			mTwitter.updateStatus("This is a developer testing his app. plz ignore." +
-					"If this is annoying, please tweet back kindly telling the developer to stfu.");
+			mTwitter.updateStatus(message);
 		} catch (TwitterException e) {
 			Log.e(TAG, e.toString());
 			//TODO Broadcast error message

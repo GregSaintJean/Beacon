@@ -17,20 +17,23 @@ public class GpsReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		
+		if(context == null){
+			Log.e(TAG, "Context in receiver was null");
+			return;
+		}
+		
+		if(intent == null){
+			Log.e(TAG, "Intent was null");
+			return;
+		}
+		
+		if(mListener == null){
+			Log.e(TAG, "GpsReceiver's listener was null");
+			return;
+		}
+		
 		if(intent.getAction().equals(LocationManager.PROVIDERS_CHANGED_ACTION)){
-			
-			if(context == null){
-				Log.e(TAG, "Context in receiver was null");
-				return;
-			}
-			
-			if(mListener == null){
-				Log.e(TAG, "GpsReceiver's listener was null");
-				return;
-			}
-			
 			mListener.onGpsChange();
-			
 		}
 		
 	}

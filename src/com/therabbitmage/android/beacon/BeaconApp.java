@@ -14,9 +14,8 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
+import com.therabbitmage.android.beacon.utils.ChronoUtils;
 
 public class BeaconApp extends Application {
 	private static final String TAG = BeaconApp.class.getSimpleName();
@@ -40,6 +39,8 @@ public class BeaconApp extends Application {
 	private static boolean mHasLocationCapability;
 	private static boolean mHasNetworkLocationCapability;
 	private static boolean mHasGpsCapability;
+	
+	private static long mInterval;
 
 	@Override
 	public void onCreate() {
@@ -333,6 +334,30 @@ public class BeaconApp extends Application {
 				getResources().getInteger(R.integer.default_twitter_active_transmission_interval));
 	}
 	
+	public final void setNextActiveTransmissionInterval(long interval){
+		//TODO Implement
+	}
+	
+	public final void setNextInactiveTransmissionInterval(long interval){
+		//TODO Implement
+	}
+	
+	public final long getActiveTransmissionInterval(){
+		return 12 * ChronoUtils.ONE_MINUTE;
+	}
+	
+	public final long getInactiveTransmissionInterval(){
+		return 20 * ChronoUtils.ONE_MINUTE;
+	}
+	
+	public static long getInterval() {
+		return mInterval;
+	}
+
+	public static void setInterval(long mInterval) {
+		BeaconApp.mInterval = mInterval;
+	}
+
 	public static boolean hasNetworkConnectivity() {
 		return sHasNetworkConnectivity;
 	}
@@ -363,48 +388,6 @@ public class BeaconApp extends Application {
 	
 	public final boolean hasNetworkLocationCapability(){
 		return mHasNetworkLocationCapability;
-	}
-
-	public final boolean isGoogleServicesAvailable(){
-		// Check that Google Play services is available
-        int resultCode =
-                GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-
-        // If Google Play services is available
-        if (ConnectionResult.SUCCESS == resultCode) {
-            // In debug mode, log the status
-            Log.d(TAG, getString(R.string.play_services_available));
-
-            // Continue
-            return true;
-        // Google Play services was not available for some reason
-        } else {
-        	
-        	Log.e(TAG, getString(R.string.error_general));
-        	Log.e(TAG, getString(R.string.result_code) + resultCode);
-        	
-        	switch(resultCode){
-        		case ConnectionResult.SERVICE_MISSING:
-        			Log.e(TAG, getString(R.string.error_service_missing));
-        			break;
-        		case ConnectionResult.SERVICE_INVALID:
-        			Log.e(TAG, getString(R.string.error_service_invalid));
-        			break;
-        		case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
-        			Log.e(TAG, getString(R.string.error_requires_updating));
-        			break;
-        		case ConnectionResult.SERVICE_DISABLED:
-        			Log.e(TAG, getString(R.string.error_service_disabled));
-        			break;
-        		case ConnectionResult.DEVELOPER_ERROR:
-        			Log.e(TAG, getString(R.string.error_developer_error));
-        		case ConnectionResult.NETWORK_ERROR:
-        			Log.e(TAG, getString(R.string.error_network_connectivity));
-        	}
-        	
-           Log.d(TAG, getString(R.string.play_services_unavailable));
-            return false;
-        }
 	}
 	
 }

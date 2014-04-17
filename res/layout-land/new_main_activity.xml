@@ -20,29 +20,45 @@
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_launcher"
             android:layout_centerInParent="true"
+            android:layout_marginBottom="5dp"
             android:gravity="center"
             android:textSize="24sp"
             android:text="@string/app_name"/>
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_below="@id/app_title">
-            <Button
-                android:id="@+id/mainbtn"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_centerHorizontal="true"
-		        android:layout_alignParentTop="true"/>
-	        <!-- TODO I should probably turn this into a menu option -->
 	        <Button 
 	            android:id="@+id/alt_setup_btn"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            style="@style/LargeButton"
+	            android:layout_width="@dimen/large_button_width"
+                android:layout_height="@dimen/large_button_height"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/blue_button"
+                android:textColor="@android:color/white"
 	            android:text="@string/setup"
-	            android:layout_centerHorizontal="true"
-	            android:layout_below="@id/mainbtn"/>
-        </RelativeLayout>
+	            android:textSize="18sp"/>
+	        <Button
+                android:id="@+id/mainbtn"
+                android:layout_width="@dimen/large_button_width"
+                android:layout_height="@dimen/large_button_height"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/green_button"
+                android:textColor="@android:color/white"
+                android:layout_marginRight="5dp"
+		        android:textSize="18sp"/>
+	        <Button 
+	            android:id="@+id/settings_btn"
+	            android:layout_width="@dimen/large_button_width"
+                android:layout_height="@dimen/large_button_height"
+                android:background="@drawable/blue_button"
+                android:textColor="@android:color/white"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/settings"
+	            android:textSize="18sp"/>
+        </LinearLayout>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/info_container" 
@@ -53,17 +69,15 @@
             android:id="@+id/location_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
             android:gravity="center"
+            android:background="@color/transparent_white"
             android:layout_alignParentTop="true"
             android:text="@string/location"/>
         <ScrollView
-              android:id="@+id/status_text"
-              android:layout_width="wrap_content"
-              android:layout_height="150dp"
+              android:id="@+id/status_scroll"
+              android:layout_width="match_parent"
+              android:layout_height="100dp"
               android:background="@color/transparent_white"
-              android:layout_alignLeft="@+id/input_container"
-              android:layout_alignRight="@id/input_container"
               android:layout_above="@+id/input_container">
 		      <TextView 
 			      android:id="@+id/status"
@@ -72,9 +86,9 @@
 			      android:textColor="@color/transparent_white"
 			      android:text="@string/app_name"/>
           </ScrollView>
-        <LinearLayout 
+          <LinearLayout 
               android:id="@+id/input_container"
-              android:layout_width="400dp"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="@android:color/white"
               android:layout_alignParentBottom="true">
@@ -85,7 +99,8 @@
                   android:layout_height="wrap_content"
                   android:inputType="text|textAutoCorrect|textAutoComplete|textMultiLine" />
           </LinearLayout>
-    </RelativeLayout>
+        
+    </RelativeLayout> 
     <LinearLayout 
         android:id="@+id/error_container"
         android:layout_width="300dp"

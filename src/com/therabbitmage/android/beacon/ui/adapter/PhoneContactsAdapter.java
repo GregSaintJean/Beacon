@@ -87,7 +87,7 @@ public class PhoneContactsAdapter extends CursorAdapter {
 
 						@Override
 						public void run() {
-							mManager.addPhoneContact(name, phoneContactId, number);
+							mManager.addPhoneContact(phoneContactId, name, number);
 							mSelectedNumbers.put(phoneContactId, true);
 						}
 						
@@ -113,7 +113,7 @@ public class PhoneContactsAdapter extends CursorAdapter {
 
 						@Override
 						public void run() {
-							mManager.removePhoneContact(phoneContactId);
+							mManager.removePhoneContactByContactId(phoneContactId);
 							mSelectedNumbers.remove(phoneContactId);
 						}
 						

@@ -31,7 +31,8 @@ import com.therabbitmage.android.beacon.receiver.NetworkReceiver;
 import com.therabbitmage.android.beacon.receiver.OnGpsChangeListener;
 import com.therabbitmage.android.beacon.receiver.OnNetworkChangeListener;
 import com.therabbitmage.android.beacon.service.BeaconService;
-import com.therabbitmage.android.beacon.utils.TimeUtils;
+import com.therabbitmage.android.beacon.utils.AndroidUtils;
+import com.therabbitmage.android.beacon.utils.ChronoUtils;
 
 public class NewMainActivity extends BaseFragmentActivity implements OnClickListener{
 	
@@ -43,20 +44,31 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 	private BroadcastReceiver mNetworkReceiver, mGpsReceiver, mBeaconKillReceiver,
 	mBeaconReceiver, mCoordinateReceiver;
 	private LocalBroadcastManager mLocalBMgr;
-	private View mInfoContainer, mIntroContainer;
-	private TextView mLocationView, mStatus;
+	private View mIntroContainer, mInfoContainer, mErrorContainer;
+	private TextView mLocationView, mStatus, mErrorNetwork, mErrorGps;
 	private EditText mInput;
-	private Button mMainButton, mAltSetupButton;
+	private Button mMainBtn, mAltSetupBtn, mSettingsBtn;
 	private StringBuilder mStatusBuilder;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		mApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		setupUI();
 		registerReceivers();
 		mStatusBuilder = new StringBuilder();
 	}
 	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if(!BeaconApp.isBeaconOnline())
+			showIntro();
+		else
+			showInfo();
+	}
+
 	private void setupUI(){
 		
 		setContentView(R.layout.new_main_activity);
@@ -64,7 +76,6 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		if (mGoogleMap == null) {
 			mGoogleMap = ((SupportMapFragment) getSupportFragmentManager()
 					.findFragmentById(R.id.map)).getMap();
-			mGoogleMap.setMyLocationEnabled(true);
 			mGoogleMap.getUiSettings().setAllGesturesEnabled(false);
 			mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
 			mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
@@ -72,25 +83,20 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		
 		mInfoContainer = findViewById(R.id.info_container);
 		mIntroContainer = findViewById(R.id.intro_container);
+		mErrorContainer = findViewById(R.id.error_container);
 		mLocationView = (TextView)findViewById(R.id.location_view);
 		mStatus = (TextView)findViewById(R.id.status);
-		mMainButton = (Button)findViewById(R.id.mainbtn);
-		mAltSetupButton = (Button)findViewById(R.id.alt_setup_btn);
+		mErrorNetwork = (TextView)findViewById(R.id.error_network_tv);
+		mErrorGps = (TextView)findViewById(R.id.error_gps_tv);
+		mMainBtn = (Button)findViewById(R.id.mainbtn);
+		mAltSetupBtn = (Button)findViewById(R.id.alt_setup_btn);
+		mSettingsBtn = (Button)findViewById(R.id.settings_btn);
 		mInput = (EditText)findViewById(R.id.input_edittxt);
 		//TODO Setup logic for when the user is typing in their message
 		
-		mMainButton.setOnClickListener(this);
-		mAltSetupButton.setOnClickListener(this);
-	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		if(!BeaconApp.isBeaconOnline())
-			showIntro();
-		else
-			showInfo();
+		mMainBtn.setOnClickListener(this);
+		mAltSetupBtn.setOnClickListener(this);
+		mSettingsBtn.setOnClickListener(this);
 	}
 
 	private void showInfo(){
@@ -98,6 +104,10 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		mIntroContainer.setVisibility(View.GONE);
 		mInfoContainer.setVisibility(View.VISIBLE);
 		mLocationView.setVisibility(View.VISIBLE);
+		mErrorContainer.setVisibility(View.GONE);
+		invalidateOptionsMenu();
+		refreshErrorContainer();
+		mGoogleMap.setMyLocationEnabled(true);
 	}
 	
 	private void showIntro(){
@@ -107,18 +117,24 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		mLocationView.setVisibility(View.GONE);
 		
 		if(mApp.isSetupDone()){
-			mMainButton.setText(R.string.start);
-			mAltSetupButton.setVisibility(View.VISIBLE);
+			mMainBtn.setText(R.string.start);
+			mAltSetupBtn.setVisibility(View.VISIBLE);
+			mSettingsBtn.setVisibility(View.VISIBLE);
 		} else {
-			mMainButton.setText(R.string.setup);
-			mAltSetupButton.setVisibility(View.GONE);
+			mMainBtn.setText(R.string.setup);
+			mAltSetupBtn.setVisibility(View.GONE);
+			mSettingsBtn.setVisibility(View.GONE);
 		}
+		
+		invalidateOptionsMenu();
+		refreshErrorContainer();
+		mGoogleMap.setMyLocationEnabled(false);
 	}
 	
 	@Override
 	public void onClick(View v) {
 		
-		if(mMainButton != null && v.getId() == mMainButton.getId()){
+		if(mMainBtn != null && v.getId() == mMainBtn.getId()){
 			
 			if(mApp.isSetupDone()){
 				fireBeacon();
@@ -129,10 +145,14 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 			
 		}
 		
-		if(mAltSetupButton != null && v.getId() == mAltSetupButton.getId()){
+		if(mAltSetupBtn != null && v.getId() == mAltSetupBtn.getId()){
 			if(mApp.isSetupDone()){
 				startSetupActivity();
 			}
+		}
+		
+		if(mSettingsBtn != null && v.getId() ==  mSettingsBtn.getId()){
+			//TODO Implement Settings page
 		}
 		
 	}
@@ -141,14 +161,14 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main, menu);
-		MenuItem settingsItem = menu.findItem(R.id.action_settings);
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
 		MenuItem shutdownItem = menu.findItem(R.id.shutdown);
 		MenuItem contactItem = menu.findItem(R.id.contact);
-		
-		if(BeaconApp.isBeaconOnline() || mApp.isSetupDone())
-			settingsItem.setVisible(true);
-		else 
-			settingsItem.setVisible(false);
 		
 		if(BeaconApp.isBeaconOnline()){
 			shutdownItem.setVisible(true);
@@ -165,9 +185,6 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		switch(item.getItemId()){
-			case R.id.action_settings:
-				startSetupActivity();
-				return true;
 			case R.id.shutdown:
 				shutdownBeacon();
 				return true;
@@ -190,11 +207,50 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 	}
 	
 	private void startSetupActivity() {
-		startActivity(new Intent(this, PhoneSetupActivity.class));
+		startActivity(new Intent(this, SetupActivity.class));
 	}
 	
 	private void fireBeacon(){
+		mApp.setBeaconStatus(true);
 		startService(new Intent(this, BeaconService.class));
+	}
+	
+	private void refreshErrorContainer(){
+		
+		if(BeaconApp.isBeaconOnline()){
+			mErrorContainer.setVisibility(View.GONE);
+			mErrorNetwork.setVisibility(View.GONE);
+			mErrorGps.setVisibility(View.GONE);
+			return;
+		}
+		
+		if(BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+			mErrorContainer.setVisibility(View.GONE);
+			mErrorNetwork.setVisibility(View.GONE);
+			mErrorGps.setVisibility(View.GONE);
+			return;
+		}
+		
+		mErrorContainer.setVisibility(View.VISIBLE);
+		
+		if(BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+			mErrorNetwork.setVisibility(View.GONE);
+			mErrorGps.setVisibility(View.VISIBLE);
+			return;
+		}
+		
+		if(!BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+			mErrorNetwork.setVisibility(View.VISIBLE);
+			mErrorGps.setVisibility(View.GONE);
+			return;
+		}
+		
+		if(!BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+			mErrorNetwork.setVisibility(View.VISIBLE);
+			mErrorGps.setVisibility(View.VISIBLE);
+			return;
+		}
+		
 	}
 	
 	private void setLocationOnMap(double lat, double lng){
@@ -218,7 +274,7 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 	}
 	
 	private void updateStatusView(String update){
-		mStatusBuilder.append(TimeUtils.getCurrentTime() + ": " + update + "\n");
+		mStatusBuilder.append(ChronoUtils.getCurrentTime() + ": " + update + "\n");
 		mStatus.setText(mStatusBuilder.toString());
 	}
 
@@ -260,7 +316,8 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 			if(NewMainActivity.this == null){
 				return;
 			}
-			//TODO Handle Network Offline
+			mApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(NewMainActivity.this));
+			refreshErrorContainer();
 		}
 		
 	};
@@ -273,7 +330,8 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 				return;
 			}
 			Log.d(TAG, "GPS Provider change detected.");
-			//TODO Handle GPS offline
+			mApp.setGpsOnline(AndroidUtils.isGpsOnline(NewMainActivity.this));
+			refreshErrorContainer();
 		}
 		
 	};
@@ -291,16 +349,17 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		public void onReceive(Context context, Intent intent){
 			
 			if(context == null){
+				Log.e(TAG, "Context in receiver was null");
+				return;
+			}
+			
+			if(intent == null){
+				Log.e(TAG, "Intent was null");
 				return;
 			}
 			
 			if(intent.getAction().equals(BeaconService.BROADCAST_SERVICE_KILLED)){
-				
-				if(context == null || NewMainActivity.this == null){
-					return;
-				}
-				
-				NewMainActivity.this.finish();
+				((NewMainActivity)context).finish();
 			}
 			
 		}
@@ -315,13 +374,17 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		public void onReceive(Context context, Intent intent) {
 			
 			if(context == null){
+				Log.e(TAG, "Context in receiver was null");
+				return;
+			}
+			
+			if(intent == null){
+				Log.e(TAG, "Intent was null");
 				return;
 			}
 			
 			if(intent.getAction().equals(BeaconService.BROADCAST_BEACON_MESSAGE)){
-				
-				NewMainActivity activity = (NewMainActivity)context;
-				activity.updateStatusView(intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE));
+				((NewMainActivity)context).updateStatusView(intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE));
 			}
 			
 		}
@@ -336,6 +399,12 @@ public class NewMainActivity extends BaseFragmentActivity implements OnClickList
 		public void onReceive(Context context, Intent intent) {
 			
 			if(context == null){
+				Log.e(TAG, "Context in receiver was null");
+				return;
+			}
+			
+			if(intent == null){
+				Log.e(TAG, "Intent was null");
 				return;
 			}
 			

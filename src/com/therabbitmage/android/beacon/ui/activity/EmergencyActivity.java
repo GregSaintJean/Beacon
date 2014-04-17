@@ -22,9 +22,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.therabbitmage.android.beacon.BeaconApp;
-import com.therabbitmage.android.beacon.service.BeaconService;
-import com.therabbitmage.android.beacon.utils.TimeUtils;
 import com.therabbitmage.android.beacon.R;
+import com.therabbitmage.android.beacon.service.BeaconService;
+import com.therabbitmage.android.beacon.utils.ChronoUtils;
 
 public class EmergencyActivity extends FragmentActivity implements OnClickListener {
 
@@ -192,7 +192,7 @@ public class EmergencyActivity extends FragmentActivity implements OnClickListen
 			
 			if(intent.getAction().equals(BeaconService.BROADCAST_BEACON_MESSAGE)){
 				
-				String currentTime = TimeUtils.getCurrentTime();
+				String currentTime = ChronoUtils.getCurrentTime();
 				
 				String message = intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE);
 				mStatusBuilder.append(currentTime + ": " + message + "\n");

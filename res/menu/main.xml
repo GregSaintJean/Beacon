@@ -1,17 +1,13 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="withText"
-        android:title="@string/action_settings"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:beacon="http://schemas.android.com/apk/res-auto" >
     <item
         android:id="@+id/contact"
-        android:showAsAction="withText"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_first_heart_clear"
         android:title="@string/call911"/>
     <item
         android:id="@+id/shutdown"
-        android:showAsAction="withText"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_online_button_clear"
         android:title="@string/shutdown"/>
-
 </menu>

@@ -5,30 +5,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 
 public class LocationUtils {
-
+	
 	public static final float FIVE_METERS = 5;
-	
-	// Milliseconds per second
-	private static final int MILLISECONDS_PER_SECOND = 1000;
-	
-	// Update frequency in seconds
-	public static final int UPDATE_INTERVAL_IN_SECONDS = 20;
-	
-	// Update frequency in milliseconds
-	public static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND
-			* UPDATE_INTERVAL_IN_SECONDS;
-	
-	// The fastest update frequency, in seconds
-	private static final int FASTEST_INTERVAL_IN_SECONDS = 10;
-	
-	// A fast frequency ceiling in milliseconds
-	public static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND
-			* FASTEST_INTERVAL_IN_SECONDS;
-	
-	private static final int ONE_MINUTE = 60;
-
-	public static final long TWO_MINUTES = MILLISECONDS_PER_SECOND * ONE_MINUTE
-			* 2;
 
 	/**
 	 * Determines whether one Location reading is better than the current
@@ -49,8 +27,8 @@ public class LocationUtils {
 
 		// Check whether the new location fix is newer or older
 		long timeDelta = location.getTime() - currentBestLocation.getTime();
-		boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-		boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+		boolean isSignificantlyNewer = timeDelta > (2 * ChronoUtils.ONE_MINUTE);
+		boolean isSignificantlyOlder = timeDelta < -(2 * ChronoUtils.ONE_MINUTE);
 		boolean isNewer = timeDelta > 0;
 
 		// If it's been more than two minutes since the current location, use

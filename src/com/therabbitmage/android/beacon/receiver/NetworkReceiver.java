@@ -22,6 +22,11 @@ public class NetworkReceiver extends BroadcastReceiver {
 			return;
 		}
 		
+		if(intent == null){
+			Log.e(TAG, "Intent was null");
+			return;
+		}
+		
 		if(mListener == null){
 			Log.e(TAG, "NetworkReceiver's listener was null");
 			return;

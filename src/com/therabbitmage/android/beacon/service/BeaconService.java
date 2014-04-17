@@ -42,9 +42,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.R;
-import com.therabbitmage.android.beacon.entities.Contact;
+import com.therabbitmage.android.beacon.entities.beacon.BeaconSMSContact;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
 import com.therabbitmage.android.beacon.provider.Beacon;
 import com.therabbitmage.android.beacon.provider.BeaconMobileQuery;
@@ -53,6 +54,7 @@ import com.therabbitmage.android.beacon.receiver.NetworkReceiver;
 import com.therabbitmage.android.beacon.receiver.OnGpsChangeListener;
 import com.therabbitmage.android.beacon.receiver.OnNetworkChangeListener;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
+import com.therabbitmage.android.beacon.utils.ChronoUtils;
 import com.therabbitmage.android.beacon.utils.LocationHelper;
 import com.therabbitmage.android.beacon.utils.LocationUtils;
 
@@ -73,6 +75,7 @@ public class BeaconService extends Service implements LocationListener,
 	public static final String BROADCAST_FACEBOOK_MESSAGE = "broadcast_facebook_message";
 	public static final String BROADCAST_COORDINATES = "broadcast_coodinates";
 	public static final String BROADCAST_SERVICE_KILLED = "broadcast_service_killed";
+	public static final String BROADCAST_BEACON_ERROR = "broadcast_beacon_error";
 	public static final String EXTRA_BROADCAST_MESSAGE = "extra_broadcast_message";
 	public static final String EXTRA_BROADCAST_FACEBOOK_MESSAGE = "extra_broadcast_facebook_message";
 	public static final String EXTRA_BROADCAST_LATITUDE = "extra_broadcast_latitude";
@@ -89,6 +92,14 @@ public class BeaconService extends Service implements LocationListener,
 	private static final int MESSAGE_SEND_ALL = 5;
 	
 	private static final int NOTIFICATION_ID = 1;
+	
+	// Update frequency in milliseconds
+	public static final long UPDATE_INTERVAL = 10 * ChronoUtils.ONE_MINUTE;
+	
+	// A fast frequency ceiling in milliseconds
+	public static final long FASTEST_INTERVAL = 7 * ChronoUtils.ONE_MINUTE;
+	
+	public static final long DEFAULT_UPDATE_INTERVAL = 15 * ChronoUtils.ONE_MINUTE;
 	
 	private long mLastTime;
 	
@@ -118,7 +129,7 @@ public class BeaconService extends Service implements LocationListener,
 	private long mInactiveTransmissionTime;
 	private long mActiveTransmissionTime;
 	private long mLastTransmissionTime;
-	private List<Contact> mContactList;
+	private List<BeaconSMSContact> mContactList;
 	
 	private enum DeviceState{
 		STILL,
@@ -158,6 +169,7 @@ public class BeaconService extends Service implements LocationListener,
 	public void onCreate(){
 		
 		mApp = BeaconApp.getInstance();
+		BeaconApp.setInterval(DEFAULT_UPDATE_INTERVAL);
 		mNm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		
 		HandlerThread thread = new HandlerThread(BeaconService.class.getSimpleName(), 
@@ -171,21 +183,23 @@ public class BeaconService extends Service implements LocationListener,
 		
 		mApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		mApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
-		mApp.setBeaconStatus(false);
 		
 		mTwitter = TwitterBeacon.getTwitter(mApp);
 		
 		mGeocoder = new Geocoder(this, Locale.getDefault());
 		
 		mLocationHelper = new LocationHelper(this, this, this, this);
-		mLocationHelper.requestLocationUpdates();
+		mLocationHelper.setUpdateInterval(UPDATE_INTERVAL);
+		mLocationHelper.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+		mLocationHelper.setFastestInterval(FASTEST_INTERVAL);
+		mLocationHelper.reset();
 		
 		mActivityRecognitionClient = new ActivityRecognitionClient(this, this, this);
 		mActivityRecognitionClient.connect();
 		isRequestingActivityUpdates = false;
 		
-		mInactiveTransmissionTime = mApp.getSmsInactiveTransmissionInterval();
-		mActiveTransmissionTime = mApp.getSmsActiveTransmissionInterval();
+		mInactiveTransmissionTime = mApp.getInactiveTransmissionInterval();
+		mActiveTransmissionTime = mApp.getActiveTransmissionInterval();
 		mLastTransmissionTime = -1;
 		mNextTransmissionTime = -1;
 		//TODO When Activity recognition is done, this boolean will change.
@@ -278,14 +292,15 @@ public class BeaconService extends Service implements LocationListener,
 						null,
 						BeaconMobileQuery.SORT_ORDER);
 		
-		mContactList = new LinkedList<Contact>();
+		mContactList = new LinkedList<BeaconSMSContact>();
 		
 		if(c.moveToFirst()){
 			
 			do{
 				
-				Contact contact = new Contact();
-				contact.setName(c.getString(c.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME)));
+				BeaconSMSContact contact = new BeaconSMSContact();
+				contact.setContactId(c.getInt(c.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_CONTACT_ID)));
+				contact.setDisplayName(c.getString(c.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME)));
 				contact.setNumber(c.getString(c.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_NUMBER)));
 				mContactList.add(contact);
 				
@@ -381,9 +396,9 @@ public class BeaconService extends Service implements LocationListener,
 					"with his shit.\n";
 			message += "End message!\n";
 			
-			ListIterator<Contact> iter = mContactList.listIterator();
+			ListIterator<BeaconSMSContact> iter = mContactList.listIterator();
 			while(iter.hasNext()){
-				Contact contact = iter.next();
+				BeaconSMSContact contact = iter.next();
 				AndroidUtils.sendSms(BeaconService.this, contact.getNumber(), message,
 						PendingIntent.getBroadcast(BeaconService.this, 0, new Intent(ACTION_SMS_SENT), 0),
 						null);
@@ -394,6 +409,37 @@ public class BeaconService extends Service implements LocationListener,
 		}
 		
 	};
+	
+	private void sendSms(String message, String number){
+		AndroidUtils.sendSms(BeaconService.this, number, message, 
+				PendingIntent.getBroadcast(BeaconService.this, 0, new Intent(ACTION_SMS_SENT), 0), null);
+		
+		sendNotification(getString(R.string.title_sms_message_sent), "Message sent: " + message, null, null, null, true);
+	}
+	
+	private void sendTwitterTweet(String message){
+		
+		AccessToken accessToken = new AccessToken(mApp.getTwitterAccessToken(), mApp.getTwitterAccessTokenSecret());
+		mTwitter.setOAuthAccessToken(accessToken);
+		
+		Intent broadcast = null;
+		
+		try{
+			mTwitter.updateStatus(message);
+		} catch (TwitterException e){
+			Log.e(TAG, e.toString());
+			broadcast = new Intent(BROADCAST_BEACON_ERROR);
+			broadcast.putExtra(EXTRA_BROADCAST_MESSAGE, e.toString());
+			mLocalBMgr.sendBroadcast(broadcast);
+			return;
+		}
+		
+		broadcast = new Intent(BROADCAST_BEACON_MESSAGE);
+		broadcast.putExtra(EXTRA_BROADCAST_MESSAGE, getString(R.string.tweet_sent));
+		mLocalBMgr.sendBroadcast(broadcast);
+		sendNotification(getString(R.string.title_twitter_status_updated), null, null, null, null, true);
+		
+	}
 	
 	private Runnable mUpdateTwitter = new Runnable(){
 
@@ -439,57 +485,35 @@ public class BeaconService extends Service implements LocationListener,
 		
 	};
 	
-	private Runnable mGetAddress = new Runnable(){
-
-		@Override
-		public void run() {
+	private void getAddress(){
+		try{
+			List<Address> addressList = mGeocoder.getFromLocation(mCurrentLocation.getLatitude(), 
+					mCurrentLocation.getLongitude(), 1);
 			
-			try{
+			if(addressList != null && addressList.size() > 0){
+				//TODO This might need to enchanced so that every time an address is retrieved, it's stored on the hard drive for history taking.
+				mCurrentAddress = addressList.get(0);
+			} else {
 				
-				List<Address> addressList = mGeocoder.getFromLocation(mCurrentLocation.getLatitude(), 
-						mCurrentLocation.getLongitude(), 1);
-				
-				if(addressList != null && addressList.size() > 0){
-					//TODO This might need to enchanced so that every time an address is retrieved, it's stored
-					mCurrentAddress = addressList.get(0);
-				} else {
-					
-					mCurrentAddress = null;
-				}
-				
-			} catch (IOException e){
-				Log.e(TAG, e.toString());
+				mCurrentAddress = null;
 			}
 			
+		} catch (IOException e){
+			Log.e(TAG, e.toString());
 		}
-		
-	};
+	}
 	
-	private class CalculateAndChangeDistance implements Runnable{
-		private Location pStartLocation;
-		private Location pEndLocation;
+	private void calculateAndChangeDistance(Location startLocation, Location endLocation){
+		float[] results =  new float[1];
 		
+		Location.distanceBetween(startLocation.getLatitude(), startLocation.getLongitude(),
+				endLocation.getLatitude(), endLocation.getLongitude(), results);
 		
-		public CalculateAndChangeDistance(Location startLocation, Location endLocation){
-			pStartLocation = startLocation;
-			pEndLocation = endLocation;
+		if(results[0] > 50){
+			mCurrentLocation = endLocation;
+			//getAddress();
+			broadcastCoordinates();
 		}
-
-
-		@Override
-		public void run() {
-			float[] results =  new float[1];
-			
-			Location.distanceBetween(pStartLocation.getLatitude(), pStartLocation.getLongitude(),
-					pEndLocation.getLatitude(), pEndLocation.getLongitude(), results);
-			
-			if(results[0] > 50){
-				mCurrentLocation = pEndLocation;
-				//getAddress();
-				broadcastCoordinates();
-			}
-		}
-		
 	}
 	
 	private boolean isFirstTransmission(){
@@ -568,11 +592,17 @@ public class BeaconService extends Service implements LocationListener,
 		Log.d(TAG, "Location changed");
 		Calendar now = Calendar.getInstance();
 		
-		
 		if(mCurrentLocation == null){
 			mLastTime = now.getTimeInMillis();
 			mCurrentLocation = location;
-			mServiceHandler.post(mGetAddress);
+			mServiceHandler.post(new Runnable(){
+
+				@Override
+				public void run() {
+					getAddress();
+				}
+				
+			});
 			broadcastCoordinates();
 			if(!BeaconApp.isBeaconOnline()){
 				Message msg = mServiceHandler.obtainMessage();
@@ -584,12 +614,27 @@ public class BeaconService extends Service implements LocationListener,
 		
 		if(LocationUtils.isBetterLocation(mCurrentLocation, location)){
 			mCurrentLocation = location;
-			mServiceHandler.post(mGetAddress);
+			mServiceHandler.post(new Runnable(){
+
+				@Override
+				public void run() {
+					getAddress();
+				}
+				
+			});
 			broadcastCoordinates();
 			return;
 		}
 		
-		mServiceHandler.post(new CalculateAndChangeDistance(mCurrentLocation, location));
+		final Location l = location;
+		mServiceHandler.post(new Runnable(){
+
+			@Override
+			public void run() {
+				calculateAndChangeDistance(mCurrentLocation, l);
+			}
+			
+		});
 		long timeElapsed = (now.getTimeInMillis() - mLastTime)/1000;
 		mLastTime = now.getTimeInMillis();
 		Log.d(TAG, "Time in seconds passed = " + timeElapsed);
@@ -643,7 +688,17 @@ public class BeaconService extends Service implements LocationListener,
 		public SmsReceiver(){}
 
 		@Override
-		public void onReceive(Context ctx, Intent intent) {
+		public void onReceive(Context context, Intent intent) {
+			
+			if(context == null){
+				Log.e(TAG, "Context in receiver was null");
+				return;
+			}
+			
+			if(intent == null){
+				Log.e(TAG, "Intent was null");
+				return;
+			}
 			
 			Log.d(TAG, "Received SMS intent");
 			

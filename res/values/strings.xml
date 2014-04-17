@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Beacon</string>
-    <string name="action_settings">Settings</string>
+    <string name="settings">Settings</string>
     
     <!-- Button text -->
     <string name="setup">Setup</string>
@@ -11,13 +11,17 @@
     <string name="call911">Call 911</string>
     <string name="cancel">Cancel</string>
     <string name="next">Next</string>
+    <string name="delete">Delete</string>
     <string name="testing_google_plus">Testing Google Plus</string>
-    <string name="add_contact">Add Contact</string>
+    <string name="add_contact">Add Contact(s)</string>
+    <string name="contacts">Contacts</string>
     <string name="phone">Phone #</string>
     <string name="finish">Finish</string>
     <string name="lock">Lock</string>
     <string name="shutdown">Shutdown</string>
     <string name="location">Location</string>
+    <string name="add_sms_contacts">Add SMS Contacts</string>
+    <string name="add_twitter_account">Add Twitter account</string>
     
     <!-- Button text tester -->
     <string name="sign_in">Sign in</string>
@@ -29,29 +33,36 @@
 
     
     <string name="social_question">Do you wish to add your social networks?</string>
+    <string name="twitter_question">Do you wish to your twitter account?</string>
+    <string name="phone_contacts_question">Add phone contacts to message</string>
     <string name="no_contacts_added">No Contacts Added</string>
     <string name="no_contacts">No Contacts</string>
     <string name="placeholder">Placeholder</string>
     <string name="all_done">All Done!</string>
     <string name="gps">GPS</string>
     <string name="network">Network</string>
+    <string name="location_x_y">Location: x: %1$s y: %2$s</string>
+    <string name="message_sent">Message Sent.</string>
+    <string name="sms_message_sent">SMS message sent.</string>
     
     <!-- Error Message -->
-    <string name="error_phone_number_required">Need to supply a phone number</string>
+    <string name="error_phone_number_required">Need to supply a phone number.</string>
     <string name="error_message_required">Need a message to send. Don\'t send empty text messages!</string>
-    <string name="play_services_available">Play Services available</string>
-    <string name="play_services_unavailable">Play Services unavailable</string>
-    <string name="error_state_update_interval">Update interval has to be set</string>
-    <string name="error_invalid_update_interval">Update interval can not be lower than 0</string>
-    <string name="error_invalid_priority">Invalid priority</string>
+    <string name="play_services_available">Play Services available.</string>
+    <string name="play_services_unavailable">Play Services unavailable.</string>
+    <string name="error_state_update_interval">Update interval has to be set.</string>
+    <string name="error_invalid_update_interval">Update interval can not be lower than 0.</string>
+    <string name="error_invalid_priority">Invalid priority.</string>
+    <string name="error_network_offline">Network connectivity unavailable </string>
+    <string name="error_gps_offline">GPS is offline</string>
     
     <!-- Notification Messages -->
-    <string name="title_beacon_online">Beacon has come online</string>
-    <string name="title_twitter_status_updated">Twitter Status Updated</string>
-    <string name="title_sms_message_sent">SMS Message Sent</string>
-    <string name="title_beacon_offline">Beacon is offline</string>
+    <string name="title_beacon_online">Beacon has come online.</string>
+    <string name="title_twitter_status_updated">Twitter Status Updated.</string>
+    <string name="title_sms_message_sent">SMS Message Sent.</string>
+    <string name="title_beacon_offline">Beacon is offline.</string>
     
-    <string name="message_beginning_transmission">Beginning Transmission</string>
-    <string name="message_ending_transmission">Ending Transmission</string>
-    <string name="error_google_map_initialized">Google map has to be initialized</string>
+    <string name="message_beginning_transmission">Beginning Transmission.</string>
+    <string name="message_ending_transmission">Ending Transmission.</string>
+    <string name="error_google_map_initialized">Google map has to be initialized.</string>
 </resources>

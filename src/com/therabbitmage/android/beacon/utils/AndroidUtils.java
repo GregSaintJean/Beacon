@@ -22,9 +22,13 @@ import android.os.StrictMode;
 import android.telephony.SmsManager;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.therabbitmage.android.beacon.R;
 
 public final class AndroidUtils {
+	
+	private static final String TAG = AndroidUtils.class.getSimpleName();
 	
 	public final static void logBundleContents(Context ctx, Bundle bundle, String logTag){
 		
@@ -249,6 +253,48 @@ public final class AndroidUtils {
 	public static final LocationManager getLocationManager(Context ctx) {
 		return (LocationManager) ctx
 				.getSystemService(Context.LOCATION_SERVICE);
+	}
+	
+	public static final boolean isGoogleServicesAvailable(Context ctx){
+		// Check that Google Play services is available
+        int resultCode =
+                GooglePlayServicesUtil.isGooglePlayServicesAvailable(ctx);
+
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d(TAG, ctx.getString(R.string.play_services_available));
+
+            // Continue
+            return true;
+        // Google Play services was not available for some reason
+        } else {
+        	
+        	Log.e(TAG, ctx.getString(R.string.error_general));
+        	Log.e(TAG, ctx.getString(R.string.result_code) + resultCode);
+        	
+        	switch(resultCode){
+        		case ConnectionResult.SERVICE_MISSING:
+        			Log.e(TAG, ctx.getString(R.string.error_service_missing));
+        			break;
+        		case ConnectionResult.SERVICE_INVALID:
+        			Log.e(TAG, ctx.getString(R.string.error_service_invalid));
+        			break;
+        		case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+        			Log.e(TAG, ctx.getString(R.string.error_requires_updating));
+        			break;
+        		case ConnectionResult.SERVICE_DISABLED:
+        			Log.e(TAG, ctx.getString(R.string.error_service_disabled));
+        			break;
+        		case ConnectionResult.DEVELOPER_ERROR:
+        			Log.e(TAG, ctx.getString(R.string.error_developer_error));
+        		case ConnectionResult.NETWORK_ERROR:
+        			Log.e(TAG, ctx.getString(R.string.error_network_connectivity));
+        	}
+        	
+           Log.d(TAG, ctx.getString(R.string.play_services_unavailable));
+            return false;
+        }
 	}
 		
 	private AndroidUtils(){}

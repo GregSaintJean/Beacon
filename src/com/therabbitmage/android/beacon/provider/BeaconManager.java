@@ -23,7 +23,7 @@ public class BeaconManager {
 	 * @param number the phone number of the contact
 	 * @return the id of the row added in the Beacon phone database. -1 if nothing was added (because it already exists)
 	 */
-	public int addPhoneContact(String name, int contactId, String number){
+	public int addPhoneContact(int contactId, String name, String number){
 		String selection = Beacon.BeaconMobileContactDetails.CN_CONTACT_ID + "=?";
 		String[] selectionArgs = new String[]{""+contactId};
 		
@@ -60,7 +60,7 @@ public class BeaconManager {
 	 * @param beaconDetailid the id that corresponds to the phone contact record
 	 */
 	
-	public void removePhoneContact(int phoneContactId){
+	public void removePhoneContactByContactId(int phoneContactId){
 		
 		String selection = Beacon.BeaconMobileContactDetails.CN_CONTACT_ID + "=?";
 		String[] selectionArgs = new String[]{""+ phoneContactId};
@@ -83,4 +83,26 @@ public class BeaconManager {
 			Log.d(TAG, "Beacon contact detail doesn't exist");
 		}
 	}
+	
+	public void removePhoneContactByBeaconId(int beaconId){
+		String selection = Beacon.BeaconMobileContactDetails._ID + "=?";
+		String[] selectionArgs = new String[]{"" + beaconId};
+		
+		Cursor c = mResolver.query(
+				Beacon.BeaconMobileContactDetails.CONTENT_URI,
+				Beacon.BeaconMobileContactDetails.sProjection,
+				selection, 
+				selectionArgs, 
+				Beacon.BeaconMobileContactDetails.DEFAULT_SORT_ORDER);
+		
+		if(c != null && c.getCount() > 0 && c.moveToFirst()){
+			int rows = mResolver.delete(Beacon.BeaconMobileContactDetails.CONTENT_URI,
+					selection, selectionArgs);
+			c.close();
+			Log.d(TAG, "Number of rows deleted =" + rows);
+		} else {
+			Log.d(TAG, "Beacon contact detail doesn't exist");
+		}
+	}
+	
 }
