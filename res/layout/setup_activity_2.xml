@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,16 +7,11 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
+    android:gravity="center_vertical"
     tools:context=".SetupActivity" >
-    <LinearLayout 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:baselineAligned="false">
-        <LinearLayout
+    <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginRight="5dp"
             android:orientation="vertical" >
@@ -32,13 +27,15 @@
 	            android:background="@drawable/blue_button"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
+	            style="@style/LargeButton"
 	            android:textColor="@android:color/white"
 	            android:text="@string/add_sms_contacts"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:orientation="vertical" >
 	        <TextView 
@@ -58,15 +55,4 @@
 	            android:textColor="@android:color/white"
 	            android:text="@string/sign_in"/>
         </LinearLayout>
-        
-    </LinearLayout>
-    <Button 
-        android:id="@+id/finish_btn"
-        android:background="@drawable/green_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:text="@string/finish"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"/>
-</RelativeLayout>
+</LinearLayout>

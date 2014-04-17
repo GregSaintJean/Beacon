@@ -3,7 +3,7 @@ package com.therabbitmage.android.beacon.utils;
 import java.text.DateFormat;
 import java.util.Calendar;
 
-public class ChronoUtils {
+public class ChronoUtils{
 
 	public static final long MILLISECONDS_PER_SECOND = 1000;
 	

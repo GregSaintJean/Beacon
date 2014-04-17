@@ -12,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,9 +22,7 @@ import com.therabbitmage.android.beacon.provider.Beacon;
 import com.therabbitmage.android.beacon.ui.adapter.ContactsAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
-public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implements OnClickListener, LoaderCallbacks<Cursor> {
-	
-	private Button mAddContactsBtn, mFinishBtn;
+public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implements LoaderCallbacks<Cursor> {
 	private ListView mContactsList;
 	private TextView mEmptyView;
 	private ProgressBar mProgress;
@@ -43,14 +39,9 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 	
 	private void setupUI(){
 		setContentView(R.layout.phone_setup_sms_contacts);
-		mAddContactsBtn = (Button)findViewById(R.id.add_contacts_btn);
-		mFinishBtn = (Button)findViewById(R.id.finish_btn);
 		mContactsList = (ListView)findViewById(R.id.list);
 		mEmptyView = (TextView)findViewById(R.id.empty);
 		mProgress = (ProgressBar)findViewById(R.id.progress);
-		
-		mAddContactsBtn.setOnClickListener(this);
-		mFinishBtn.setOnClickListener(this);
 	}
 	
 	@Override
@@ -129,18 +120,6 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 		mProgress.setVisibility(View.GONE);
 		mEmptyView.setVisibility(View.VISIBLE);
 		mContactsList.setVisibility(View.GONE);
-	}
-
-	@Override
-	public void onClick(View v) {
-		if(mAddContactsBtn != null && v.getId() == mAddContactsBtn.getId()){
-			Intent intent = new Intent(this, AddSMSContactsActivity.class);
-			startActivity(intent);
-		}
-		
-		if(mFinishBtn != null && v.getId() == mFinishBtn.getId()){
-			finish();
-		}
 	}
 
 }

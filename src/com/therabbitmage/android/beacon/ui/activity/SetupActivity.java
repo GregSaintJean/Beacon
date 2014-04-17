@@ -20,7 +20,7 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 	
 	private BroadcastReceiver mTwitterReceiver;
 	private LocalBroadcastManager mLBMgr;
-	private Button mPhoneContactsBtn, mTwitterAccountBtn, mFinishBtn;
+	private Button mPhoneContactsBtn, mTwitterAccountBtn;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +37,7 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 		setContentView(R.layout.setup_activity_2);
 		mPhoneContactsBtn =  (Button)findViewById(R.id.setup_contacts_btn);
 		mTwitterAccountBtn = (Button)findViewById(R.id.setup_twitter_btn);
-		mFinishBtn = (Button)findViewById(R.id.finish_btn);
 		mPhoneContactsBtn.setOnClickListener(this);
-		mFinishBtn.setOnClickListener(this);
 		updateViewForTwitter();
 	}
 	
@@ -63,21 +61,12 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 			openSMSSetupActivity();
 		}
 		
-		if(mFinishBtn != null  && v.getId() == mFinishBtn.getId()){
-			finish();
-		}
-		
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.common_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
 		return true;
 	}
 

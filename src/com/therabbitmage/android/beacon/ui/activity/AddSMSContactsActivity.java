@@ -12,9 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,12 +26,11 @@ import com.therabbitmage.android.beacon.ui.adapter.SMSContactAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
 public class AddSMSContactsActivity extends BaseFragmentActivity 
-implements OnClickListener, AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
+implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 	
 	private TextView mEmpty;
 	private ListView mList;
 	private ProgressBar mProgress;
-	private Button mFinishBtn;
 	private SMSContactAdapter mAdapter;
 	private HashMap<Loader<Cursor>, Boolean> mActiveLoader;
 	private boolean mHasStarted = false;
@@ -61,22 +58,9 @@ implements OnClickListener, AdapterView.OnItemClickListener, LoaderCallbacks<Cur
 
 	private void setupUI(){
 		setContentView(R.layout.add_sms_contacts_activity);
-		mFinishBtn = (Button)findViewById(R.id.finish_btn);
 		mProgress = (ProgressBar)findViewById(R.id.progress);
 		mList = (ListView)findViewById(R.id.list);
 		mEmpty = (TextView)findViewById(R.id.empty);
-		mFinishBtn.setOnClickListener(this);
-	}
-
-	@Override
-	public void onClick(View v) {
-		if(v == null){
-			return;
-		}
-		
-		if(mFinishBtn != null && v.getId() == mFinishBtn.getId()){
-			finish();
-		}
 	}
 	
 	@Override

@@ -8,37 +8,10 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".PhoneSetupSMSContactsActivity" >
-    <LinearLayout 
-        android:id="@+id/button_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center_horizontal">
-        <Button 
-	        android:id="@+id/add_contacts_btn"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/blue_button"
-	        android:padding="10dp"
-	        android:layout_margin="5dp"
-	        android:textColor="@android:color/white"
-	        android:text="@string/add_contact"/>
-        <Button 
-	        android:id="@+id/finish_btn"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:padding="10dp"
-	        android:layout_margin="5dp"
-	        android:textColor="@android:color/white"
-	        android:background="@drawable/green_button"
-	        android:text="@string/finish"/>        
-    </LinearLayout>
     <ListView 
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/button_container"
         android:visibility="gone"/>
     <TextView 
         android:id="@+id/empty"
