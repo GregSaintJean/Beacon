@@ -3,6 +3,6 @@
     xmlns:beacon="http://schemas.android.com/apk/res-auto" >
     <item
         android:id="@+id/finish"
-        android:showAsAction="ifRoom|withText"
+        beacon:showAsAction="ifRoom|withText"
         android:title="@string/finish"/>
 </menu>

@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.therabbitmage.android.beacon.R;
@@ -56,6 +56,10 @@ public class ContactsAdapter extends ArrayAdapter<BeaconSMSContact> {
 		notifyDataSetChanged();
 	}
 	
+	public List<BeaconSMSContact> getData(){
+		return mContacts;
+	}
+	
 	@Override
 	public int getCount() {
 		if(mContacts == null){
@@ -88,7 +92,7 @@ public class ContactsAdapter extends ArrayAdapter<BeaconSMSContact> {
 			v = mInflater.inflate(R.layout.phone_contact_item, null, false);
 			vh.title = (TextView)v.findViewById(R.id.title);
 			vh.subtitle = (TextView)v.findViewById(R.id.subtitle);
-			vh.check_item = (Button)v.findViewById(R.id.delete_btn);
+			vh.check_item = (ImageButton)v.findViewById(R.id.delete_btn);
 			v.setTag(vh);
 		}
 		
@@ -104,14 +108,16 @@ public class ContactsAdapter extends ArrayAdapter<BeaconSMSContact> {
 
 					@Override
 					protected Void doInBackground(Void... params) {
-						mBeaconMgr.removePhoneContactByBeaconId(mContacts.get(currentPosition).getContactId());
+						mBeaconMgr.removePhoneContactByContactId(mContacts.get(currentPosition).getContactId());
 						return null;
 					}
 
 					@Override
 					protected void onPostExecute(Void result) {
 						super.onPostExecute(result);
-						mContacts.remove(currentPosition);
+						if(mContacts.size() != currentPosition){
+							mContacts.remove(currentPosition);
+						}
 						ContactsAdapter.this.notifyDataSetChanged();
 					}
 					
@@ -127,7 +133,7 @@ public class ContactsAdapter extends ArrayAdapter<BeaconSMSContact> {
 	class ViewHolder{
 		TextView title;
 		TextView subtitle;
-		Button check_item;
+		ImageButton check_item;
 		int position;
 	}
 

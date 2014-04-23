@@ -1,15 +1,14 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,14 +24,14 @@ import com.therabbitmage.android.beacon.provider.MobileContactsQuery;
 import com.therabbitmage.android.beacon.ui.adapter.SMSContactAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
-public class AddSMSContactsActivity extends BaseFragmentActivity 
+public class AddSMSContactsActivity extends BaseActionBarActivity 
 implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 	
+	private static final String TAG = AddSMSContactsActivity.class.getSimpleName();
 	private TextView mEmpty;
 	private ListView mList;
 	private ProgressBar mProgress;
 	private SMSContactAdapter mAdapter;
-	private HashMap<Loader<Cursor>, Boolean> mActiveLoader;
 	private boolean mHasStarted = false;
 
 	@Override
@@ -41,19 +40,18 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 		setupUI();
 		mAdapter = new SMSContactAdapter(this);
 		mList.setAdapter(mAdapter);
-		mActiveLoader = new HashMap<Loader<Cursor>, Boolean>();
 		getSupportLoaderManager().initLoader(MobileContactsQuery.MOBILE_QUERY_ID, null, this);
 		getSupportLoaderManager().initLoader(BeaconMobileQuery.BEACON_QUERY_ID, null, this);
-		mHasStarted = true;
+		//mHasStarted = true;
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if(mHasStarted){
+		/*if(mHasStarted){
 			getSupportLoaderManager().restartLoader(MobileContactsQuery.MOBILE_QUERY_ID, null, this);
 			getSupportLoaderManager().restartLoader(BeaconMobileQuery.BEACON_QUERY_ID, null, this);
-		}
+		}*/
 	}
 
 	private void setupUI(){
@@ -61,25 +59,14 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 		mProgress = (ProgressBar)findViewById(R.id.progress);
 		mList = (ListView)findViewById(R.id.list);
 		mEmpty = (TextView)findViewById(R.id.empty);
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.common_menu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return true;
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-			case R.id.finish:
-				finish();
+			case android.R.id.home:
+				NavUtils.navigateUpFromSameTask(this);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -104,10 +91,11 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 		mList.setVisibility(View.VISIBLE);
 	}
 	
-	private void showEmptyView(){
+	private void showEmptyView(int resId){
 		mProgress.setVisibility(View.GONE);
 		mEmpty.setVisibility(View.VISIBLE);
 		mList.setVisibility(View.GONE);
+		mEmpty.setText(resId);
 	}
 
 	@Override
@@ -122,7 +110,6 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 						MobileContactsQuery.SELECTION,
 						null,
 						MobileContactsQuery.SORT_ORDER);
-				mActiveLoader.put(l, true);
 				return l;
 			case BeaconMobileQuery.BEACON_QUERY_ID:
 				l = new CursorLoader(this,
@@ -131,7 +118,6 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 					null,
 					null,
 					BeaconMobileQuery.SORT_ORDER);
-				mActiveLoader.put(l, true);
 				return l;
 		}
 		return null;
@@ -142,19 +128,16 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 		
 		switch(loader.getId()){
 			case MobileContactsQuery.MOBILE_QUERY_ID:
-				
 				if(data != null && data.getCount() > 0){
 					ArrayList<PhoneContact> phoneContacts = ContactHelper.convertCursortoPhoneContacts(data);
 					mAdapter.setPhoneContacts(phoneContacts);
 				} else if(data.getCount() == 0){
-					showEmptyView();
-					mActiveLoader.remove(loader);
+					showEmptyView(R.string.no_contacts_found);
 					return;
 				}
 				
 				break;
 			case BeaconMobileQuery.BEACON_QUERY_ID:
-				
 				if(data != null){
 					ArrayList<BeaconSMSContact> beaconContacts = ContactHelper.convertCursorToBeaconContacts(data);
 					mAdapter.setBeaconContacts(beaconContacts);
@@ -167,15 +150,12 @@ implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 			showList();
 		}
 		
-		mActiveLoader.remove(loader);
-		
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> data) {
 		mAdapter.setBeaconContacts(null);
 		mAdapter.setPhoneContacts(null);
-		showProgressBar();
 	}
 
 }

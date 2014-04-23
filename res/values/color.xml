@@ -7,8 +7,8 @@
     <color name="transparent_white">#88FFFFFF</color>
     <color name="transparent_black">#AA000000</color>
     <color name="disabled_grey">#FFb7b7b7</color>
-    <color name="network_blue">#FF267ed4</color>
-    <color name="gps_green">#FF76843C</color>
+    <color name="network_blue">#CC267ed4</color>
+    <color name="gps_green">#CC76843C</color>
     <color name="swtor_blue">#FF1B6276</color>
     <color name="background_orange">#FFFFA00E</color>
     <color name="background_blue">#FF33B5E5</color>

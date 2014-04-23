@@ -5,9 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,11 +33,12 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 	}
 	
 	private void setupUI(){
-		setContentView(R.layout.setup_activity_2);
+		setContentView(R.layout.setup_activity);
 		mPhoneContactsBtn =  (Button)findViewById(R.id.setup_contacts_btn);
 		mTwitterAccountBtn = (Button)findViewById(R.id.setup_twitter_btn);
 		mPhoneContactsBtn.setOnClickListener(this);
 		updateViewForTwitter();
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	private void setupTwitter(){
@@ -62,19 +62,12 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 		}
 		
 	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.common_menu, menu);
-		return true;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-			case R.id.finish:
-				finish();
+			case android.R.id.home:
+				NavUtils.navigateUpFromSameTask(this);
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);

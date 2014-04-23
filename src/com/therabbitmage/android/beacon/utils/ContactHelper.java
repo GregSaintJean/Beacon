@@ -25,14 +25,12 @@ public final class ContactHelper {
 			do
 			{
 				BeaconSMSContact c = new BeaconSMSContact();
-				c.setContactId(cursor.getInt(cursor.getColumnIndex(Beacon.BeaconMobileContactDetails._ID)));
+				c.setContactId(cursor.getInt(cursor.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_CONTACT_ID)));
 				c.setDisplayName(cursor.getString(cursor.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_DISPLAY_NAME)));
 				c.setNumber(cursor.getString(cursor.getColumnIndex(Beacon.BeaconMobileContactDetails.CN_NUMBER)));
 				list.add(c);
 			}
 			while(cursor.moveToNext());
-			
-			cursor.close();
 			
 		}
 		
@@ -58,7 +56,6 @@ public final class ContactHelper {
 			}
 			while(cursor.moveToNext());
 			
-			cursor.close();
 		}
 		
 		return list;

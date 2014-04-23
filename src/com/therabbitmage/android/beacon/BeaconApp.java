@@ -22,7 +22,6 @@ public class BeaconApp extends Application {
 	
 	private static BeaconApp sBeacon;
 
-	private static final String US_EMERGENCY_NUMBER = "911";
 	private static final int NO_ID = -1;
 	
 	//Should Beacon be online?
@@ -39,8 +38,6 @@ public class BeaconApp extends Application {
 	private static boolean mHasLocationCapability;
 	private static boolean mHasNetworkLocationCapability;
 	private static boolean mHasGpsCapability;
-	
-	private static long mInterval;
 
 	@Override
 	public void onCreate() {
@@ -97,10 +94,6 @@ public class BeaconApp extends Application {
 		} catch (NoSuchAlgorithmException e) {
 			Log.d(TAG + e.getStackTrace()[0].getLineNumber(), e.toString());
 		}
-	}
-
-	public final void dial911() {
-		AndroidUtils.callNumber(this, US_EMERGENCY_NUMBER);
 	}
 
 	public final boolean hasTwitterRequestToken() {
@@ -348,14 +341,6 @@ public class BeaconApp extends Application {
 	
 	public final long getInactiveTransmissionInterval(){
 		return 20 * ChronoUtils.ONE_MINUTE;
-	}
-	
-	public static long getInterval() {
-		return mInterval;
-	}
-
-	public static void setInterval(long mInterval) {
-		BeaconApp.mInterval = mInterval;
 	}
 
 	public static boolean hasNetworkConnectivity() {

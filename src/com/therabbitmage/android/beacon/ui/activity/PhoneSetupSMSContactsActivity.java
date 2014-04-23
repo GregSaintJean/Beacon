@@ -1,11 +1,13 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.Menu;
@@ -19,10 +21,11 @@ import android.widget.TextView;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.entities.beacon.BeaconSMSContact;
 import com.therabbitmage.android.beacon.provider.Beacon;
+import com.therabbitmage.android.beacon.provider.BeaconManager;
 import com.therabbitmage.android.beacon.ui.adapter.ContactsAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
-public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implements LoaderCallbacks<Cursor> {
+public class PhoneSetupSMSContactsActivity extends BaseActionBarActivity implements LoaderCallbacks<Cursor> {
 	private ListView mContactsList;
 	private TextView mEmptyView;
 	private ProgressBar mProgress;
@@ -42,6 +45,7 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 		mContactsList = (ListView)findViewById(R.id.list);
 		mEmptyView = (TextView)findViewById(R.id.empty);
 		mProgress = (ProgressBar)findViewById(R.id.progress);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	@Override
@@ -52,18 +56,16 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 	}
 
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		return true;
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-			case R.id.add_contacts:
+			case android.R.id.home:
+				NavUtils.navigateUpFromSameTask(this);
+				return true;
+			case R.id.pull_contacts:
 				startAddSMSContactsActivity();
 				return true;
-			case R.id.finish:
-				finish();
+			case R.id.purge:
+				new PurgeContactListTask().execute();
 				return true;
 			default:
 				return super.onOptionsItemSelected(item);
@@ -89,11 +91,11 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		
 		if(data != null && data.getCount() > 0){
-			List<BeaconSMSContact> list = ContactHelper.convertCursorToBeaconContacts(data);
+			ArrayList<BeaconSMSContact> list = ContactHelper.convertCursorToBeaconContacts(data);
 			mAdapter.setData(list);
 			showList();
 		} else if(data.getCount() == 0){
-			showEmptyView();
+			showEmptyView(R.string.no_contacts_found);
 		}
 		
 	}
@@ -116,10 +118,32 @@ public class PhoneSetupSMSContactsActivity extends BaseFragmentActivity implemen
 		mContactsList.setVisibility(View.VISIBLE);
 	}
 	
-	private void showEmptyView(){
+	private void showEmptyView(int resId){
 		mProgress.setVisibility(View.GONE);
 		mEmptyView.setVisibility(View.VISIBLE);
 		mContactsList.setVisibility(View.GONE);
+		
+		mEmptyView.setText(resId);
+	}
+	
+	private class PurgeContactListTask extends AsyncTask<Void, Void, Void>{
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			for(int i = 0; i < mAdapter.getData().size(); i++){
+				BeaconManager mgr = new BeaconManager(PhoneSetupSMSContactsActivity.this);
+				mgr.removePhoneContactByContactId(mAdapter.getData().get(i).getContactId());
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			mAdapter.notifyDataSetChanged();
+		}
+		
 	}
 
 }

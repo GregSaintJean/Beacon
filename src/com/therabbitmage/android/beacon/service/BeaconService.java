@@ -94,12 +94,13 @@ public class BeaconService extends Service implements LocationListener,
 	private static final int NOTIFICATION_ID = 1;
 	
 	// Update frequency in milliseconds
-	public static final long UPDATE_INTERVAL = 10 * ChronoUtils.ONE_MINUTE;
+	//public static final long UPDATE_INTERVAL = 10 * ChronoUtils.ONE_MINUTE;
+	
+	public static final long UPDATE_INTERVAL = 30 * ChronoUtils.ONE_SECOND;
 	
 	// A fast frequency ceiling in milliseconds
-	public static final long FASTEST_INTERVAL = 7 * ChronoUtils.ONE_MINUTE;
-	
-	public static final long DEFAULT_UPDATE_INTERVAL = 15 * ChronoUtils.ONE_MINUTE;
+	//public static final long FASTEST_INTERVAL = 7 * ChronoUtils.ONE_MINUTE;
+	public static final long FASTEST_INTERVAL = 15 * ChronoUtils.ONE_SECOND;
 	
 	private long mLastTime;
 	
@@ -144,14 +145,15 @@ public class BeaconService extends Service implements LocationListener,
 		
 		@Override
 		public void handleMessage(Message msg) {
-			
 			Bundle arguments = (Bundle)msg.obj;
 			//TODO Complete, this is where commands will be passed.
 			switch(msg.what){
 				case MESSAGE_STOP:
+					Log.d(TAG, "Message to stop beacon received");
 					mApp.setBeaconStatus(false);
 					break;
 				case MESSAGE_START_BEACON:
+					Log.d(TAG, "Message to start beacon received");
 					startBeacon();
 					break;
 				case MESSAGE_SEND_ALL:
@@ -169,7 +171,6 @@ public class BeaconService extends Service implements LocationListener,
 	public void onCreate(){
 		
 		mApp = BeaconApp.getInstance();
-		BeaconApp.setInterval(DEFAULT_UPDATE_INTERVAL);
 		mNm = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 		
 		HandlerThread thread = new HandlerThread(BeaconService.class.getSimpleName(), 
@@ -213,7 +214,9 @@ public class BeaconService extends Service implements LocationListener,
 		Message msg = mServiceHandler.obtainMessage();
 		msg.arg1 = startId;
 		msg.arg2 = flags;
-		msg.obj = intent.getExtras();
+		if(intent != null){
+			msg.obj = intent.getExtras();
+		}
 		
 		if(intent.getAction() != null){
 			if(intent.getAction().equals(ACTION_STOP)){
@@ -224,6 +227,8 @@ public class BeaconService extends Service implements LocationListener,
 				msg.what = MESSAGE_SMS_SEND;
 			} else if (intent.getAction().equals(ACTION_SEND_TWITTER_MESSAGE)){
 				msg.what = MESSAGE_TWITTER_SEND;
+			} else if(intent.getAction().equals(ACTION_BEGIN)){
+				msg.what = MESSAGE_START_BEACON;
 			}
 		} 
 		
@@ -243,7 +248,7 @@ public class BeaconService extends Service implements LocationListener,
 		mActivityRecognitionClient.disconnect();
 		mServiceLooper.quit();
 		mNm.cancelAll();
-		sendNotification(getString(R.string.title_beacon_offline), null, null, null, null, false);
+		sendNotification(getString(R.string.notification_beacon_offline), null, null, null, null, false);
 		Intent broadcastIntent = new Intent(BROADCAST_SERVICE_KILLED);
 		mLocalBMgr.sendBroadcast(broadcastIntent);
 		mApp.setActive(false);
@@ -404,7 +409,7 @@ public class BeaconService extends Service implements LocationListener,
 						null);
 			}
 			
-			sendNotification(getString(R.string.title_sms_message_sent), "Message sent: " + message, null, null, null, true);
+			sendNotification(getString(R.string.sms_message_sent), "Message sent: " + message, null, null, null, true);
 			
 		}
 		
@@ -414,7 +419,7 @@ public class BeaconService extends Service implements LocationListener,
 		AndroidUtils.sendSms(BeaconService.this, number, message, 
 				PendingIntent.getBroadcast(BeaconService.this, 0, new Intent(ACTION_SMS_SENT), 0), null);
 		
-		sendNotification(getString(R.string.title_sms_message_sent), "Message sent: " + message, null, null, null, true);
+		sendNotification(getString(R.string.sms_message_sent), "Message sent: " + message, null, null, null, true);
 	}
 	
 	private void sendTwitterTweet(String message){
@@ -437,7 +442,7 @@ public class BeaconService extends Service implements LocationListener,
 		broadcast = new Intent(BROADCAST_BEACON_MESSAGE);
 		broadcast.putExtra(EXTRA_BROADCAST_MESSAGE, getString(R.string.tweet_sent));
 		mLocalBMgr.sendBroadcast(broadcast);
-		sendNotification(getString(R.string.title_twitter_status_updated), null, null, null, null, true);
+		sendNotification(getString(R.string.notification_twitter_status_updated), null, null, null, null, true);
 		
 	}
 	
@@ -476,7 +481,7 @@ public class BeaconService extends Service implements LocationListener,
 				mLocalBMgr.sendBroadcast(broadcast);
 				//TODO Enhance so that the user can send direct messages
 				
-				sendNotification(getString(R.string.title_twitter_status_updated), null, null, null, null, true);
+				sendNotification(getString(R.string.notification_twitter_status_updated), null, null, null, null, true);
 				
 			} else {
 				//TODO set a time to transmit again.

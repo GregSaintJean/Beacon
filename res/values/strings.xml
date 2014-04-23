@@ -13,8 +13,9 @@
     <string name="next">Next</string>
     <string name="delete">Delete</string>
     <string name="testing_google_plus">Testing Google Plus</string>
-    <string name="add_contact">Add Contact(s)</string>
-    <string name="contacts">Contacts</string>
+    <string name="pull">Pull</string>
+    <string name="purge">Purge</string>
+    <string name="pulled_contacts">Pulled Contacts</string>
     <string name="phone">Phone #</string>
     <string name="finish">Finish</string>
     <string name="lock">Lock</string>
@@ -22,7 +23,14 @@
     <string name="location">Location</string>
     <string name="add_sms_contacts">Add SMS Contacts</string>
     <string name="add_twitter_account">Add Twitter account</string>
+    <string name="google_play_required">Google Play Services is required</string>
+    <string name="google_play_must_be_installed">The Google Play app store must be installed in order to use Beacon</string>
+    <string name="common_ok">Ok</string>
+    <string name="no_contacts_found">No Contacts Found</string>
     
+    <!-- Context description -->
+    <string name="delete_button">Delete Button</string>
+    <string name="add_button">Add Button</string>
     <!-- Button text tester -->
     <string name="sign_in">Sign in</string>
     <string name="login_google">Login into Google</string>
@@ -33,8 +41,8 @@
 
     
     <string name="social_question">Do you wish to add your social networks?</string>
-    <string name="twitter_question">Do you wish to your twitter account?</string>
-    <string name="phone_contacts_question">Add phone contacts to message</string>
+    <string name="twitter_question">Do you wish to add your twitter account?</string>
+    <string name="phone_contacts_question">Please add sms contacts for messaging.</string>
     <string name="no_contacts_added">No Contacts Added</string>
     <string name="no_contacts">No Contacts</string>
     <string name="placeholder">Placeholder</string>
@@ -44,6 +52,23 @@
     <string name="location_x_y">Location: x: %1$s y: %2$s</string>
     <string name="message_sent">Message Sent.</string>
     <string name="sms_message_sent">SMS message sent.</string>
+    
+    <!-- Transmission messages -->
+    <!-- SMS -->
+    <string name="transmit_sms_beacon_online_location_address">Beacon activated!\nLocation: x: %1$s y: %2$s\nAddress: %3$s\nMap: %4$s</string>
+    <string name="transmit_sms_beacon_online_location">Beacon activated!\n Location: x: %1$s y: %2$s\nMap: %4$s</string>
+    <string name="transmit_sms_beacon_online">Beacon activated!\n Please help!</string>
+    <string name="transmit_sms_beacon_update_location_address">Beacon update.\n Location: x: %1$s y: %2$s\n Address: %3$s\nMap: %4$s</string>
+    <string name="transmit_sms_beacon_update_location">Beacon update.\n Location: x: %1$s y: %2$s\nMap: %4$s</string>
+    <string name="transmit_sms_beacon_update">Beacon update.\n Please help!</string>
+    
+    <!-- Tweets -->
+    <string name="transmit_twitter_beacon_online_location_address">#BeaconActive\nLocation: x: %1$s y: %2$s\nAddress: %3$s\nMap: %4$s</string>
+    <string name="transmit_twitter_beacon_online_location">#BeaconActive\n Location: x: %1$s y: %2$s\nMap: %4$s</string>
+    <string name="transmit_twitter_beacon_online">#BeaconActive\n Please help!</string>
+    <string name="transmit_twitter_beacon_update_location_address">#BeaconUpdate\n Location: x: %1$s y: %2$s\n Address: %3$s\nMap: %4$s</string>
+    <string name="transmit_twitter_beacon_update_location">#BeaconUpdate\n Location: x: %1$s y: %2$s\nMap: %4$s</string>
+    <string name="transmit_twitter_beacon_update">#BeaconUpdate\n Please help!</string>
     
     <!-- Error Message -->
     <string name="error_phone_number_required">Need to supply a phone number.</string>
@@ -57,10 +82,11 @@
     <string name="error_gps_offline">GPS is offline</string>
     
     <!-- Notification Messages -->
-    <string name="title_beacon_online">Beacon has come online.</string>
-    <string name="title_twitter_status_updated">Twitter Status Updated.</string>
-    <string name="title_sms_message_sent">SMS Message Sent.</string>
-    <string name="title_beacon_offline">Beacon is offline.</string>
+    <string name="notification_beacon_first_online">Beacon has come online.</string>
+    <string name="notification_beacon_online">Beacon is online.</string>
+    <string name="notification_twitter_status_updated">Twitter Status Updated.</string>
+    <string name="notification_sms_message_sent">SMS Message Sent.</string>
+    <string name="notification_beacon_offline">Beacon is offline.</string>
     
     <string name="message_beginning_transmission">Beginning Transmission.</string>
     <string name="message_ending_transmission">Ending Transmission.</string>

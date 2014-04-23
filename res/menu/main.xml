@@ -1,13 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:beacon="http://schemas.android.com/apk/res-auto" >
     <item
-        android:id="@+id/contact"
-        android:showAsAction="ifRoom"
-        android:icon="@drawable/ic_first_heart_clear"
-        android:title="@string/call911"/>
-    <item
         android:id="@+id/shutdown"
-        android:showAsAction="ifRoom"
+        beacon:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_online_button_clear"
         android:title="@string/shutdown"/>
 </menu>

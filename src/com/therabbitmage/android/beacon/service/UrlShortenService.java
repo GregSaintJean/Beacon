@@ -1,6 +1,7 @@
 package com.therabbitmage.android.beacon.service;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -9,7 +10,7 @@ import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.therabbitmage.android.beacon.R;
+import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
 import com.therabbitmage.android.beacon.network.URLShortenerAPI;
 
 public class UrlShortenService extends IntentService {
@@ -68,11 +69,12 @@ public class UrlShortenService extends IntentService {
 	private void grabShortenedUrl(String url, ResultReceiver receiver){
 		
 		try{
-			String resultUrl = URLShortenerAPI.urlShorten(url, getString(R.string.google_public_access_api_key));
+			
+			Url resultUrl = URLShortenerAPI.urlShorten(url);
 			
 			if(receiver != null){
 				Bundle resultData = new Bundle();
-				resultData.putString(EXTRA_URL, resultUrl);
+				resultData.putParcelable(EXTRA_URL, resultUrl);
 				receiver.send(0, resultData);
 			} else {
 				Intent intent = new Intent(BROADCAST_SUCCESS_URL);
@@ -81,8 +83,10 @@ public class UrlShortenService extends IntentService {
 			
 		} catch(IOException e){
 			Log.e(TAG, e.toString());
-			
-			//TODO Send an error
+		} catch (URISyntaxException e) {
+			Log.e(TAG, e.toString());
+		} catch(Exception e){
+			Log.e(TAG, e.toString());
 		}
 		
 	}

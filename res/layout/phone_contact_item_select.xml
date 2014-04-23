@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="5dp"
-    android:orientation="vertical"
     android:clickable="true" >
     <TextView 
         android:id="@+id/title"
@@ -19,15 +18,18 @@
         android:layout_height="wrap_content"
         android:textSize="14sp"
         android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@id/title"
-        android:layout_centerVertical="true"/>
-    <CheckBox 
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_below="@id/title"/>
+    <ImageView
         android:id="@+id/check_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_centerVertical="true"
-        android:clickable="false"
-        android:layout_alignParentRight="true"/>
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_check"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible" />
 </RelativeLayout>

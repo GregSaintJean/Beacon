@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.therabbitmage.android.beacon.R;
@@ -52,9 +52,10 @@ public class SMSContactAdapter extends ArrayAdapter<PhoneContact> {
 		
 		if(mBeaconSmsContacts != null && mPhoneContacts != null){
 			processMatchingContacts();
+		} else {
+			notifyDataSetChanged();
 		}
 		
-		notifyDataSetChanged();
 	}
 	
 	public void setBeaconContacts(ArrayList<BeaconSMSContact> beaconContacts){
@@ -62,27 +63,22 @@ public class SMSContactAdapter extends ArrayAdapter<PhoneContact> {
 		
 		if(mBeaconSmsContacts != null && mPhoneContacts != null){
 			processMatchingContacts();
+		} else {
+			notifyDataSetChanged();
 		}
 		
-		notifyDataSetChanged();
 	}
 	
 	private void processMatchingContacts(){
-		mSelectedNumbers = new ArrayMap<Integer,Boolean>();
-		
 		for(int i = 0; i < mBeaconSmsContacts.size(); i++){
-			
 			for(int j = 0; j < mPhoneContacts.size(); j++){
-				
-				if(mBeaconSmsContacts.get(i).getContactId() == mPhoneContacts.get(j).getId()
-						&& !mSelectedNumbers.containsKey(j)){
-					mSelectedNumbers.put(j, true);
+				if(mBeaconSmsContacts.get(i).getContactId() == mPhoneContacts.get(j).getId() 
+						&& !mSelectedNumbers.containsKey(mPhoneContacts.get(j).getId())){
+					mSelectedNumbers.put(mPhoneContacts.get(j).getId(), true);
 				}
-				
 			}
-			
 		}
-		
+		notifyDataSetChanged();
 	}
 
 	@Override
@@ -97,21 +93,24 @@ public class SMSContactAdapter extends ArrayAdapter<PhoneContact> {
 			v = mInflater.inflate(R.layout.phone_contact_item_select, null, false);
 			vh.title = (TextView)v.findViewById(R.id.title);
 			vh.subtitle = (TextView)v.findViewById(R.id.subtitle);
-			vh.checkbox = (CheckBox)v.findViewById(R.id.check_item);
+			vh.imageView = (ImageView)v.findViewById(R.id.check_item);
 			v.setTag(vh);
 		}
 		
 		vh.title.setText(mPhoneContacts.get(position).getDisplayName());
 		vh.subtitle.setText(mPhoneContacts.get(position).getNumber());
-		vh.checkbox.setChecked(mSelectedNumbers.containsKey(position));
-		final CheckBox cb = vh.checkbox;
-		final boolean isChecked = vh.checkbox.isChecked();
+		if(mSelectedNumbers.containsKey(mPhoneContacts.get(position).getId())){
+			vh.imageView.setVisibility(View.VISIBLE);
+		} else {
+			vh.imageView.setVisibility(View.INVISIBLE);
+		}
+		
 		final int currentPosition = position;
 		v.setOnClickListener(new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
-				if(isChecked){
+				if(mSelectedNumbers.containsKey(currentPosition)){
 					addToQueue(new Command(REMOVE_CONTACT, currentPosition));
 				} else {
 					addToQueue(new Command(ADD_CONTACT, currentPosition));
@@ -155,8 +154,9 @@ public class SMSContactAdapter extends ArrayAdapter<PhoneContact> {
 		
 		if(command.getCommand() == REMOVE_CONTACT){
 			mManager.removePhoneContactByContactId(mPhoneContacts.get(command.getPosition()).getId());
-			mSelectedNumbers.remove(command.getPosition());
+			mSelectedNumbers.remove(mPhoneContacts.get(command.getPosition()).getId());
 		}
+		
 		((Activity)getContext()).runOnUiThread(new Runnable(){
 
 			@Override
@@ -211,7 +211,7 @@ public class SMSContactAdapter extends ArrayAdapter<PhoneContact> {
 	class ViewHolder{
 		TextView title;
 		TextView subtitle;
-		CheckBox checkbox;
+		ImageView imageView;
 	}
 
 }

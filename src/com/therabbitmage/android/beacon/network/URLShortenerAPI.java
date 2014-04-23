@@ -3,31 +3,39 @@ package com.therabbitmage.android.beacon.network;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URISyntaxException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.message.BasicHeader;
 
 import android.net.Uri;
+import android.util.Log;
 
 import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
 
 public final class URLShortenerAPI {
 	
-	private static final String BASE_URL = "https://www.googleapis.com/urlshortener/v1/url";
-	private static final String KEY = "key";
+	private static final String TAG = URLShortenerAPI.class.getSimpleName();
 	
-	public static String urlShorten(String url, String api_key) throws IOException{
-	 	Uri.Builder uriBuilder = new Uri.Builder();
-	 	uriBuilder.authority(BASE_URL);
-	 	uriBuilder.appendQueryParameter(KEY, api_key);
+	private static final String BASE_URL = "https://www.googleapis.com/urlshortener/v1/url";
+	
+	public static Url urlShorten(String url) throws IOException, URISyntaxException{
+	 	android.net.Uri.Builder uriBuilder = Uri.parse(BASE_URL).buildUpon();
+	 	String uri = uriBuilder.build().toString();
 	 	
-	 	Map<String, String> requestHeaders = new HashMap<String, String>();
-	 	requestHeaders.put(HTTP.CONTENT_TYPE, NetworkUtils.TYPE_JSON);
+	 	Header[] headers = new Header[1];
+	 	headers[0] = new BasicHeader(ApacheNetworkUtils.HEADER_CONTENT_TYPE, ApacheNetworkUtils.TYPE_JSON);
+	 	ApacheNetworkUtils.getAndroidInstance(ApacheNetworkUtils.sUserAgent, false);
+	 	HttpResponse response = ApacheNetworkUtils.post(
+	 			uri,
+	 			ApacheNetworkUtils.getDefaultApacheHeaders(),
+	 			new Url(url).toJson());
+	 	ApacheNetworkUtils.toStringResponseHeaders(response.getAllHeaders());
 	 	
-	 	HttpResponse response = NetworkUtils.post(url, requestHeaders, new Url(url).toJson());
+	 	ApacheNetworkUtils.toStringStatusLine(response.getStatusLine());
+	 	
 	 	HttpEntity entity = response.getEntity();
 	 	
 	 	BufferedReader br = new BufferedReader(new InputStreamReader(entity.getContent()));
@@ -41,10 +49,13 @@ public final class URLShortenerAPI {
 	 	}
 	 	
 	 	br.close();
-	 	NetworkUtils.release();
+	 	Log.v(TAG, "Body: " + stringBuilder.toString());
+	 	ApacheNetworkUtils.release();
+	 	return Url.fromJson(stringBuilder.toString());
 	 	
-	 	return br.toString();
+	 	
 	 	
 	}
 
 }
+
