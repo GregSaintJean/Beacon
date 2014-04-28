@@ -11,6 +11,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
+import com.therabbitmage.android.beacon.network.NetworkResponse;
 import com.therabbitmage.android.beacon.network.URLShortenerAPI;
 
 public class UrlShortenService extends IntentService {
@@ -19,9 +20,13 @@ public class UrlShortenService extends IntentService {
 	
 	public static final String ACTION_SHORTEN = "action_shorten";
 	public static final String BROADCAST_SUCCESS_URL =  "broadcast_success_url";
+	public static final String BROADCAST_ERROR = "broadcast_error";
 	public static final String EXTRA_ERROR = "extra_error";
 	public static final String EXTRA_URL = "extra_url";
 	public static final String EXTRA_RECEIVER = "extra_receiver";
+	
+	public static final int RESULT_CODE_SUCCESS = 0;
+	public static final int RESULT_CODE_FAIL = 1;
 	
 	private LocalBroadcastManager mLBMgr;
 
@@ -39,12 +44,12 @@ public class UrlShortenService extends IntentService {
 		
 		if(intent.getAction() == null){
 			
-			//TODO Send an error
+			broadcastError(null);
 			return;
 		}
 		
 		if(intent.getExtras() == null){
-			//TODO Send an error
+			broadcastError(null);
 			return ;
 		}
 		
@@ -59,7 +64,7 @@ public class UrlShortenService extends IntentService {
 				}
 				
 			} else {
-				//TODO Send an error
+				broadcastError((ResultReceiver)intent.getExtras().get(EXTRA_RECEIVER));
 			}
 			
 		}
@@ -70,25 +75,43 @@ public class UrlShortenService extends IntentService {
 		
 		try{
 			
-			Url resultUrl = URLShortenerAPI.urlShorten(url);
 			
-			if(receiver != null){
+			NetworkResponse response = URLShortenerAPI.urlShorten(url);
+			if(response.getError() == 0){
+				Url resultUrl = response.getUrl();
 				Bundle resultData = new Bundle();
 				resultData.putParcelable(EXTRA_URL, resultUrl);
-				receiver.send(0, resultData);
+				if(receiver != null){
+					receiver.send(RESULT_CODE_SUCCESS, resultData);
+				} else {
+					Intent intent = new Intent(BROADCAST_SUCCESS_URL);
+					intent.putExtra(EXTRA_URL, resultUrl);
+					mLBMgr.sendBroadcast(intent);
+				}
 			} else {
-				Intent intent = new Intent(BROADCAST_SUCCESS_URL);
-				mLBMgr.sendBroadcast(intent);
+				broadcastError(receiver);
 			}
 			
 		} catch(IOException e){
 			Log.e(TAG, e.toString());
+			broadcastError(receiver);
 		} catch (URISyntaxException e) {
 			Log.e(TAG, e.toString());
+			broadcastError(receiver);
 		} catch(Exception e){
 			Log.e(TAG, e.toString());
+			broadcastError(receiver);
 		}
 		
+	}
+	
+	private void broadcastError(ResultReceiver receiver){
+		if(receiver == null){
+			Intent intent = new Intent(BROADCAST_ERROR);
+			mLBMgr.sendBroadcast(intent);
+		} else {
+			receiver.send(RESULT_CODE_FAIL, null);
+		}
 	}
 
 }

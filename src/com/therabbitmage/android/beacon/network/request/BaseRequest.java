@@ -4,7 +4,9 @@ import java.util.Map;
 
 import android.support.v4.util.ArrayMap;
 
-public abstract class BaseRequest {
+import com.therabbitmage.android.beacon.network.response.BaseResponse;
+
+public abstract class BaseRequest<T> {
 	
 	public static final int METHOD_GET = 656;
 	public static final int METHOD_POST = 782;
@@ -13,6 +15,9 @@ public abstract class BaseRequest {
 	private int mMethod;
 	private Map<String, String> mParameters;
 	private Map<String, String> mHeaders;
+	private BaseResponse<T> mResponse;
+	protected byte[] mBody;
+	protected String mBodyContentType;
 	
 	public BaseRequest(String url){
 		this(url, METHOD_GET);
@@ -122,6 +127,26 @@ public abstract class BaseRequest {
 			return;
 		}
 		mHeaders.put(key, value);
+	}
+
+	public BaseResponse<T> getResponse() {
+		return mResponse;
+	}
+
+	public void setResponse(BaseResponse<T> mResponse) {
+		this.mResponse = mResponse;
+	}
+	
+	public byte[] getBody(){
+		return mBody;
+	}
+	
+	public String getBodyType(){
+		return mBodyContentType;
+	}
+	
+	public void setPostBodyType(String type){
+		mBodyContentType = type;
 	}
 
 }

@@ -1,12 +1,12 @@
 package com.therabbitmage.android.beacon.network.response;
 
-import java.io.InputStream;
 import java.util.Map;
 
-public abstract class BaseResponse {
+public class BaseResponse<T> {
 	
 	private Map<String, String> mHeaders;
-	private InputStream mBodyResponse;
+	private String mContentType;
+	private T mBodyResponse;
 	private Error mError;
 	
 	public BaseResponse(){
@@ -20,15 +20,23 @@ public abstract class BaseResponse {
 	public void setHeaders(Map<String, String> headers) {
 		this.mHeaders = headers;
 	}
-
-	public InputStream getBodyResponse() {
+	
+	public T getBodyResponse() {
 		return mBodyResponse;
 	}
 
-	public void setBodyResponse(InputStream bodyResponse) {
+	public void setBodyResponse(T bodyResponse) {
 		this.mBodyResponse = bodyResponse;
 	}
 	
+	public String getContentType() {
+		return mContentType;
+	}
+
+	public void setContentType(String mContentType) {
+		this.mContentType = mContentType;
+	}
+
 	public Error getError() {
 		return mError;
 	}

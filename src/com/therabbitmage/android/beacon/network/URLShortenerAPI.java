@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicHeader;
 
 import android.net.Uri;
@@ -21,7 +22,7 @@ public final class URLShortenerAPI {
 	
 	private static final String BASE_URL = "https://www.googleapis.com/urlshortener/v1/url";
 	
-	public static Url urlShorten(String url) throws IOException, URISyntaxException{
+	public static NetworkResponse urlShorten(String url) throws IOException, URISyntaxException{
 	 	android.net.Uri.Builder uriBuilder = Uri.parse(BASE_URL).buildUpon();
 	 	String uri = uriBuilder.build().toString();
 	 	
@@ -38,23 +39,31 @@ public final class URLShortenerAPI {
 	 	
 	 	HttpEntity entity = response.getEntity();
 	 	
-	 	BufferedReader br = new BufferedReader(new InputStreamReader(entity.getContent()));
+	 	NetworkResponse networkResponse = new NetworkResponse();
 	 	
-	 	StringBuilder stringBuilder = new StringBuilder();
-	 	
-	 	String output = new String();
-	 	
-	 	while((output = br.readLine()) != null){
-	 		stringBuilder.append(output);
+	 	if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+	 		networkResponse.setError(0);
+	 		BufferedReader br = new BufferedReader(new InputStreamReader(entity.getContent()));
+		 	
+		 	StringBuilder stringBuilder = new StringBuilder();
+		 	
+		 	String output = new String();
+		 	
+		 	while((output = br.readLine()) != null){
+		 		stringBuilder.append(output);
+		 	}
+		 	
+		 	br.close();
+		 	Log.v(TAG, "Body: " + stringBuilder.toString());
+		 	ApacheNetworkUtils.release();
+		 	
+		 	networkResponse.setUrl(Url.fromJson(stringBuilder.toString()));
+	 		
+	 	} else {
+	 		networkResponse.setError(1);
 	 	}
 	 	
-	 	br.close();
-	 	Log.v(TAG, "Body: " + stringBuilder.toString());
-	 	ApacheNetworkUtils.release();
-	 	return Url.fromJson(stringBuilder.toString());
-	 	
-	 	
-	 	
+	 	return networkResponse;
 	}
 
 }

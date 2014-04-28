@@ -362,7 +362,7 @@ public class BeaconService extends Service implements LocationListener,
 				Calendar now = Calendar.getInstance();
 				
 				if(now.getTimeInMillis() >= mNextTransmissionTime){
-					//transmit();
+					transmit();
 					calculateNextTransmissionTimes(now);
 				}
 				

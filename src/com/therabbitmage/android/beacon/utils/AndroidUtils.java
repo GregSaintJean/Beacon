@@ -163,7 +163,6 @@ public final class AndroidUtils {
             StrictMode.setVmPolicy(vmPolicyBuilder.build());
         }
     }
-
 	
 	//SDK 9 Version 2.3
 	public final static boolean gingerbreadOrBetter(){
@@ -218,15 +217,6 @@ public final class AndroidUtils {
 	//SDK 19 Version 4.4
 	public final static boolean kitkatOrBetter(){
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-	}
-	
-	//http://android-developers.blogspot.com/2011/09/androids-http-clients.html	
-	@SuppressWarnings({ "unused", "deprecation" })
-	private final static void disableConnectionReuseIfNecessary() {
-		   // Work around pre-Froyo bugs in HTTP connection reuse.
-		if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO){
-			System.setProperty("http.keepAlive", "false");
-		}
 	}
 	
 	public static final boolean checkPhoneAndSmsCapability(Context ctx){
