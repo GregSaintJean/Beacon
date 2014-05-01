@@ -54,8 +54,7 @@ public final class URLShortenerAPI {
 		 	}
 		 	
 		 	br.close();
-		 	Log.v(TAG, "Body: " + stringBuilder.toString());
-		 	ApacheNetworkUtils.release();
+		 	Log.i(TAG, "Body: " + stringBuilder.toString());
 		 	
 		 	networkResponse.setUrl(Url.fromJson(stringBuilder.toString()));
 	 		

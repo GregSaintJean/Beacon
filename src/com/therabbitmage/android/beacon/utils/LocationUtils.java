@@ -24,6 +24,10 @@ public class LocationUtils {
 			// A new location is always better than no location
 			return true;
 		}
+		
+		if(location == currentBestLocation){
+			return false;
+		}
 
 		// Check whether the new location fix is newer or older
 		long timeDelta = location.getTime() - currentBestLocation.getTime();

@@ -13,6 +13,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
@@ -95,6 +96,8 @@ public final class ApacheNetworkUtils {
 	public static final String TYPE_DEFAULT = HTTP.DEFAULT_CONTENT_TYPE; // Matches TYPE_NO_MEDIA
 	
 	private static HttpClient mHttpClient;
+	
+	private static HttpUriRequest sCurrentRequest;
 	
 	public static HttpClient getInstance(){
 		
@@ -186,6 +189,8 @@ public final class ApacheNetworkUtils {
 			httpGet.setHeaders(getDefaultApacheHeaders());
 		}
 		
+		sCurrentRequest = httpGet;
+		
 		return mHttpClient.execute(httpGet);
 	}
 	
@@ -203,6 +208,8 @@ public final class ApacheNetworkUtils {
 		} else {
 			httpPost.setHeaders(getDefaultApacheHeaders());
 		}
+		
+		sCurrentRequest = httpPost;
 		
 		return mHttpClient.execute(httpPost);
 	}
@@ -238,6 +245,10 @@ public final class ApacheNetworkUtils {
 		Log.i(TAG, builder.toString());
 		
 		return builder.toString();
+	}
+	
+	public static final HttpUriRequest getCurrentRequest(){
+		return sCurrentRequest;
 	}
 	
 	public static final String getBase64String(final String s){

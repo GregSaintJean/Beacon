@@ -8,5 +8,5 @@
     <item 
         android:id="@+id/pull_contacts"
         beacon:showAsAction="ifRoom|withText"
-        android:title="@string/pull"/>
+        android:title="@string/select"/>
 </menu>

@@ -28,7 +28,8 @@ public class BeaconApp extends Application {
 	private static boolean sIsBeaconOnline;
 	
 	//Is Beacon currently transmitting?
-	private static boolean isBeaconActive;
+	private static boolean sIsBeaconActive;
+	private static boolean sIsBeaconMoving;
 	
 	private static boolean sHasNetworkConnectivity;
 	private static boolean sIsGpsOnline;
@@ -57,7 +58,7 @@ public class BeaconApp extends Application {
 
 	}
 	
-	public void setBeaconStatus(boolean isBeaconOnline){
+	public static void setBeaconStatus(boolean isBeaconOnline){
 		sIsBeaconOnline = isBeaconOnline;
 	}
 	
@@ -66,11 +67,19 @@ public class BeaconApp extends Application {
 	}
 	
 	public static boolean isActive() {
-		return isBeaconActive;
+		return sIsBeaconActive;
 	}
 
-	public void setActive(boolean isActive) {
-		BeaconApp.isBeaconActive = isActive;
+	public static void setActive(boolean isActive) {
+		BeaconApp.sIsBeaconActive = isActive;
+	}
+
+	public static boolean isBeaconMoving() {
+		return sIsBeaconMoving;
+	}
+
+	public static void setBeaconMoving(boolean isBeaconMoving) {
+		BeaconApp.sIsBeaconMoving = isBeaconMoving;
 	}
 
 	public static final BeaconApp getInstance(){

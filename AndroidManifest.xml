@@ -45,7 +45,7 @@
         </activity>
         <activity 
             android:name=".ui.activity.PhoneSetupSMSContactsActivity"
-            android:label="@string/pulled_contacts"
+            android:label="@string/selected_contacts"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"
             android:parentActivityName=".ui.activity.SetupActivity">
@@ -65,7 +65,7 @@
         </activity>
         <activity 
             android:name=".ui.activity.AddSMSContactsActivity"
-            android:label="@string/add_sms_contacts"
+            android:label="@string/select_sms_contacts"
             android:exported="false"
             android:theme="@style/Theme.AppCompat"
             android:parentActivityName=".ui.activity.PhoneSetupSMSContactsActivity">
@@ -86,11 +86,24 @@
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value=".ui.activity.SetupActivity" />
         </activity>
+        <activity 
+            android:name=".ui.activity.SettingsActivity"
+            android:label="@string/settings"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat"
+            android:parentActivityName=".ui.activity.MainActivity">
+            <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value=".ui.activity.MainActivity" />
+        </activity>
         <service 
             android:name=".service.TwitterIntentService"
             android:exported="false"/>
         <service 
             android:name=".service.BeaconService"
+            android:exported="false"/>
+        <service 
+            android:name=".service.UrlShortenService"
             android:exported="false"/>
         <receiver 
             android:name=".receiver.NetworkReceiver">

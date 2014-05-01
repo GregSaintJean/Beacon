@@ -10,15 +10,19 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -68,7 +72,7 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if(!BeaconApp.isBeaconOnline())
+		if(!BeaconApp.isActive())
 			showIntro();
 		else
 			showInfo();
@@ -97,7 +101,28 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 		mAltSetupBtn = (Button)findViewById(R.id.alt_setup_btn);
 		mSettingsBtn = (Button)findViewById(R.id.settings_btn);
 		mInput = (EditText)findViewById(R.id.input_edittxt);
-		//TODO Setup logic for when the user is typing in their message
+		mInput.setOnEditorActionListener(new OnEditorActionListener(){
+
+			@Override
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {
+				boolean handled = false;
+				if(actionId == EditorInfo.IME_ACTION_SEND){
+					if(TextUtils.isEmpty(v.getText())){
+						handled = false;
+					} else {
+						handled = true;
+						Intent messageIntent = new Intent(MainActivity.this, BeaconService.class);
+						//messageIntent.setAction(BeaconService.ACTION_SEND_SMS_MESSAGE);
+						messageIntent.setAction(BeaconService.ACTION_SEND_TWITTER_MESSAGE);
+						messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, v.getText().toString());
+						startService(messageIntent);
+					}
+				}
+				return handled;
+			}
+			
+		});
 		
 		mMainBtn.setOnClickListener(this);
 		mAltSetupBtn.setOnClickListener(this);
@@ -107,7 +132,7 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.google_play_required)
 			.setMessage(R.string.google_play_must_be_installed)
-			.setNeutralButton(R.string.common_ok, new android.content.DialogInterface.OnClickListener(){
+			.setNeutralButton(android.R.string.ok, new android.content.DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -176,7 +201,7 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 		}
 		
 		if(mSettingsBtn != null && v.getId() ==  mSettingsBtn.getId()){
-			//TODO Implement Settings page
+			startSettingsActivity();
 		}
 		
 	}
@@ -192,7 +217,7 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		
 		MenuItem shutdownItem = menu.findItem(R.id.shutdown);
-		shutdownItem.setVisible(BeaconApp.isBeaconOnline());
+		shutdownItem.setVisible(BeaconApp.isActive());
 		return true;
 	}
 
@@ -222,16 +247,20 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 		startActivity(new Intent(this, SetupActivity.class));
 	}
 	
+	private void startSettingsActivity(){
+		startActivity(new Intent(this, SettingsActivity.class));
+	}
+	
 	private void fireBeacon(){
+		BeaconApp.setActive(true);
 		Intent intent = new Intent(this, BeaconService.class);
 		intent.setAction(BeaconService.ACTION_BEGIN);
 		startService(intent);
-		mApp.setBeaconStatus(true);
 	}
 	
 	private void refreshErrorContainer(){
 		
-		if(BeaconApp.isBeaconOnline()){
+		if(BeaconApp.isActive()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
@@ -283,8 +312,10 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 	}
 	
 	private void setLocationOnLocationView(double lat, double lng){
-		//TODO Change text so that it puts down the address as well and make it an Android string.
-		mLocationView.setText("Location: Latitude: " + lat +" Longtitude: " + lng);
+		//TODO Change text so that it puts down the address as well
+		mLocationView.setText(String.format(getString(R.string.location_view_text), 
+				Double.toString(lat),
+				Double.toString(lng)));
 	}
 	
 	private void updateStatusView(String update){
@@ -400,7 +431,7 @@ public class MainActivity extends BaseActionBarActivity implements OnClickListen
 			}
 			
 			if(intent.getAction().equals(BeaconService.BROADCAST_BEACON_MESSAGE)){
-				((MainActivity)context).updateStatusView(intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE));
+				MainActivity.this.updateStatusView(intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE));
 			}
 			
 		}
