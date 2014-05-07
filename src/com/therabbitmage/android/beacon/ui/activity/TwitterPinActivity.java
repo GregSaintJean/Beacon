@@ -1,5 +1,6 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +14,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.BuildConfig;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
 import com.therabbitmage.android.beacon.service.TwitterIntentService;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
-public class TwitterPinActivity extends BaseActivity {
+public class TwitterPinActivity extends Activity {
 	
 	private LocalBroadcastManager mBMgr;
 	private BroadcastReceiver mTwitterReceiver;
@@ -70,8 +72,8 @@ public class TwitterPinActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		mApp.clearTwitterAccessTokenAndSecret();
-		mApp.clearTwitterRequestTokenAndSecret();
+		BeaconApp.getInstance().clearTwitterAccessTokenAndSecret();
+		BeaconApp.getInstance().clearTwitterRequestTokenAndSecret();
 		TwitterBeacon.clearTwitter();
 		super.onBackPressed();
 	}

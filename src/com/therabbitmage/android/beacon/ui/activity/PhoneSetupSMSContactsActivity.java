@@ -10,6 +10,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,7 +26,7 @@ import com.therabbitmage.android.beacon.provider.BeaconManager;
 import com.therabbitmage.android.beacon.ui.adapter.ContactsAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
-public class PhoneSetupSMSContactsActivity extends BaseActionBarActivity implements LoaderCallbacks<Cursor> {
+public class PhoneSetupSMSContactsActivity extends ActionBarActivity implements LoaderCallbacks<Cursor> {
 	private ListView mContactsList;
 	private TextView mEmptyView;
 	private ProgressBar mProgress;

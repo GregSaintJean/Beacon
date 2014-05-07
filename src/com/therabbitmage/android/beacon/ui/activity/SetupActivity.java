@@ -1,5 +1,6 @@
 package com.therabbitmage.android.beacon.ui.activity;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,10 +13,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.service.TwitterIntentService;
 
-public class SetupActivity extends BaseActivity implements OnClickListener{
+public class SetupActivity extends Activity implements OnClickListener{
 	
 	private BroadcastReceiver mTwitterReceiver;
 	private LocalBroadcastManager mLBMgr;
@@ -25,8 +27,8 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLBMgr = LocalBroadcastManager.getInstance(this);
-		if(!mApp.isSetupDone()){
-			mApp.setIsSetupDone(true);
+		if(!BeaconApp.getInstance().isSetupDone()){
+			BeaconApp.getInstance().setIsSetupDone(true);
 		}
 		setupUI();
 		setupTwitter();
@@ -93,7 +95,7 @@ public class SetupActivity extends BaseActivity implements OnClickListener{
 	
 	private void updateViewForTwitter(){
 		if(mTwitterAccountBtn != null){
-			if(mApp.hasTwitterLogin()){
+			if(BeaconApp.getInstance().hasTwitterLogin()){
 				mTwitterAccountBtn.setText(R.string.logout);
 				mTwitterAccountBtn.setOnClickListener(new OnClickListener(){
 

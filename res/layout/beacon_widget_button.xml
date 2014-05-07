@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/beacon_button"
+    android:layout_width="@dimen/large_button_width"
+    android:layout_height="@dimen/large_button_height"
+    android:background="@drawable/blue_button"
+    android:textColor="@android:color/white"
+    android:textSize="18sp"
+    android:contentDescription="@string/common_blank"
+    android:text="@string/app_name"/>

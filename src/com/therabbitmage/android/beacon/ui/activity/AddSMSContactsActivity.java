@@ -8,7 +8,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +24,7 @@ import com.therabbitmage.android.beacon.provider.MobileContactsQuery;
 import com.therabbitmage.android.beacon.ui.adapter.SMSContactAdapter;
 import com.therabbitmage.android.beacon.utils.ContactHelper;
 
-public class AddSMSContactsActivity extends BaseActionBarActivity 
+public class AddSMSContactsActivity extends ActionBarActivity 
 implements AdapterView.OnItemClickListener, LoaderCallbacks<Cursor> {
 	
 	private static final String TAG = AddSMSContactsActivity.class.getSimpleName();

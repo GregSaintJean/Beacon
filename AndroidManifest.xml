@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.therabbitmage.android.beacon"
-    android:versionCode="1"
+    android:versionCode="2"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -36,7 +36,8 @@
         <activity
             android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat">
+            android:theme="@style/Theme.AppCompat"
+            android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -96,6 +97,16 @@
 	            android:name="android.support.PARENT_ACTIVITY"
 	            android:value=".ui.activity.MainActivity" />
         </activity>
+        <activity 
+            android:name=".ui.activity.AboutActivity"
+            android:label="@string/about"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat"
+            android:parentActivityName=".ui.activity.SettingsActivity">
+            <meta-data
+	            android:name="android.support.PARENT_ACTIVITY"
+	            android:value=".ui.activity.SettingsActivity" />
+        </activity>
         <service 
             android:name=".service.TwitterIntentService"
             android:exported="false"/>
@@ -117,18 +128,19 @@
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
             </intent-filter>
         </receiver>
+        <receiver 
+            android:name=".receiver.widget.BeaconButtonWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                </intent-filter>
+                <meta-data android:name="android.appwidget.provider"
+                    android:resource="@xml/beacon_button" />
+        </receiver>
         <provider 
             android:name=".provider.BeaconProvider"
             android:authorities="com.therabbitmage.android.beacon.provider.BeaconProvider"
             android:syncable="false"
             android:exported="false"/>
-        <!-- Facebook -->
-        <activity android:name="com.facebook.LoginActivity"
-                  android:theme="@android:style/Theme.Translucent.NoTitleBar"
-                  android:label="@string/app_name" />
-        <meta-data 
-            android:name="com.facebook.sdk.ApplicationId" 
-            android:value="@string/facebook_app_id" />
         <!-- Google Play -->
         <meta-data
             android:name="com.google.android.gms.version"

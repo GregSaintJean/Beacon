@@ -116,7 +116,6 @@ public class BeaconService extends Service implements LocationListener,
 	private Geocoder mGeocoder;
 	private NotificationManager mNm;
 	private NotificationCompat.Builder mBuilder;
-	private BeaconApp mApp;
 	private ActivityRecognitionClient mActivityRecognitionClient;
 
 	private LocationHelper mLocationHelper;
@@ -179,7 +178,6 @@ public class BeaconService extends Service implements LocationListener,
 	@Override
 	public void onCreate() {
 
-		mApp = BeaconApp.getInstance();
 		mNm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		HandlerThread thread = new HandlerThread(
@@ -192,11 +190,11 @@ public class BeaconService extends Service implements LocationListener,
 		mLocalBMgr = LocalBroadcastManager.getInstance(this);
 		registerReceivers();
 
-		mApp.setHasNetworkConnectivity(AndroidUtils
+		BeaconApp.setHasNetworkConnectivity(AndroidUtils
 				.hasNetworkConnectivity(this));
-		mApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
 
-		mTwitter = TwitterBeacon.getTwitter(mApp);
+		mTwitter = TwitterBeacon.getTwitter(BeaconApp.getInstance());
 
 		mGeocoder = new Geocoder(this, Locale.getDefault());
 
@@ -211,8 +209,8 @@ public class BeaconService extends Service implements LocationListener,
 		mActivityRecognitionClient.connect();
 		isRequestingActivityUpdates = false;
 
-		mInactiveTransmissionTime = mApp.getInactiveTransmissionInterval();
-		mActiveTransmissionTime = mApp.getActiveTransmissionInterval();
+		mInactiveTransmissionTime = BeaconApp.getInactiveTransmissionInterval();
+		mActiveTransmissionTime = BeaconApp.getActiveTransmissionInterval();
 		mLastTransmissionTime = -1;
 		mNextTransmissionTime = -1;
 		// TODO When Activity recognition is done, this boolean will change.
@@ -355,7 +353,7 @@ public class BeaconService extends Service implements LocationListener,
 		if (AndroidUtils.checkPhoneAndSmsCapability(this)) {
 			mServiceHandler.post(mSendBeaconSms);
 		} else if (AndroidUtils.hasNetworkConnectivity(this)
-				&& mApp.hasTwitterLogin()) {
+				&& BeaconApp.hasTwitterLogin()) {
 			mServiceHandler.post(mBeaconUpdateTwitter);
 		} else {
 			scheduleNextBeacon();
@@ -383,8 +381,7 @@ public class BeaconService extends Service implements LocationListener,
 
 				Calendar now = Calendar.getInstance();
 
-				//if (now.getTimeInMillis() >= mNextTransmissionTime) {
-				if(false){
+				if (now.getTimeInMillis() >= mNextTransmissionTime) {
 					transmit();
 				} else {
 					scheduleNextBeacon();
@@ -507,7 +504,7 @@ public class BeaconService extends Service implements LocationListener,
 							}
 
 							sendSmsMessage(receiverMessage);
-							if (mApp.hasTwitterLogin()) {
+							if (BeaconApp.hasTwitterLogin()) {
 								Log.d(TAG, "Attempted to tweet");
 								mServiceHandler.post(mBeaconUpdateTwitter);
 							} else {
@@ -550,7 +547,7 @@ public class BeaconService extends Service implements LocationListener,
 				}
 
 				sendSmsMessage(message);
-				if (mApp.hasTwitterLogin()) {
+				if (BeaconApp.hasTwitterLogin()) {
 					Log.d(TAG, "Attempted to tweet");
 					mServiceHandler.post(mBeaconUpdateTwitter);
 				} else {
@@ -567,7 +564,7 @@ public class BeaconService extends Service implements LocationListener,
 		@Override
 		public void run() {
 
-			if (BeaconApp.hasNetworkConnectivity() && mApp.hasTwitterLogin()) {
+			if (BeaconApp.hasNetworkConnectivity() && BeaconApp.hasTwitterLogin()) {
 
 				String message;
 
@@ -682,26 +679,36 @@ public class BeaconService extends Service implements LocationListener,
 	}
 
 	private void sendSmsMessage(String message) {
+		if(!BeaconApp.hasSmsCapability()){
+			Log.d(TAG, "Device does not have SMS");
+			return;
+		}
 		ListIterator<BeaconSMSContact> iter = mContactList.listIterator();
 		while (iter.hasNext()) {
 			BeaconSMSContact contact = iter.next();
 			sendSms(message, contact.getNumber());
 		}
+		
+		String broadcastMessage = "Message sent: " + message;
+		broadcastUpdate(broadcastMessage);
+		
+		sendNotification(getString(R.string.sms_message_sent), "Message sent: "
+				+ message, null, null, null, false);
 	}
 
 	private void sendSms(String message, String number) {
 		AndroidUtils.sendSms(BeaconService.this, number, message, PendingIntent
 				.getBroadcast(BeaconService.this, 0,
 						new Intent(ACTION_SMS_SENT), 0), null);
-
-		sendNotification(getString(R.string.sms_message_sent), "Message sent: "
-				+ message, null, null, null, true);
 	}
 
 	private void sendTwitterTweet(String message) {
+		if(!BeaconApp.hasTwitterLogin()){
+			return;
+		}
 
-		AccessToken accessToken = new AccessToken(mApp.getTwitterAccessToken(),
-				mApp.getTwitterAccessTokenSecret());
+		AccessToken accessToken = new AccessToken(BeaconApp.getTwitterAccessToken(),
+				BeaconApp.getTwitterAccessTokenSecret());
 		mTwitter.setOAuthAccessToken(accessToken);
 
 		Intent broadcast = null;
@@ -715,14 +722,13 @@ public class BeaconService extends Service implements LocationListener,
 			mLocalBMgr.sendBroadcast(broadcast);
 			return;
 		}
-
-		broadcast = new Intent(BROADCAST_BEACON_MESSAGE);
-		broadcast.putExtra(EXTRA_BROADCAST_MESSAGE,
-				getString(R.string.tweet_sent));
-		mLocalBMgr.sendBroadcast(broadcast);
+		
+		String broadcastMessage = getString(R.string.tweet_sent) + ": " + message;
+		broadcastUpdate(broadcastMessage);
+		
 		sendNotification(
 				getString(R.string.notification_twitter_status_updated), null,
-				null, null, null, true);
+				null, null, null, false);
 
 	}
 
@@ -906,6 +912,12 @@ public class BeaconService extends Service implements LocationListener,
 				mCurrentLocation.getLongitude());
 		mLocalBMgr.sendBroadcast(broadcastIntent);
 	}
+	
+	private void broadcastUpdate(String message){
+		Intent broadcastIntent = new Intent(BROADCAST_COORDINATES);
+		broadcastIntent.putExtra(EXTRA_BROADCAST_MESSAGE, message);
+		mLocalBMgr.sendBroadcast(broadcastIntent);
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -917,7 +929,7 @@ public class BeaconService extends Service implements LocationListener,
 		@Override
 		public void onNetworkChange() {
 			Log.d(TAG, "Network Change detected");
-			mApp.setHasNetworkConnectivity(AndroidUtils
+			BeaconApp.setHasNetworkConnectivity(AndroidUtils
 					.hasNetworkConnectivity(BeaconService.this));
 		}
 
@@ -928,7 +940,7 @@ public class BeaconService extends Service implements LocationListener,
 		@Override
 		public void onGpsChange() {
 			Log.d(TAG, "Gps Change detected");
-			mApp.setGpsOnline(AndroidUtils.isGpsOnline(BeaconService.this));
+			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(BeaconService.this));
 		}
 
 	};
