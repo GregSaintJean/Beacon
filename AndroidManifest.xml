@@ -128,14 +128,6 @@
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
             </intent-filter>
         </receiver>
-        <receiver 
-            android:name=".receiver.widget.BeaconButtonWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                </intent-filter>
-                <meta-data android:name="android.appwidget.provider"
-                    android:resource="@xml/beacon_button" />
-        </receiver>
         <provider 
             android:name=".provider.BeaconProvider"
             android:authorities="com.therabbitmage.android.beacon.provider.BeaconProvider"
