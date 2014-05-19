@@ -3,5 +3,6 @@
     <item
         android:id="@+id/shutdown"
         beacon:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_action_shutdown"
         android:title="@string/shutdown"/>
 </menu>
