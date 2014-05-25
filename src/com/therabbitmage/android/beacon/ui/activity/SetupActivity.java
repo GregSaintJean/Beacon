@@ -27,8 +27,8 @@ public class SetupActivity extends Activity implements OnClickListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mLBMgr = LocalBroadcastManager.getInstance(this);
-		if(!BeaconApp.getInstance().isSetupDone()){
-			BeaconApp.getInstance().setIsSetupDone(true);
+		if(!BeaconApp.isSetupDone()){
+			BeaconApp.setIsSetupDone(true);
 		}
 		setupUI();
 		setupTwitter();
@@ -95,7 +95,7 @@ public class SetupActivity extends Activity implements OnClickListener{
 	
 	private void updateViewForTwitter(){
 		if(mTwitterAccountBtn != null){
-			if(BeaconApp.getInstance().hasTwitterLogin()){
+			if(BeaconApp.hasTwitterLogin()){
 				mTwitterAccountBtn.setText(R.string.logout);
 				mTwitterAccountBtn.setOnClickListener(new OnClickListener(){
 

@@ -7,10 +7,42 @@
     <string name="common_blank"></string>
     <string name="beacon_offline">Beacon Offline</string>
     <string name="beacon_online">Beacon Online</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    
     
     <string-array name="message_array">
         <item>SMS</item>
         <item>Twitter</item>
+    </string-array>
+    
+    <string-array name="main_nav_array_1">
+        <item>Setup</item>
+        <item>Settings</item>
+    </string-array>
+    
+    <string-array name="main_nav_array_2">
+        <item>Settings</item>
+    </string-array>
+    
+    <string-array name="setup_array">
+        <item>Select/Unselect Contacts</item>
+        <item>Twitter Setup</item>
+    </string-array>
+    
+    <string-array name="setup_array_desc">
+        <item>Select SMS Contacts from phone contacts for messaging</item>
+        <item>Do you wish to add your twitter accounts?</item>
+    </string-array>
+    
+    <string-array name="setup_nav_array">
+        <item>Home</item>
+        <item>Settings</item>
+    </string-array>
+    
+    <string-array name="settings_nav_array">
+        <item>Home</item>
+        <item>Setup</item>
     </string-array>
     
     <!-- Button text -->
