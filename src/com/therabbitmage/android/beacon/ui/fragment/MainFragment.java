@@ -56,7 +56,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	private View mIntroContainer, mInfoContainer, mErrorContainer;
 	private TextView mLocationView, mStatus, mErrorNetwork, mErrorGps;
 	private EditText mInput;
-	private Button mMainBtn;
+	private Button mBtnMain, mBtnSend;
 	private StringBuilder mStatusBuilder;
 	private Spinner mMessageSpinner;
 	private int mMessageType = MESSAGE_SMS;
@@ -70,12 +70,18 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(BeaconApp.hasGpsCapability()){
-			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(getActivity()));
-		}
-		
-		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(getActivity()));
 		mStatusBuilder = new StringBuilder();
+		setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void onStart() {
+		super.onStart();
+		if(!BeaconApp.isActive()){
+			showIntro();
+		} else {
+			showInfo();
+		}
 	}
 
 	@Override
@@ -120,16 +126,18 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		mStatus = (TextView)v.findViewById(R.id.status);
 		mErrorNetwork = (TextView)v.findViewById(R.id.error_network_tv);
 		mErrorGps = (TextView)v.findViewById(R.id.error_gps_tv);
-		mMainBtn = (Button)v.findViewById(R.id.mainbtn);
+		mBtnMain = (Button)v.findViewById(R.id.mainbtn);
 		mInput = (EditText)v.findViewById(R.id.input_edittxt);
 		mMessageSpinner = (Spinner)v.findViewById(R.id.message_spinner);
 		ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
 				.createFromResource(getActivity(), R.array.message_array, R.layout.beacon_spinner_item);
 		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mMessageSpinner.setAdapter(spinnerAdapter);
+		
 		mMessageSpinner.setOnItemSelectedListener(this);
 		mInput.setOnEditorActionListener(this);
-		mMainBtn.setOnClickListener(this);
+		mBtnMain.setOnClickListener(this);
+		mBtnSend.setOnClickListener(this);
 		
 		if(!AndroidUtils.isGoogleServicesAvailable(getActivity())){
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -149,7 +157,6 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 			});
 			builder.create().show();	
 		}
-		
 		
 		return v;
 	}
@@ -177,23 +184,13 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		mGoogleMap.setMyLocationEnabled(false);
 		
 		if(BeaconApp.isSetupDone()){
-			mMainBtn.setText(R.string.start);
+			mBtnMain.setText(R.string.start);
 		} else {
-			mMainBtn.setText(R.string.setup);
+			mBtnMain.setText(R.string.setup);
 		}
 		
 		getActivity().invalidateOptionsMenu();
 		refreshErrorContainer();
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-		if(!BeaconApp.isActive()){
-			showIntro();
-		} else {
-			showInfo();
-		}
 	}
 	
 	@Override
@@ -205,18 +202,12 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 			} else {
 				handled = true;
 				
+				CharSequence message = v.getText().toString();
+				
 				if (mMessageType == MESSAGE_SMS){
-					Intent messageIntent = new Intent(getActivity(), BeaconService.class);
-					messageIntent.setAction(BeaconService.ACTION_SEND_SMS_MESSAGE);
-					messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, v.getText().toString());
-					getActivity().startService(messageIntent);
-					Log.d(TAG, "Sending SMS Request");
+					sendSMSRequest(message);
 				} else if(mMessageType == MESSAGE_TWITTER){
-					Intent messageIntent = new Intent(getActivity(), BeaconService.class);
-					messageIntent.setAction(BeaconService.ACTION_SEND_TWITTER_MESSAGE);
-					messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, v.getText().toString());
-					getActivity().startService(messageIntent);
-					Log.d(TAG, "Sending Twitter Request");
+					sendTwitterRequest(message);
 				}
 				
 				v.setText("");
@@ -225,6 +216,22 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 			}
 		}
 		return handled;
+	}
+	
+	private void sendSMSRequest(CharSequence message){
+		Intent messageIntent = new Intent(getActivity(), BeaconService.class);
+		messageIntent.setAction(BeaconService.ACTION_SEND_SMS_MESSAGE);
+		messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, message);
+		getActivity().startService(messageIntent);
+		Log.d(TAG, "Sending SMS Request");
+	}
+	
+	private void sendTwitterRequest(CharSequence message){
+		Intent messageIntent = new Intent(getActivity(), BeaconService.class);
+		messageIntent.setAction(BeaconService.ACTION_SEND_TWITTER_MESSAGE);
+		messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, message);
+		getActivity().startService(messageIntent);
+		Log.d(TAG, "Sending Twitter Request");
 	}
 	
 	@Override
@@ -238,7 +245,8 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		case 1:
 			mMessageType = MESSAGE_TWITTER;
 			break;
-	}
+		}
+		
 	}
 
 	@Override
@@ -254,20 +262,30 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		outState.putDouble(LONG_KEY, mLong);
 		outState.putString(STATUS_TYPE, mStatusBuilder.toString());
 		super.onSaveInstanceState(outState);
-		super.onSaveInstanceState(outState);
 	}
 	
 	@Override
 	public void onClick(View v) {
-		if(mMainBtn != null && v.getId() == mMainBtn.getId()){
+		if(mBtnMain != null && v.getId() == mBtnMain.getId()){
 			
-			/*if(BeaconApp.isSetupDone()){
+			if(BeaconApp.isSetupDone()){
 				fireBeacon();
 				showInfo();
 			} else {
 				startSetupActivity();
 			}
-			*/
+		}
+		
+		if(mBtnSend != null && v.getId() == mBtnSend.getId()){
+			
+			CharSequence message = mInput.getText().toString();
+			if (mMessageType == MESSAGE_SMS){
+				sendSMSRequest(message);
+			} else if(mMessageType == MESSAGE_TWITTER){
+				sendTwitterRequest(message);
+			}
+			
+			mInput.setText("");
 		}
 	}
 

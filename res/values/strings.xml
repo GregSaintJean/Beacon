@@ -68,6 +68,7 @@
     <string name="google_play_must_be_installed">The Google Play app store must be installed in order to use Beacon</string>
     <string name="no_contacts_found">No Contacts Found</string>
     <string name="about">About</string>
+    <string name="send">Send</string>
     
     <!-- Context description -->
     <string name="delete_button">Delete Button</string>

@@ -437,6 +437,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 				new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
 	}
 	
+	private void unregisterReceivers(){
+		mLocalBMgr.unregisterReceiver(mBeaconReceiver);
+		mLocalBMgr.unregisterReceiver(mCoordinateReceiver);
+		mLocalBMgr.unregisterReceiver(mBeaconKillReceiver);
+		unregisterReceiver(mNetworkReceiver);
+		unregisterReceiver(mGpsReceiver);
+	}
+	
 	private OnNetworkChangeListener mNetworkChangeListener = new OnNetworkChangeListener(){
 
 		@Override
@@ -464,14 +472,6 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		}
 		
 	};
-	
-	private void unregisterReceivers(){
-		mLocalBMgr.unregisterReceiver(mBeaconReceiver);
-		mLocalBMgr.unregisterReceiver(mCoordinateReceiver);
-		mLocalBMgr.unregisterReceiver(mBeaconKillReceiver);
-		unregisterReceiver(mNetworkReceiver);
-		unregisterReceiver(mGpsReceiver);
-	}
 	
 	private class BeaconKillReceiver extends BroadcastReceiver{
 		

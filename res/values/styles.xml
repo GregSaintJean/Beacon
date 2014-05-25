@@ -17,6 +17,13 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
     
+    <!-- the theme applied to the application or activity -->
+    <style name="CustomActionBarTheme"
+           parent="@style/Theme.AppCompat">
+        <!-- Support library compatibility -->
+        <item name="windowActionBarOverlay">true</item>
+    </style>
+    
     <style name="LargeButton">
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>

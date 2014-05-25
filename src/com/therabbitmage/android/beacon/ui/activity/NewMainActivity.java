@@ -37,8 +37,16 @@ public class NewMainActivity extends NavDrawerActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.new_main_activity);
+		setupUI();
+		if(BeaconApp.hasGpsCapability())
+			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		
+		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		registerReceivers();
+	}
+	
+	private void setupUI(){
+		setContentView(R.layout.new_main_activity);
 		setDrawerLayout((DrawerLayout) findViewById(R.id.drawer_layout));
 		setDrawerList((ListView)findViewById(R.id.left_drawer));
 		
