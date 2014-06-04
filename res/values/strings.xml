@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Beacon</string>
+    <string name="app_name">Signal</string>
     <string name="settings">Settings</string>
     <string name="version">Version %1$s (%2$s)</string>
     <string name="common_blank"></string>
@@ -101,6 +101,7 @@
     <string name="transmit_sms_beacon_online_location_address">Beacon activated!\nLocation: x: %1$s y: %2$s\nAddress: %3$s</string>
     <string name="transmit_sms_beacon_online_location_map">Beacon activated!\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
     <string name="transmit_sms_beacon_online_location">Beacon activated!\nLocation: x: %1$s y: %2$s</string>
+    <string name="transmit_sms_beacon_online_location_gps_on">Location: x: %1$s y: %2$s</string>
     <string name="transmit_sms_beacon_online">Beacon activated!\n Please help!</string>
     <string name="transmit_sms_beacon_update_location_address">Beacon update.\n Location: x: %1$s y: %2$s\n Address: %3$s\nMap: %4$s</string>
     <string name="transmit_sms_beacon_update_location_map">Beacon update.\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
@@ -130,6 +131,32 @@
     <string name="error_network_offline">Network connectivity unavailable </string>
     <string name="error_gps_offline">GPS is offline</string>
     
+    <!-- Logcat messages -->
+    <string name="logcat_action_message_type">Action did not contain message type</string>
+    <string name="logcat_action_message">Action did not contain a message to send</string>
+    <string name="logcat_device_no_sms">Device does not have SMS</string>
+    <string name="logcat_developer_error">Developer Error</string>
+    <string name="logcat_date_invalid">Date Invalid</string>
+    <string name="logcat_google_play_services_connected">Google Play Services connected</string>
+    <string name="logcat_google_play_services_disconnected">Google Play Services disconnected</string>
+    <string name="logcat_network_lost">Network connectivity lost!</string>
+    <string name="logcat_location_changed">Location changed</string>
+    <string name="logcat_location_services_disconnect">Location services disconnected</string>
+    <string name="logcat_time_in_secs_passed_update">Time passed since last location changed in seconds = %1$s</string>
+    <string name="logcat_terminate_beacon">Terminating Beacon</string>
+    <string name="logcat_generic_sms_failure">Generic SMS Failure</string>
+    <string name="logcat_sms_no_service">SMS No Service</string>
+    <string name="logcat_generic_null_pdu">SMS Generic Null PDU</string>
+    <string name="logcat_sms_radio_off">SMS Radio Off</string>
+    <string name="logcat_context_receiver_null">Context in receiver was null</string>
+    <string name="logcat_intent_null">Intent was null</string>
+    <string name="logcat_tranmission_intent_received">Transmission intent received</string>
+    <string name="logcat_connection_failed_called">Connection failed called</string>
+    <string name="logcat_network_change_detected">Network change detected</string>
+    <string name="logcat_gps_change_detected">GPS change detected</string>
+    <string name="logcat_first_location_update">First location update</string>
+    <string name="logcat_keyhash">Key Hash = %1$s</string>
+    
     <!-- Notification Messages -->
     <string name="notification_beacon_first_online">Beacon has come online.</string>
     <string name="notification_beacon_online">Beacon is online.</string>
@@ -141,6 +168,9 @@
     <string name="message_ending_transmission">Ending Transmission.</string>
     <string name="error_google_map_initialized">Google map has to be initialized.</string>
     
+    <string name="facebook">Facebook</string>
+    <string name="google_plus">Google+</string>
+    <string name="Twitter">Twitter</string>
     <string name="open_sources_libraries">Open Source Libraries</string>
     <string name="bullet">&#8226;</string>
     <string name="twitter4j">Twitter4j</string>

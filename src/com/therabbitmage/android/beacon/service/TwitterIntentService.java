@@ -11,7 +11,7 @@ import android.os.ResultReceiver;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.BuildConfig;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
@@ -40,12 +40,12 @@ public class TwitterIntentService extends IntentService {
 	
 	private LocalBroadcastManager mLocalBMgr;
 	
-	private BeaconApp mApp;
+	private SignalApp mApp;
 	private Twitter mTwitter;
 
 	public TwitterIntentService() {
 		super(TwitterIntentService.class.getSimpleName());
-		mApp = BeaconApp.getInstance();
+		mApp = SignalApp.getInstance();
 		mTwitter = TwitterBeacon.getTwitter(mApp);
 		mLocalBMgr = LocalBroadcastManager.getInstance(this);
 	}
@@ -85,7 +85,7 @@ public class TwitterIntentService extends IntentService {
 	//TODO Error Handling needs to be done here.
 	private void authenticate(Intent startIntent) {
 
-		BeaconApp app = BeaconApp.getInstance();
+		SignalApp app = SignalApp.getInstance();
 		RequestToken requestToken = null;
 
 		if (app.hasTwitterRequestToken()) {
@@ -132,7 +132,7 @@ public class TwitterIntentService extends IntentService {
 
 	//TODO Error Handling needs to be done here.
 	private void getAccessToken(Intent startIntent, String pin) {
-		BeaconApp app = BeaconApp.getInstance();
+		SignalApp app = SignalApp.getInstance();
 		if (app.hasTwitterRequestToken()) {
 			RequestToken requestToken = new RequestToken(
 					app.getTwitterRequestToken(),
@@ -174,7 +174,7 @@ public class TwitterIntentService extends IntentService {
 	}
 	
 	private void logout(){
-		BeaconApp app = BeaconApp.getInstance();
+		SignalApp app = SignalApp.getInstance();
 		app.clearTwitterAccessTokenAndSecret();
 		app.clearTwitterRequestTokenAndSecret();
 		TwitterBeacon.clearTwitter();

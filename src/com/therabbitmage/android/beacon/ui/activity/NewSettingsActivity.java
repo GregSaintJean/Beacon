@@ -92,13 +92,13 @@ public class NewSettingsActivity extends NavDrawerActivity {
 	
 	public void startMainActivity(){
 		Intent intent = new Intent(this, NewMainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
 	
 	public void startSetupActivity(){
 		Intent intent = new Intent(this, NewSetupActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
 }

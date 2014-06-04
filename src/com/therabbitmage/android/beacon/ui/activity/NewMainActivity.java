@@ -15,13 +15,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.receiver.GpsReceiver;
 import com.therabbitmage.android.beacon.receiver.NetworkReceiver;
 import com.therabbitmage.android.beacon.receiver.OnGpsChangeListener;
 import com.therabbitmage.android.beacon.receiver.OnNetworkChangeListener;
-import com.therabbitmage.android.beacon.service.BeaconService;
+import com.therabbitmage.android.beacon.service.SignalService;
 import com.therabbitmage.android.beacon.ui.fragment.MainFragment;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 
@@ -38,10 +38,10 @@ public class NewMainActivity extends NavDrawerActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setupUI();
-		if(BeaconApp.hasGpsCapability())
-			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		if(SignalApp.hasGpsCapability())
+			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
 		
-		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
+		SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		registerReceivers();
 	}
 	
@@ -77,7 +77,7 @@ public class NewMainActivity extends NavDrawerActivity{
 		
 		ArrayAdapter<CharSequence> drawerAdapter;
 		
-		if(BeaconApp.isSetupDone()){
+		if(SignalApp.isSetupDone()){
 			drawerAdapter = ArrayAdapter.createFromResource(this, R.array.main_nav_array_1, R.layout.drawer_list_item);
 		} else {
 			drawerAdapter = ArrayAdapter.createFromResource(this, R.array.main_nav_array_2, R.layout.drawer_list_item);
@@ -92,7 +92,7 @@ public class NewMainActivity extends NavDrawerActivity{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		switchDrawerItems(BeaconApp.isSetupDone());
+		switchDrawerItems(SignalApp.isSetupDone());
 	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener{
@@ -114,7 +114,7 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			
-			if(BeaconApp.isSetupDone()){
+			if(SignalApp.isSetupDone()){
 				
 				switch(position){
 					case 0:
@@ -156,7 +156,7 @@ public class NewMainActivity extends NavDrawerActivity{
 	private void startSetupActivity(){
 		try{
 			Intent intent = new Intent(this, NewSetupActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 		} finally{
 			finish();
@@ -167,7 +167,7 @@ public class NewMainActivity extends NavDrawerActivity{
 	private void startSettingsActivity(){
 		try{
 			Intent intent = new Intent(this, NewSettingsActivity.class);
-			intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION| Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
 		} finally{
 			finish();
@@ -180,13 +180,13 @@ public class NewMainActivity extends NavDrawerActivity{
 		mCoordinateReceiver = new CoordinateReceiver();
 		mBeaconKillReceiver = new BeaconKillReceiver();
 		
-		IntentFilter filter = new IntentFilter(BeaconService.BROADCAST_BEACON_MESSAGE);
+		IntentFilter filter = new IntentFilter(SignalService.BROADCAST_BEACON_MESSAGE);
 		getLocalBroadcastManager().registerReceiver(mBeaconReceiver, filter);
 		
-		filter = new IntentFilter(BeaconService.BROADCAST_COORDINATES);
+		filter = new IntentFilter(SignalService.BROADCAST_COORDINATES);
 		getLocalBroadcastManager().registerReceiver(mCoordinateReceiver, filter);
 		
-		filter = new IntentFilter(BeaconService.BROADCAST_SERVICE_KILLED);
+		filter = new IntentFilter(SignalService.BROADCAST_SERVICE_KILLED);
 		getLocalBroadcastManager().registerReceiver(mBeaconKillReceiver, filter);
 		
 		mNetworkReceiver = new NetworkReceiver();
@@ -215,7 +215,7 @@ public class NewMainActivity extends NavDrawerActivity{
 			if(NewMainActivity.this == null){
 				return;
 			}
-			BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(NewMainActivity.this));
+			SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(NewMainActivity.this));
 			mMainFragment.refreshErrorContainer();
 		}
 		
@@ -229,7 +229,7 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			Log.d(TAG, "GPS Provider change detected.");
-			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(NewMainActivity.this));
+			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(NewMainActivity.this));
 			mMainFragment.refreshErrorContainer();
 		}
 		
@@ -249,7 +249,7 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			
-			if(intent.getAction().equals(BeaconService.BROADCAST_SERVICE_KILLED)){
+			if(intent.getAction().equals(SignalService.BROADCAST_SERVICE_KILLED)){
 				NewMainActivity.this.finish();
 			}
 			
@@ -274,8 +274,8 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			
-			if(intent.getAction().equals(BeaconService.BROADCAST_BEACON_MESSAGE)){
-				mMainFragment.updateStatusView(intent.getStringExtra(BeaconService.EXTRA_BROADCAST_MESSAGE));
+			if(intent.getAction().equals(SignalService.BROADCAST_BEACON_MESSAGE)){
+				mMainFragment.updateStatusView(intent.getStringExtra(SignalService.EXTRA_BROADCAST_MESSAGE));
 			}
 			
 		}
@@ -299,8 +299,8 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			
-			double lat = intent.getDoubleExtra(BeaconService.EXTRA_BROADCAST_LATITUDE, 0);
-			double lng = intent.getDoubleExtra(BeaconService.EXTRA_BROADCAST_LONGITUDE, 0);
+			double lat = intent.getDoubleExtra(SignalService.EXTRA_BROADCAST_LATITUDE, 0);
+			double lng = intent.getDoubleExtra(SignalService.EXTRA_BROADCAST_LONGITUDE, 0);
 			
 			if(lat == 0 || lng == 0){
 				return;

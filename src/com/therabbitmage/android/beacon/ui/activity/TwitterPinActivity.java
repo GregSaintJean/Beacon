@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.BuildConfig;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
@@ -72,8 +72,8 @@ public class TwitterPinActivity extends Activity {
 
 	@Override
 	public void onBackPressed() {
-		BeaconApp.getInstance().clearTwitterAccessTokenAndSecret();
-		BeaconApp.getInstance().clearTwitterRequestTokenAndSecret();
+		SignalApp.getInstance().clearTwitterAccessTokenAndSecret();
+		SignalApp.getInstance().clearTwitterRequestTokenAndSecret();
 		TwitterBeacon.clearTwitter();
 		super.onBackPressed();
 	}

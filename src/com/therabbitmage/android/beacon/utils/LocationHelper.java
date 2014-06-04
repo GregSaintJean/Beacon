@@ -138,7 +138,7 @@ public class LocationHelper {
 	}
 	
 	public void reset(){
-		if(mLocationClient != null){
+		if(mLocationClient != null && mLocationClient.isConnected()){
 			stopRequestLocationUpdates();
 			mLocationClient.disconnect();
 		}

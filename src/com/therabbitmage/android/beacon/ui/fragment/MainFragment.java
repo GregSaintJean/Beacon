@@ -31,9 +31,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.R;
-import com.therabbitmage.android.beacon.service.BeaconService;
+import com.therabbitmage.android.beacon.service.SignalService;
 import com.therabbitmage.android.beacon.ui.activity.SetupActivity;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 import com.therabbitmage.android.beacon.utils.ChronoUtils;
@@ -77,7 +77,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(!BeaconApp.isActive()){
+		if(!SignalApp.isBeaconOnline()){
 			showIntro();
 		} else {
 			showInfo();
@@ -127,6 +127,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		mErrorNetwork = (TextView)v.findViewById(R.id.error_network_tv);
 		mErrorGps = (TextView)v.findViewById(R.id.error_gps_tv);
 		mBtnMain = (Button)v.findViewById(R.id.mainbtn);
+		mBtnSend = (Button)v.findViewById(R.id.sendButton);
 		mInput = (EditText)v.findViewById(R.id.input_edittxt);
 		mMessageSpinner = (Spinner)v.findViewById(R.id.message_spinner);
 		ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter
@@ -183,7 +184,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
 		mGoogleMap.setMyLocationEnabled(false);
 		
-		if(BeaconApp.isSetupDone()){
+		if(SignalApp.isSetupDone()){
 			mBtnMain.setText(R.string.start);
 		} else {
 			mBtnMain.setText(R.string.setup);
@@ -219,17 +220,19 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	}
 	
 	private void sendSMSRequest(CharSequence message){
-		Intent messageIntent = new Intent(getActivity(), BeaconService.class);
-		messageIntent.setAction(BeaconService.ACTION_SEND_SMS_MESSAGE);
-		messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, message);
+		Intent messageIntent = new Intent(getActivity(), SignalService.class);
+		messageIntent.setAction(SignalService.ACTION_SEND);
+		messageIntent.putExtra(SignalService.EXTRA_MESSAGE_TYPE, SignalService.MESSAGE_TYPE_SMS);
+		messageIntent.putExtra(SignalService.EXTRA_MESSAGE, message);
 		getActivity().startService(messageIntent);
 		Log.d(TAG, "Sending SMS Request");
 	}
 	
 	private void sendTwitterRequest(CharSequence message){
-		Intent messageIntent = new Intent(getActivity(), BeaconService.class);
-		messageIntent.setAction(BeaconService.ACTION_SEND_TWITTER_MESSAGE);
-		messageIntent.putExtra(BeaconService.EXTRA_MESSAGE, message);
+		Intent messageIntent = new Intent(getActivity(), SignalService.class);
+		messageIntent.setAction(SignalService.ACTION_SEND);
+		messageIntent.putExtra(SignalService.EXTRA_MESSAGE_TYPE, SignalService.MESSAGE_TYPE_TWITTER);
+		messageIntent.putExtra(SignalService.EXTRA_MESSAGE, message);
 		getActivity().startService(messageIntent);
 		Log.d(TAG, "Sending Twitter Request");
 	}
@@ -268,7 +271,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	public void onClick(View v) {
 		if(mBtnMain != null && v.getId() == mBtnMain.getId()){
 			
-			if(BeaconApp.isSetupDone()){
+			if(SignalApp.isSetupDone()){
 				fireBeacon();
 				showInfo();
 			} else {
@@ -299,7 +302,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem shutdownItem = menu.findItem(R.id.shutdown);
-		shutdownItem.setVisible(BeaconApp.isActive());
+		shutdownItem.setVisible(SignalApp.isBeaconOnline());
 	}
 	
 	@Override
@@ -315,8 +318,8 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 
 	private void shutdownBeacon(){
 		try{
-			Intent shutdownIntent = new Intent(getActivity(), BeaconService.class);
-			shutdownIntent.setAction(BeaconService.ACTION_STOP);
+			Intent shutdownIntent = new Intent(getActivity(), SignalService.class);
+			shutdownIntent.setAction(SignalService.ACTION_STOP);
 			getActivity().startService(shutdownIntent);
 		} finally{
 			getActivity().finish();
@@ -328,21 +331,20 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	}
 	
 	private void fireBeacon(){
-		BeaconApp.setActive(true);
-		Intent intent = new Intent(getActivity(), BeaconService.class);
-		intent.setAction(BeaconService.ACTION_BEGIN);
+		Intent intent = new Intent(getActivity(), SignalService.class);
+		intent.setAction(SignalService.ACTION_START);
 		getActivity().startService(intent);
 	}
 	
 	public void refreshErrorContainer(){
-		if(BeaconApp.isActive()){
+		if(SignalApp.isBeaconOnline()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+		if(SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
@@ -351,19 +353,19 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		
 		mErrorContainer.setVisibility(View.VISIBLE);
 		
-		if(BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+		if(SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;
 		}
 		
-		if(!BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+		if(!SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(!BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+		if(!SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;

@@ -35,7 +35,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.therabbitmage.android.beacon.BeaconApp;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.receiver.GpsReceiver;
 import com.therabbitmage.android.beacon.receiver.NetworkReceiver;
@@ -76,10 +76,10 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if(BeaconApp.hasGpsCapability())
-			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		if(SignalApp.hasGpsCapability())
+			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
 		
-		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
+		SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		setupUI();
 		registerReceivers();
 		mStatusBuilder = new StringBuilder();
@@ -106,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		if(!BeaconApp.isActive())
+		if(!SignalApp.isActive())
 			showIntro();
 		else
 			showInfo();
@@ -247,7 +247,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		mInfoContainer.setVisibility(View.GONE);
 		mLocationView.setVisibility(View.GONE);
 		
-		if(BeaconApp.isSetupDone()){
+		if(SignalApp.isSetupDone()){
 			mMainBtn.setText(R.string.start);
 			mAltSetupBtn.setVisibility(View.VISIBLE);
 			mSettingsBtn.setVisibility(View.VISIBLE);
@@ -267,7 +267,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		
 		if(mMainBtn != null && v.getId() == mMainBtn.getId()){
 			
-			if(BeaconApp.isSetupDone()){
+			if(SignalApp.isSetupDone()){
 				fireBeacon();
 				showInfo();
 			} else {
@@ -277,7 +277,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		}
 		
 		if(mAltSetupBtn != null && v.getId() == mAltSetupBtn.getId()){
-			if(BeaconApp.isSetupDone()){
+			if(SignalApp.isSetupDone()){
 				startSetupActivity();
 			}
 		}
@@ -299,7 +299,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		
 		MenuItem shutdownItem = menu.findItem(R.id.shutdown);
-		shutdownItem.setVisible(BeaconApp.isActive());
+		shutdownItem.setVisible(SignalApp.isActive());
 		return true;
 	}
 
@@ -334,7 +334,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	}
 	
 	private void fireBeacon(){
-		BeaconApp.setActive(true);
+		SignalApp.setActive(true);
 		Intent intent = new Intent(this, BeaconService.class);
 		intent.setAction(BeaconService.ACTION_BEGIN);
 		startService(intent);
@@ -342,14 +342,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 	
 	private void refreshErrorContainer(){
 		
-		if(BeaconApp.isActive()){
+		if(SignalApp.isActive()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+		if(SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
@@ -358,19 +358,19 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 		
 		mErrorContainer.setVisibility(View.VISIBLE);
 		
-		if(BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+		if(SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;
 		}
 		
-		if(!BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
+		if(!SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(!BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
+		if(!SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;
@@ -453,7 +453,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 			if(MainActivity.this == null){
 				return;
 			}
-			BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(MainActivity.this));
+			SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(MainActivity.this));
 			refreshErrorContainer();
 		}
 		
@@ -467,7 +467,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener{
 				return;
 			}
 			Log.d(TAG, "GPS Provider change detected.");
-			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(MainActivity.this));
+			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(MainActivity.this));
 			refreshErrorContainer();
 		}
 		

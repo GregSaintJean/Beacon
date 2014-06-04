@@ -7,9 +7,18 @@
     <string name="google_public_access_api_key">AIzaSyDWN1DuLRVk59gg_v8fyGHRoZLIl7rvL-k</string>
     
     <!-- Preference Names -->
+    <!-- App Preference names -->
     <string name="beacon_pref">beacon</string>
     <string name="is_setup_done">is_setup_done</string>
     <string name="first_time_run">first_time_run</string>
+    <string name="beacon_sms_inactive_transmission_interval">sms_inactive_transmission_interval</string>
+    <string name="beacon_sms_active_transmission_interval">sms_active_transmission_interval</string>
+    <string name="beacon_twitter_inactive_transmission_interval">twitter_inactive_transmission_interval</string>
+    <string name="beacon_twitter_active_transmission_interval">twitter_active_transmission_interval</string>
+    <string name="uuid">uuid</string>
+    <string name="analytics_opt_out">analytics opt out</string>
+    
+    <!-- Twitter Preference names -->
     <string name="twitter_pref">twitter</string>
     <string name="twitter_request_token">twitter_request_token</string>
     <string name="twitter_request_secret_token">twitter_request_secret_token</string>
@@ -19,11 +28,6 @@
     <string name="twitter_user_id">twitter_user_id</string>
     <string name="twitter_username">twitter_username</string>
     <string name="twitter_expiration">twitter_expiration</string>
-    
-    <string name="beacon_sms_inactive_transmission_interval">sms_inactive_transmission_interval</string>
-    <string name="beacon_sms_active_transmission_interval">sms_active_transmission_interval</string>
-    <string name="beacon_twitter_inactive_transmission_interval">twitter_inactive_transmission_interval</string>
-    <string name="beacon_twitter_active_transmission_interval">twitter_active_transmission_interval</string>
     
     
     <!-- integer name="default_inactive_transmission_interval">300000</integer--><!-- 5 minutes -->
