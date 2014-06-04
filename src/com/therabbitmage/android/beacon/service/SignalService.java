@@ -206,6 +206,7 @@ public class SignalService extends BaseService implements LocationListener,
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
 		if(intent == null){
+			Log.d(TAG, "Intent was null because Android can be stupid sometimes");
 			return START_STICKY;
 		}
 		
