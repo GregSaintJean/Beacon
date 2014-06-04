@@ -109,6 +109,18 @@
     <string name="transmit_sms_beacon_update">Beacon update.\n Please help!</string>
     <string name="transmit_sms_beacon_message">Beacon message: %1$s</string>
     
+    <!-- TEST SMS -->
+    <string name="transmit_test_sms_beacon_online_location_address">Beacon testing activated!\nLocation: x: %1$s y: %2$s\nAddress: %3$s</string>
+    <string name="transmit_test_sms_beacon_online_location_map">Beacon testing activated!\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
+    <string name="transmit_test_sms_beacon_online_location">Beacon testing activated!\nLocation: x: %1$s y: %2$s</string>
+    <string name="transmit_test_sms_beacon_online_location_gps_on">Testing! Location: x: %1$s y: %2$s</string>
+    <string name="transmit_test_sms_beacon_online">Beacon testing activated!\n</string>
+    <string name="transmit_test_sms_beacon_update_location_address">Beacon testing update.\n Location: x: %1$s y: %2$s\n Address: %3$s\nMap: %4$s</string>
+    <string name="transmit_test_sms_beacon_update_location_map">Beacon testing update.\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
+    <string name="transmit_test_sms_beacon_update_location">Beacon testing update.\n Location: x: %1$s y: %2$s\n</string>
+    <string name="transmit_test_sms_beacon_update">Beacon testing update.\n</string>
+    <string name="transmit_test_sms_beacon_message">Beacon message: %1$s (This is a test)</string>
+    
     <!-- Tweets -->
     <string name="transmit_twitter_beacon_online_location_address">#BeaconActive\nLocation: x: %1$s y: %2$s\nAddress: %3$s</string>
     <string name="transmit_twitter_beacon_online_location_map">#BeaconActive\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
@@ -119,6 +131,17 @@
     <string name="transmit_twitter_beacon_update_location">#BeaconUpdate\n Location: x: %1$s y: %2$s</string>
     <string name="transmit_twitter_beacon_update">#BeaconUpdate\n Please help!</string>
     <string name="transmit_twitter_beacon_message">#BeaconMessage: %1$s</string>
+    
+    <!-- Test Tweets -->
+    <string name="transmit_test_twitter_beacon_online_location_address">#BeaconTestingActive\nLocation: x: %1$s y: %2$s\nAddress: %3$s</string>
+    <string name="transmit_test_twitter_beacon_online_location_map">#BeaconTestingActive\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
+    <string name="transmit_test_twitter_beacon_online_location">#BeaconTestingActive\n Location: x: %1$s y: %2$s</string>
+    <string name="transmit_test_twitter_beacon_online">#BeaconTestingActive\n</string>
+    <string name="transmit_test_twitter_beacon_update_location_address">#BeaconTestingUpdate\n Location: x: %1$s y: %2$s\n Address: %3$s\n</string>
+    <string name="transmit_test_twitter_beacon_update_location_map">#BeaconTestingUpdate\n Location: x: %1$s y: %2$s\nMap: %3$s</string>
+    <string name="transmit_test_twitter_beacon_update_location">#BeaconTestingUpdate\n Location: x: %1$s y: %2$s</string>
+    <string name="transmit_test_twitter_beacon_update">#BeaconTestingUpdate\n</string>
+    <string name="transmit_test_twitter_beacon_message">#BeaconTestMessage: %1$s</string>
     
     <!-- Error Message -->
     <string name="error_phone_number_required">Need to supply a phone number.</string>

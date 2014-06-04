@@ -47,6 +47,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.entities.beacon.BeaconSMSContact;
+import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
 import com.therabbitmage.android.beacon.provider.Beacon;
 import com.therabbitmage.android.beacon.provider.BeaconMobileQuery;
@@ -149,7 +150,8 @@ public class SignalService extends BaseService implements LocationListener,
 	
 	private List<BeaconSMSContact> mContactList;
 	private boolean mHasSentFirstTransmission, mConnectedToGooglePlay, mSentFirstSMSData, mSentTwitterData, mWaitingForLocation;
-	private String mMapUrl, mShortenedUrl;
+	private String mMapUrl;
+	private Url mShortenedUrl;
 	
 	private enum DeviceState{
 		STILL, MOVING, MOVING_VEHICLE
@@ -279,7 +281,9 @@ public class SignalService extends BaseService implements LocationListener,
 	
 	private void startBeacon(){
 		SignalApp.setisBeaconOnline(true);
-		attemptToConnectToGooglePlayServices();
+		if(SignalApp.hasNetworkConnectivity()){
+			attemptToConnectToGooglePlayServices();
+		}
 	}
 	
 	private void compileContactList() {
@@ -357,6 +361,13 @@ public class SignalService extends BaseService implements LocationListener,
 	}
 	
 	private void runOnConnected(Bundle bundle){
+		mLocationHelper.onConnected(bundle);
+		
+		if(mActivityRecognitionClient != null
+				&& mActivityRecognitionClient.isConnected()
+				/*&& !isRequestingActivityUpdates*/){
+			//TODO Activity Recognition?
+		}
 		if(!mHasSentFirstTransmission){
 			prepareFirstMessage();
 		}
@@ -426,6 +437,9 @@ public class SignalService extends BaseService implements LocationListener,
 
 	@Override
 	public void onLocationChanged(Location location) {
+		if(IS_DEBUG){
+			Log.d(TAG, "onLocationChanged called");
+		}
 		
 		final Location l = location;
 		
@@ -442,7 +456,7 @@ public class SignalService extends BaseService implements LocationListener,
 	
 	private void runOnLocationChanged(Location location){
 		
-		if(LocationUtils.isBetterLocation(mCurrentLocation, location)){
+		if(LocationUtils.isBetterLocation(location, mCurrentLocation)){
 			mCurrentLocation = location;
 			
 			if(mStartingLocation == null){
@@ -482,28 +496,51 @@ public class SignalService extends BaseService implements LocationListener,
 				if(resultCode == UrlShortenService.RESULT_CODE_SUCCESS){
 					mShortenedUrl = resultData.getParcelable(UrlShortenService.EXTRA_URL);
 					
-					String smsMessage = 
+					String smsMessage = IS_DEBUG ?
+							String.format(
+									getString(R.string.transmit_test_sms_beacon_online_location_map),
+									Double.toString(mCurrentLocation.getLatitude()),
+									Double.toString(mCurrentLocation.getLongitude()),
+									mShortenedUrl.getId())
+							:
 							String.format(
 									getString(R.string.transmit_sms_beacon_online_location_map),
 									Double.toString(mCurrentLocation.getLatitude()),
 									Double.toString(mCurrentLocation.getLongitude()),
-									mShortenedUrl);
+									mShortenedUrl.getId());
 					
-					String twitterMessage = String.format(getString(R.string.transmit_twitter_beacon_online_location_map),
+					String twitterMessage = IS_DEBUG ?
+							String.format(getString(R.string.transmit_test_twitter_beacon_online_location_map),
+									Double.toString(mCurrentLocation.getLatitude()),
+									Double.toString(mCurrentLocation.getLongitude()),
+									mShortenedUrl.getId())
+							:
+							String.format(getString(R.string.transmit_twitter_beacon_online_location_map),
 							Double.toString(mCurrentLocation.getLatitude()),
 							Double.toString(mCurrentLocation.getLongitude()),
-							mShortenedUrl);
+							mShortenedUrl.getId());
 					
 					sendSMSMessage(smsMessage);
 					sendTwitterMessage(twitterMessage);
 					
 				} else {
-					String smsMessage = String.format(
+					String smsMessage = IS_DEBUG ?
+							String.format(
+									getString(R.string.transmit_test_sms_beacon_online_location),
+									Double.toString(mCurrentLocation.getLatitude()),
+									Double.toString(mCurrentLocation.getLongitude()))
+							:
+							String.format(
 							getString(R.string.transmit_sms_beacon_online_location),
 							Double.toString(mCurrentLocation.getLatitude()),
 							Double.toString(mCurrentLocation.getLongitude()));
 					
-					String twitterMessage = String.format(getString(R.string.transmit_twitter_beacon_online_location),
+					String twitterMessage = IS_DEBUG ?
+							String.format(getString(R.string.transmit_test_twitter_beacon_online_location),
+									Double.toString(mCurrentLocation.getLatitude()),
+									Double.toString(mCurrentLocation.getLongitude()))
+							:
+							String.format(getString(R.string.transmit_twitter_beacon_online_location),
 							Double.toString(mCurrentLocation.getLatitude()),
 							Double.toString(mCurrentLocation.getLongitude()));
 					
@@ -566,29 +603,52 @@ public class SignalService extends BaseService implements LocationListener,
 						
 						if(resultCode == UrlShortenService.RESULT_CODE_SUCCESS){
 							mShortenedUrl = resultData.getParcelable(UrlShortenService.EXTRA_URL);
-							String smsMessage = 
+							String smsMessage = IS_DEBUG ?
+									String.format(
+											getString(R.string.transmit_test_sms_beacon_online_location_map),
+											Double.toString(mCurrentLocation.getLatitude()),
+											Double.toString(mCurrentLocation.getLongitude()),
+											mShortenedUrl.getId())
+									:
 									String.format(
 											getString(R.string.transmit_sms_beacon_online_location_map),
 											Double.toString(mCurrentLocation.getLatitude()),
 											Double.toString(mCurrentLocation.getLongitude()),
-											mShortenedUrl);
+											mShortenedUrl.getId());
 							
-							String twitterMessage = String.format(getString(R.string.transmit_twitter_beacon_online_location_map),
+							String twitterMessage = IS_DEBUG ?
+									String.format(getString(R.string.transmit_test_twitter_beacon_online_location_map),
+											Double.toString(mCurrentLocation.getLatitude()),
+											Double.toString(mCurrentLocation.getLongitude()),
+											mShortenedUrl.getId())
+									:
+									String.format(getString(R.string.transmit_twitter_beacon_online_location_map),
 									Double.toString(mCurrentLocation.getLatitude()),
 									Double.toString(mCurrentLocation.getLongitude()),
-									mShortenedUrl);
+									mShortenedUrl.getId());
 							
 							sendSMSMessage(smsMessage);
 							sendTwitterMessage(twitterMessage);
 							
 						} else {
 							
-							String smsMessage = String.format(
+							String smsMessage = IS_DEBUG ?
+									String.format(
+											getString(R.string.transmit_test_sms_beacon_online_location),
+											Double.toString(mCurrentLocation.getLatitude()),
+											Double.toString(mCurrentLocation.getLongitude()))
+									:
+									String.format(
 									getString(R.string.transmit_sms_beacon_online_location),
 									Double.toString(mCurrentLocation.getLatitude()),
 									Double.toString(mCurrentLocation.getLongitude()));
 							
-							String twitterMessage = String.format(getString(R.string.transmit_twitter_beacon_online_location),
+							String twitterMessage = IS_DEBUG ?
+									String.format(getString(R.string.transmit_test_twitter_beacon_online_location),
+											Double.toString(mCurrentLocation.getLatitude()),
+											Double.toString(mCurrentLocation.getLongitude()))
+									:
+									String.format(getString(R.string.transmit_twitter_beacon_online_location),
 									Double.toString(mCurrentLocation.getLatitude()),
 									Double.toString(mCurrentLocation.getLongitude()));
 							
@@ -612,12 +672,23 @@ public class SignalService extends BaseService implements LocationListener,
 				
 			} else {
 				
-				String smsMessage = String.format(
+				String smsMessage = IS_DEBUG ?
+						String.format(
+								getString(R.string.transmit_test_sms_beacon_online_location),
+								Double.toString(mCurrentLocation.getLatitude()),
+								Double.toString(mCurrentLocation.getLongitude()))
+						:
+						String.format(
 						getString(R.string.transmit_sms_beacon_online_location),
 						Double.toString(mCurrentLocation.getLatitude()),
 						Double.toString(mCurrentLocation.getLongitude()));
 				
-				String twitterMessage = String.format(getString(R.string.transmit_twitter_beacon_online_location),
+				String twitterMessage = IS_DEBUG ?
+						String.format(getString(R.string.transmit_test_twitter_beacon_online_location),
+								Double.toString(mCurrentLocation.getLatitude()),
+								Double.toString(mCurrentLocation.getLongitude()))
+						:
+						String.format(getString(R.string.transmit_twitter_beacon_online_location),
 						Double.toString(mCurrentLocation.getLatitude()),
 						Double.toString(mCurrentLocation.getLongitude()));
 				
@@ -628,11 +699,15 @@ public class SignalService extends BaseService implements LocationListener,
 			
 		} else {
 			
-			sendSMSMessage(getString(R.string.transmit_sms_beacon_online));
+			if(SignalApp.hasGpsCapability()){
+				//TODO set something up so as soon as the GPS comes online, it sends the coordinates.
+			}
+			
+			sendSMSMessage(IS_DEBUG ? getString(R.string.transmit_test_sms_beacon_online) : getString(R.string.transmit_sms_beacon_online));
 			
 			if(SignalApp.hasNetworkConnectivity() && SignalApp.hasTwitterLogin()){
 				
-				sendTwitterMessage(getString(R.string.transmit_twitter_beacon_online));
+				sendTwitterMessage(IS_DEBUG ? getString(R.string.transmit_test_twitter_beacon_online) : getString(R.string.transmit_twitter_beacon_online));
 				
 			}
 		}
@@ -777,7 +852,9 @@ public class SignalService extends BaseService implements LocationListener,
 	}
 	
 	private void scheduleNextRegularTransmission(){
-		Log.d(TAG, "scheduleNextRegularTransmission is called");
+		if(IS_DEBUG){
+			Log.d(TAG, "scheduleNextRegularTransmission is called");
+		}
 		
 		long inactiveInterval = SignalApp.getInactiveTransmissionInterval();
 		long nextTransmission = System.currentTimeMillis()  + inactiveInterval;
@@ -786,7 +863,10 @@ public class SignalService extends BaseService implements LocationListener,
 	}
 	
 	public void transmitBeacon(){
-		Log.d(TAG, getString(R.string.logcat_tranmission_intent_received));
+		if(IS_DEBUG){
+			Log.d(TAG, getString(R.string.logcat_tranmission_intent_received));
+		}
+		
 	}
 	
 	private void shutdownBeacon(){
@@ -878,7 +958,7 @@ public class SignalService extends BaseService implements LocationListener,
 			SignalApp.setHasNetworkConnectivity(AndroidUtils
 					.hasNetworkConnectivity(SignalService.this));
 			
-			if(SignalApp.isBeaconOnline() && !mConnectedToGooglePlay){
+			if(SignalApp.isBeaconOnline() && !mConnectedToGooglePlay && SignalApp.hasNetworkConnectivity()){
 				attemptToConnectToGooglePlayServices();
 			}
 			

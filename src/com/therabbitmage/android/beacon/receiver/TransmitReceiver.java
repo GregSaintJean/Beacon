@@ -27,8 +27,7 @@ public class TransmitReceiver extends BroadcastReceiver {
 		
 		if(intent.getAction().equals(SignalService.ACTION_TRANSMIT)){
 			Log.d(TAG, "Transmission request received");
-			/*TODO I can code some logic around the idea that if the SignalService ever crashes, that 
-			 * this code will help get it restarted. 
+			/*TODO Write logic that checks if the Beacon is suppose to be on and if it is turn it back on.
 			*/ 
 			if(SignalService.getInstance() != null){
 				SignalService.getInstance().transmitBeacon();
