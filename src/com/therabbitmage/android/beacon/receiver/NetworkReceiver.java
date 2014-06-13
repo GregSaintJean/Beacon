@@ -1,12 +1,11 @@
 package com.therabbitmage.android.beacon.receiver;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
-public class NetworkReceiver extends BroadcastReceiver {
+public class NetworkReceiver extends BaseBroadcastReceiver {
 	
 	private static final String TAG = NetworkReceiver.class.getSimpleName();
 

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="first_transmission">Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list!</string>
-    <string name="first_tranmission_location">Hello. This message is an SOS! Someone you know has placed you on the Beacon\'s emergency contact list! There current location in latitude and longitude is </string>
-    <string name="sos_message">This message is an SOS! Someone you know is in desperate need!</string>
-    <string name="sos_message_location">This message is an SOS! Someone you know is in desperate need! Their current location in latitude and longitude is </string>
-    <string name="end_transmission">The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe.</string>
-    <string name="end_transmission_location">The SOS is now ending. Please make ensure the individual who had sent this SOS to you is safe. Their current location in latitude and longitude is </string>
-</resources>

@@ -170,8 +170,8 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		getActivity().invalidateOptionsMenu();
 		refreshErrorContainer();
 		mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
-		mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
-		mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+		mGoogleMap.getUiSettings().setMyLocationButtonEnabled(false);
+		mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
 		mGoogleMap.setMyLocationEnabled(true);
 	}
 	

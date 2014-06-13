@@ -3,10 +3,16 @@ package com.therabbitmage.android.beacon.utils;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 
 public class LocationUtils {
 	
 	public static final float FIVE_METERS = 5;
+	
+	public static final LocationManager getLocationManager(Context ctx) {
+		return (LocationManager) ctx
+				.getSystemService(Context.LOCATION_SERVICE);
+	}
 
 	/**
 	 * Determines whether one Location reading is better than the current

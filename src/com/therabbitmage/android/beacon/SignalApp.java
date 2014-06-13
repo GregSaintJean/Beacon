@@ -55,9 +55,8 @@ public class SignalApp extends Application {
 		mGoogleAnalytics.setAppOptOut(getAnalyticsOptOut());
 		setAnalyticsOptOut(mGoogleAnalytics.getAppOptOut());
 		
-		Log.d(TAG, "This is a debug build.");
-		
 		if(IS_DEBUG){
+			Log.d(TAG, "This is a debug build.");
 			printDebugKeyHash();
 		}
 		

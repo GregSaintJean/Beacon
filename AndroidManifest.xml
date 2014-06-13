@@ -133,9 +133,15 @@
             </intent-filter>
         </receiver>
         <receiver 
-            android:name=".receiver.TransmitReceiver">
+            android:name=".receiver.TransmitReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.TRANSMIT"/>
+                <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.DELAY_TWITTER_TRANSMIT"/>
+                <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.DELAY_TWITTER_TRANSMIT_GPS"/>
+                <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.DELAY_SMS_TRANSMIT"/>
+                <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.DELAY_SMS_TRANSMIT_GPS"/>
+                <action android:name="com.therabbitmage.android.beacon.service.NewBeaconService.action.DELAY_FIRST_MESSAGE_TWITTER"/>
             </intent-filter>
         </receiver>
         <provider 

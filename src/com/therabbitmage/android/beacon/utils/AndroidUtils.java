@@ -7,6 +7,8 @@ import java.util.Set;
 import org.apache.http.protocol.HTTP;
 
 import android.annotation.TargetApi;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -81,16 +83,17 @@ public final class AndroidUtils {
 			return false;
 		}
 		
-		ConnectivityManager connMgr = (ConnectivityManager)ctx
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+		NetworkInfo networkInfo = getConnectivityManager(ctx).getActiveNetworkInfo();
 		
 		return networkInfo != null && networkInfo.isConnected();
 	}
 	
 	public static final boolean isGpsOnline(Context ctx){
-		LocationManager lm = (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
-		return lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		if(ctx == null){
+			return false;
+		}
+		
+		return getLocationManager(ctx).isProviderEnabled(LocationManager.GPS_PROVIDER);
 	}
 	
 	public final static void sendSms(Context ctx, String number, String message,
@@ -219,6 +222,22 @@ public final class AndroidUtils {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 	}
 	
+	public static final NotificationManager getNotificationManager(Context ctx){
+		return (NotificationManager)ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+	}
+	
+	public static final AlarmManager getAlarmManager(Context ctx){
+		return (AlarmManager)ctx.getSystemService(Context.ALARM_SERVICE);
+	}
+	
+	public static final LocationManager getLocationManager(Context ctx){
+		return (LocationManager)ctx.getSystemService(Context.LOCATION_SERVICE);
+	}
+	
+	public static final ConnectivityManager getConnectivityManager(Context ctx){
+		return (ConnectivityManager)ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+	}
+	
 	public static final boolean checkPhoneAndSmsCapability(Context ctx){
 		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
 	}
@@ -236,13 +255,7 @@ public final class AndroidUtils {
 	}
 	
 	public static final boolean isNetworkLocationOnline(Context ctx){
-		LocationManager lm = (LocationManager)ctx.getSystemService(LocationManager.GPS_PROVIDER);
-		return lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-	}
-	
-	public static final LocationManager getLocationManager(Context ctx) {
-		return (LocationManager) ctx
-				.getSystemService(Context.LOCATION_SERVICE);
+		return getLocationManager(ctx).isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 	
 	public static final boolean isGoogleServicesAvailable(Context ctx){

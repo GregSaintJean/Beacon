@@ -14,7 +14,6 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -45,8 +44,8 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.R;
+import com.therabbitmage.android.beacon.SignalApp;
 import com.therabbitmage.android.beacon.entities.beacon.BeaconSMSContact;
 import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
@@ -61,7 +60,7 @@ import com.therabbitmage.android.beacon.utils.ChronoUtils;
 import com.therabbitmage.android.beacon.utils.LocationHelper;
 import com.therabbitmage.android.beacon.utils.LocationUtils;
 
-public class BeaconService extends Service implements LocationListener,
+public class BeaconService extends BaseService implements LocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks,
 		GooglePlayServicesClient.OnConnectionFailedListener {
 
