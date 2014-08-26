@@ -31,7 +31,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.therabbitmage.android.beacon.SignalApp;
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.service.SignalService;
 import com.therabbitmage.android.beacon.ui.activity.SetupActivity;
@@ -77,7 +77,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(!SignalApp.isBeaconOnline()){
+		if(!BeaconApp.isBeaconOnline()){
 			showIntro();
 		} else {
 			showInfo();
@@ -184,7 +184,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		mGoogleMap.getUiSettings().setZoomControlsEnabled(false);
 		mGoogleMap.setMyLocationEnabled(false);
 		
-		if(SignalApp.isSetupDone()){
+		if(BeaconApp.isSetupDone()){
 			mBtnMain.setText(R.string.start);
 		} else {
 			mBtnMain.setText(R.string.setup);
@@ -271,7 +271,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	public void onClick(View v) {
 		if(mBtnMain != null && v.getId() == mBtnMain.getId()){
 			
-			if(SignalApp.isSetupDone()){
+			if(BeaconApp.isSetupDone()){
 				fireBeacon();
 				showInfo();
 			} else {
@@ -302,7 +302,7 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
 		MenuItem shutdownItem = menu.findItem(R.id.shutdown);
-		shutdownItem.setVisible(SignalApp.isBeaconOnline());
+		shutdownItem.setVisible(BeaconApp.isBeaconOnline());
 	}
 	
 	@Override
@@ -337,14 +337,14 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 	}
 	
 	public void refreshErrorContainer(){
-		if(SignalApp.isBeaconOnline()){
+		if(BeaconApp.isBeaconOnline()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
+		if(BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
 			mErrorContainer.setVisibility(View.GONE);
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.GONE);
@@ -353,19 +353,19 @@ public class MainFragment extends Fragment implements OnClickListener, OnEditorA
 		
 		mErrorContainer.setVisibility(View.VISIBLE);
 		
-		if(SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
+		if(BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.GONE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;
 		}
 		
-		if(!SignalApp.hasNetworkConnectivity() && SignalApp.isGpsOnline()){
+		if(!BeaconApp.hasNetworkConnectivity() && BeaconApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.GONE);
 			return;
 		}
 		
-		if(!SignalApp.hasNetworkConnectivity() && !SignalApp.isGpsOnline()){
+		if(!BeaconApp.hasNetworkConnectivity() && !BeaconApp.isGpsOnline()){
 			mErrorNetwork.setVisibility(View.VISIBLE);
 			mErrorGps.setVisibility(View.VISIBLE);
 			return;

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.therabbitmage.android.beacon.R;
-import com.therabbitmage.android.beacon.SignalApp;
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.service.SignalService;
 
 public class TransmitReceiver extends BaseBroadcastReceiver {
@@ -16,12 +16,12 @@ public class TransmitReceiver extends BaseBroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		
 		if (context == null) {
-			Log.e(TAG, SignalApp.getInstance().getString(R.string.logcat_context_receiver_null));
+			Log.e(TAG, BeaconApp.getInstance().getString(R.string.logcat_context_receiver_null));
 			return;
 		}
 
 		if (intent == null) {
-			Log.e(TAG, SignalApp.getInstance().getString(R.string.logcat_intent_null));
+			Log.e(TAG, BeaconApp.getInstance().getString(R.string.logcat_intent_null));
 			return;
 		}
 		

@@ -43,7 +43,7 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.therabbitmage.android.beacon.R;
-import com.therabbitmage.android.beacon.SignalApp;
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.entities.beacon.BeaconSMSContact;
 import com.therabbitmage.android.beacon.entities.google.urlshortener.Url;
 import com.therabbitmage.android.beacon.network.TwitterBeacon;
@@ -113,8 +113,8 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	private static PendingIntent sSendSMSIntent;
 	
 	static {
-		sRepeatingPendingIntent = PendingIntent.getBroadcast(SignalApp.getInstance(), REQUEST_CODE_TRANSMISSION, new Intent(ACTION_TRANSMIT), PendingIntent.FLAG_UPDATE_CURRENT);
-		sSendSMSIntent = PendingIntent.getBroadcast(SignalApp.getInstance(), REQUEST_CODE_SMS, new Intent(ACTION_SMS_SENT), 0);
+		sRepeatingPendingIntent = PendingIntent.getBroadcast(BeaconApp.getInstance(), REQUEST_CODE_TRANSMISSION, new Intent(ACTION_TRANSMIT), PendingIntent.FLAG_UPDATE_CURRENT);
+		sSendSMSIntent = PendingIntent.getBroadcast(BeaconApp.getInstance(), REQUEST_CODE_SMS, new Intent(ACTION_SMS_SENT), 0);
 	}
 	
 	private static TheSignalService sInstance;
@@ -181,7 +181,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 		registerReceivers();
 		
 		gpsAndNetworkCheck();
-		mTwitter = TwitterBeacon.getTwitter(SignalApp.getInstance());
+		mTwitter = TwitterBeacon.getTwitter(BeaconApp.getInstance());
 		initLocationServices();
 		
 		compileContactList();
@@ -253,7 +253,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	public void onDestroy() {
 		super.onDestroy();
 		
-		SignalApp.setisBeaconOnline(false);
+		BeaconApp.setisBeaconOnline(false);
 		unregisterReceivers();
 		mLocationHelper.shutdownLocationHelper();
 		mServiceLooper.quit();
@@ -290,8 +290,8 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	}
 	
 	private void gpsAndNetworkCheck(){
-		SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
-		SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
+		BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
 	}
 	
 	private void initLocationServices(){
@@ -305,14 +305,14 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	}
 	
 	private void startBeacon(){
-		SignalApp.setisBeaconOnline(true);
-		if(SignalApp.hasNetworkConnectivity()){
+		BeaconApp.setisBeaconOnline(true);
+		if(BeaconApp.hasNetworkConnectivity()){
 			attemptToConnectToGooglePlayServices();
 		} else {
 			mAwaitingNetworkConnect = true;
 		}
 		
-		if(!SignalApp.hasGpsCapability()){
+		if(!BeaconApp.hasGpsCapability()){
 			prepareFirstMessage();
 		}
 	}
@@ -322,7 +322,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 			Log.d(TAG, getString(R.string.logcat_tranmission_intent_received));
 		}
 		
-		if(!SignalApp.hasGpsCapability()){
+		if(!BeaconApp.hasGpsCapability()){
 			transmitBareBonesBeacon();
 			return;
 		}
@@ -425,9 +425,9 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 			//TODO Activity Recogition
 		}
 		
-		if(!mHasSentFirstTransmission && (!SignalApp.hasGpsCapability() || !SignalApp.isGpsOnline())){
+		if(!mHasSentFirstTransmission && (!BeaconApp.hasGpsCapability() || !BeaconApp.isGpsOnline())){
 			prepareFirstMessage();
-			if(SignalApp.hasGpsCapability()){
+			if(BeaconApp.hasGpsCapability()){
 				
 			}
 		}
@@ -583,7 +583,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	
 	private void prepareFirstMessage() {
 		
-		if(!SignalApp.hasGpsCapability()){
+		if(!BeaconApp.hasGpsCapability()){
 			sendBareBonesFirstMessage();
 			scheduleNextTransmission();
 			mHasSentFirstTransmission = true;
@@ -609,7 +609,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	
 	private void sendBareBonesFirstMessageTwitter(){
 		
-		if(SignalApp.hasTwitterLogin() && SignalApp.hasNetworkConnectivity()){
+		if(BeaconApp.hasTwitterLogin() && BeaconApp.hasNetworkConnectivity()){
 			String message = IS_DEBUG ?
 					getString(R.string.transmit_test_twitter_beacon_online)
 					:
@@ -670,14 +670,14 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	}
 	
 	private void sendTwitterMessage(String message) {
-		if(!SignalApp.hasTwitterLogin()){
+		if(!BeaconApp.hasTwitterLogin()){
 			return;
 		}
 		
 		//TODO Have it handle direct messenging
 
-		AccessToken accessToken = new AccessToken(SignalApp.getTwitterAccessToken(),
-				SignalApp.getTwitterAccessTokenSecret());
+		AccessToken accessToken = new AccessToken(BeaconApp.getTwitterAccessToken(),
+				BeaconApp.getTwitterAccessTokenSecret());
 		mTwitter.setOAuthAccessToken(accessToken);
 
 		Intent broadcast = null;
@@ -702,7 +702,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 	}
 	
 	private void sendSMSMessage(String message){
-		if(!SignalApp.hasSmsCapability() && IS_DEBUG){
+		if(!BeaconApp.hasSmsCapability() && IS_DEBUG){
 			Log.d(TAG, getString(R.string.logcat_device_no_sms));
 			return;
 		}
@@ -797,15 +797,15 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 				Log.d(TAG, TheSignalService.this.getString(R.string.logcat_network_change_detected));
 			}
 			
-			SignalApp.setHasNetworkConnectivity(AndroidUtils
+			BeaconApp.setHasNetworkConnectivity(AndroidUtils
 					.hasNetworkConnectivity(TheSignalService.this));
 			
-			if(SignalApp.isBeaconOnline() && !mConnectedToGooglePlay && SignalApp.hasNetworkConnectivity()){
+			if(BeaconApp.isBeaconOnline() && !mConnectedToGooglePlay && BeaconApp.hasNetworkConnectivity()){
 				attemptToConnectToGooglePlayServices();
 				return;
 			}
 			
-			if(mAwaitingNetworkConnect && SignalApp.hasNetworkConnectivity() && SignalApp.isBeaconOnline()){
+			if(mAwaitingNetworkConnect && BeaconApp.hasNetworkConnectivity() && BeaconApp.isBeaconOnline()){
 				attemptToConnectToGooglePlayServices();
 				mAwaitingNetworkConnect = false;
 				return;
@@ -813,7 +813,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 			
 			if(mDelayFirstMessageTwitter){
 				
-				if(!SignalApp.hasGpsCapability()){
+				if(!BeaconApp.hasGpsCapability()){
 					sendBareBonesDelayedFirstMessageTwitter();
 				}
 				
@@ -834,7 +834,7 @@ GooglePlayServicesClient.OnConnectionFailedListener{
 			if(IS_DEBUG){
 				Log.d(TAG, TheSignalService.this.getString(R.string.logcat_gps_change_detected));
 			}
-			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(TheSignalService.this));
+			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(TheSignalService.this));
 			//TODO Implement the rest
 		}
 		

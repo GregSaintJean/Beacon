@@ -15,7 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.therabbitmage.android.beacon.SignalApp;
+import com.therabbitmage.android.beacon.BeaconApp;
 import com.therabbitmage.android.beacon.R;
 import com.therabbitmage.android.beacon.receiver.GpsReceiver;
 import com.therabbitmage.android.beacon.receiver.NetworkReceiver;
@@ -38,10 +38,10 @@ public class NewMainActivity extends NavDrawerActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setupUI();
-		if(SignalApp.hasGpsCapability())
-			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
+		if(BeaconApp.hasGpsCapability())
+			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(this));
 		
-		SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
+		BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(this));
 		registerReceivers();
 	}
 	
@@ -77,7 +77,7 @@ public class NewMainActivity extends NavDrawerActivity{
 		
 		ArrayAdapter<CharSequence> drawerAdapter;
 		
-		if(SignalApp.isSetupDone()){
+		if(BeaconApp.isSetupDone()){
 			drawerAdapter = ArrayAdapter.createFromResource(this, R.array.main_nav_array_1, R.layout.drawer_list_item);
 		} else {
 			drawerAdapter = ArrayAdapter.createFromResource(this, R.array.main_nav_array_2, R.layout.drawer_list_item);
@@ -92,7 +92,7 @@ public class NewMainActivity extends NavDrawerActivity{
 	@Override
 	protected void onStart() {
 		super.onStart();
-		switchDrawerItems(SignalApp.isSetupDone());
+		switchDrawerItems(BeaconApp.isSetupDone());
 	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener{
@@ -114,7 +114,7 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			
-			if(SignalApp.isSetupDone()){
+			if(BeaconApp.isSetupDone()){
 				
 				switch(position){
 					case 0:
@@ -215,7 +215,7 @@ public class NewMainActivity extends NavDrawerActivity{
 			if(NewMainActivity.this == null){
 				return;
 			}
-			SignalApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(NewMainActivity.this));
+			BeaconApp.setHasNetworkConnectivity(AndroidUtils.hasNetworkConnectivity(NewMainActivity.this));
 			mMainFragment.refreshErrorContainer();
 		}
 		
@@ -229,7 +229,7 @@ public class NewMainActivity extends NavDrawerActivity{
 				return;
 			}
 			Log.d(TAG, "GPS Provider change detected.");
-			SignalApp.setGpsOnline(AndroidUtils.isGpsOnline(NewMainActivity.this));
+			BeaconApp.setGpsOnline(AndroidUtils.isGpsOnline(NewMainActivity.this));
 			mMainFragment.refreshErrorContainer();
 		}
 		

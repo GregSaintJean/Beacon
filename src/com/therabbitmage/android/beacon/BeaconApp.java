@@ -19,14 +19,14 @@ import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.therabbitmage.android.beacon.utils.AndroidUtils;
 import com.therabbitmage.android.beacon.utils.ChronoUtils;
 
-public class SignalApp extends Application {
+public class BeaconApp extends Application {
 	
-	private static final String TAG = SignalApp.class.getSimpleName();
+	private static final String TAG = BeaconApp.class.getSimpleName();
 	private static final boolean IS_DEBUG = BuildConfig.DEBUG;
 	
 	private static final int NO_ID = -1;
 	
-	private static SignalApp sBeacon;
+	private static BeaconApp sBeacon;
 	private static UUID sUUID;
 	private GoogleAnalytics mGoogleAnalytics;
 	
@@ -98,10 +98,10 @@ public class SignalApp extends Application {
 	}
 
 	public static final void setActive(boolean isActive) {
-		SignalApp.sIsBeaconActive = isActive;
+		BeaconApp.sIsBeaconActive = isActive;
 	}
 
-	public static final SignalApp getInstance(){
+	public static final BeaconApp getInstance(){
 		return sBeacon;
 	}
 	
@@ -112,7 +112,7 @@ public class SignalApp extends Application {
 	public final void printDebugKeyHash(){
 		try {
 			PackageInfo info = getPackageManager().getPackageInfo(
-					SignalApp.class.getPackage().getName(),
+					BeaconApp.class.getPackage().getName(),
 					PackageManager.GET_SIGNATURES);
 			for (Signature signature : info.signatures) {
 				MessageDigest md = MessageDigest.getInstance("SHA");
@@ -143,7 +143,7 @@ public class SignalApp extends Application {
 	}
 	
 	private static final void putUUID(String uuid){
-		SignalApp app = SignalApp.getInstance();
+		BeaconApp app = BeaconApp.getInstance();
 		
 		SharedPreferences sharedPref= app.getSharedPreferences(app.getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -152,7 +152,7 @@ public class SignalApp extends Application {
 	}
 	
 	private static final String pullUUID(){
-		SignalApp app = SignalApp.getInstance();
+		BeaconApp app = BeaconApp.getInstance();
 		SharedPreferences sharedPref= app.getSharedPreferences(app.getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		return sharedPref.getString(app.getString(R.string.uuid), null);
 	}
@@ -162,7 +162,7 @@ public class SignalApp extends Application {
 	}
 	
 	public static final void setAnalyticsOptOut(boolean optOut){
-		SignalApp app = getInstance();
+		BeaconApp app = getInstance();
 		SharedPreferences sharedPref = app.getSharedPreferences(
 				app.getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
@@ -171,49 +171,49 @@ public class SignalApp extends Application {
 	}
 	
 	public static final boolean getAnalyticsOptOut(){
-		SignalApp app = getInstance();
+		BeaconApp app = getInstance();
 		SharedPreferences sharedPref = app.getSharedPreferences(
 				app.getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		return sharedPref.getBoolean(app.getString(R.string.analytics_opt_out), false);
 	}
 
 	public static final String getTwitterRequestToken() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(SignalApp.getInstance().getString(R.string.twitter_request_token),
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(BeaconApp.getInstance().getString(R.string.twitter_request_token),
 				"");
 	}
 
 	public static final String getTwitterRequestSecretToken() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(SignalApp.getInstance().getString(R.string.twitter_request_secret_token), "");
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(BeaconApp.getInstance().getString(R.string.twitter_request_secret_token), "");
 	}
 
 	public static final void setTwitterRequestToken(String token) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SignalApp.getInstance().getString(R.string.twitter_request_token), token);
+		editor.putString(BeaconApp.getInstance().getString(R.string.twitter_request_token), token);
 		editor.commit();
 	}
 
 	public static final void setTwitterRequestSecretToken(String token) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SignalApp.getInstance().getString(R.string.twitter_request_secret_token),
+		editor.putString(BeaconApp.getInstance().getString(R.string.twitter_request_secret_token),
 				token);
 		editor.commit();
 	}
 
 	public static final void clearTwitterRequestTokenAndSecret() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.remove(SignalApp.getInstance().getString(R.string.twitter_request_token));
+		editor.remove(BeaconApp.getInstance().getString(R.string.twitter_request_token));
 		editor.commit();
-		editor.remove(SignalApp.getInstance().getString(R.string.twitter_request_secret_token));
+		editor.remove(BeaconApp.getInstance().getString(R.string.twitter_request_secret_token));
 		editor.commit();
 	}
 	
@@ -230,44 +230,44 @@ public class SignalApp extends Application {
 	}
 
 	public static final String getTwitterAccessToken() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(SignalApp.getInstance().getString(R.string.twitter_access_token),
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(BeaconApp.getInstance().getString(R.string.twitter_access_token),
 				"");
 	}
 	
 	public static final String getTwitterAccessTokenSecret() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		return sharedPref.getString(
-				SignalApp.getInstance().getString(R.string.twitter_access_token_secret), "");
+				BeaconApp.getInstance().getString(R.string.twitter_access_token_secret), "");
 	}
 	
 	public static final void setTwitterAccessToken(String token) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SignalApp.getInstance().getString(R.string.twitter_access_token), token);
+		editor.putString(BeaconApp.getInstance().getString(R.string.twitter_access_token), token);
 		editor.commit();
 	}
 
 	public static final void setTwitterAccessTokenSecret(String token) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SignalApp.getInstance().getString(R.string.twitter_access_token_secret), token);
+		editor.putString(BeaconApp.getInstance().getString(R.string.twitter_access_token_secret), token);
 		editor.commit();
 	}
 
 	public static final void clearTwitterAccessTokenAndSecret() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.remove(SignalApp.getInstance().getString(R.string.twitter_access_token));
+		editor.remove(BeaconApp.getInstance().getString(R.string.twitter_access_token));
 		editor.commit();
-		editor.remove(SignalApp.getInstance().getString(R.string.twitter_access_token_secret));
+		editor.remove(BeaconApp.getInstance().getString(R.string.twitter_access_token_secret));
 		editor.commit();
-		editor.remove(SignalApp.getInstance().getString(R.string.twitter_user_id));
+		editor.remove(BeaconApp.getInstance().getString(R.string.twitter_user_id));
 		editor.commit();
 	}
 
@@ -276,63 +276,63 @@ public class SignalApp extends Application {
 	}
 	
 	public static final int getTwitterUserId() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getInt(SignalApp.getInstance().getString(R.string.twitter_user_id), NO_ID);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getInt(BeaconApp.getInstance().getString(R.string.twitter_user_id), NO_ID);
 	}
 
 	public static final void setTwitterUserId(int userId) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putInt(SignalApp.getInstance().getString(R.string.twitter_user_id), userId);
+		editor.putInt(BeaconApp.getInstance().getString(R.string.twitter_user_id), userId);
 		editor.commit();
 	}
 	
 	public static final String getTwitterScreenName() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
-		return sharedPref.getString(SignalApp.getInstance().getString(R.string.twitter_username), "");
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		return sharedPref.getString(BeaconApp.getInstance().getString(R.string.twitter_username), "");
 	}
 
 	public static final void setTwitterScreenName(String userName) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.twitter_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putString(SignalApp.getInstance().getString(R.string.twitter_username), userName);
+		editor.putString(BeaconApp.getInstance().getString(R.string.twitter_username), userName);
 		editor.commit();
 	}
 
 	public static final boolean isFirstRun() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
-		return sharedPref.getBoolean(SignalApp.getInstance().getString(R.string.first_time_run), true);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		return sharedPref.getBoolean(BeaconApp.getInstance().getString(R.string.first_time_run), true);
 	}
 
 	public static final void firstRunExecuted() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putBoolean(SignalApp.getInstance().getString(R.string.first_time_run), false);
+		editor.putBoolean(BeaconApp.getInstance().getString(R.string.first_time_run), false);
 		editor.commit();
 	}
 
 	public static final boolean isSetupDone() {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(SignalApp.getInstance().getString(R.string.beacon_pref), 
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(BeaconApp.getInstance().getString(R.string.beacon_pref), 
 				Context.MODE_PRIVATE);
-		return sharedPref.getBoolean(SignalApp.getInstance().getString(R.string.is_setup_done), false);
+		return sharedPref.getBoolean(BeaconApp.getInstance().getString(R.string.is_setup_done), false);
 	}
 
 	public static final void setIsSetupDone(boolean isSetupDone) {
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putBoolean(SignalApp.getInstance().getString(R.string.is_setup_done), isSetupDone);
+		editor.putBoolean(BeaconApp.getInstance().getString(R.string.is_setup_done), isSetupDone);
 		editor.commit();
 	}
 	
 	private static final boolean checkIsTablet(){
-		return SignalApp.getInstance().getResources().getBoolean(R.bool.isTablet);
+		return BeaconApp.getInstance().getResources().getBoolean(R.bool.isTablet);
 	}
 	
 	public static final boolean isTablet(){
@@ -340,63 +340,63 @@ public class SignalApp extends Application {
 	}
 	
 	public static final void setSmsInactiveTransmissionInterval(long interval){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putLong(SignalApp.getInstance().getString(R.string.beacon_sms_inactive_transmission_interval), interval);
+		editor.putLong(BeaconApp.getInstance().getString(R.string.beacon_sms_inactive_transmission_interval), interval);
 		editor.commit();
 	}
 	
 	public static final void setSmsActiveTransmissionInterval(long interval){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putLong(SignalApp.getInstance().getString(R.string.beacon_sms_active_transmission_interval), interval);
+		editor.putLong(BeaconApp.getInstance().getString(R.string.beacon_sms_active_transmission_interval), interval);
 		editor.commit();
 	}
 	
 	public static final long getSmsInactiveTransmissionInterval(){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(SignalApp.getInstance().getString(R.string.beacon_pref), 
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(BeaconApp.getInstance().getString(R.string.beacon_pref), 
 				Context.MODE_PRIVATE);
-		return sharedPref.getLong(SignalApp.getInstance().getString(R.string.beacon_sms_inactive_transmission_interval), 
-				SignalApp.getInstance().getResources().getInteger(R.integer.default_sms_inactive_transmission_interval));
+		return sharedPref.getLong(BeaconApp.getInstance().getString(R.string.beacon_sms_inactive_transmission_interval), 
+				BeaconApp.getInstance().getResources().getInteger(R.integer.default_sms_inactive_transmission_interval));
 	}
 	
 	public static final long getSmsActiveTransmissionInterval(){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(SignalApp.getInstance().getString(R.string.beacon_pref), 
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(BeaconApp.getInstance().getString(R.string.beacon_pref), 
 				Context.MODE_PRIVATE);
-		return sharedPref.getLong(SignalApp.getInstance().getString(R.string.beacon_sms_active_transmission_interval), 
-				SignalApp.getInstance().getResources().getInteger(R.integer.default_sms_active_transmission_interval));
+		return sharedPref.getLong(BeaconApp.getInstance().getString(R.string.beacon_sms_active_transmission_interval), 
+				BeaconApp.getInstance().getResources().getInteger(R.integer.default_sms_active_transmission_interval));
 	}
 	
 	public static final void setTwitterInactiveTransmissionInterval(long interval){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putLong(SignalApp.getInstance().getString(R.string.beacon_twitter_inactive_transmission_interval), interval);
+		editor.putLong(BeaconApp.getInstance().getString(R.string.beacon_twitter_inactive_transmission_interval), interval);
 		editor.commit();
 	}
 	
 	public static final void setTwitterActiveTransmissionInterval(long interval){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(
-				SignalApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(
+				BeaconApp.getInstance().getString(R.string.beacon_pref), Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
-		editor.putLong(SignalApp.getInstance().getString(R.string.beacon_twitter_active_transmission_interval), interval);
+		editor.putLong(BeaconApp.getInstance().getString(R.string.beacon_twitter_active_transmission_interval), interval);
 		editor.commit();
 	}
 	
 	public static final long getTwitterInactiveTransmissionInterval(){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(SignalApp.getInstance().getString(R.string.beacon_pref), 
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(BeaconApp.getInstance().getString(R.string.beacon_pref), 
 				Context.MODE_PRIVATE);
-		return sharedPref.getLong(SignalApp.getInstance().getString(R.string.beacon_twitter_inactive_transmission_interval), 
-				SignalApp.getInstance().getResources().getInteger(R.integer.default_twitter_inactive_transmission_interval));
+		return sharedPref.getLong(BeaconApp.getInstance().getString(R.string.beacon_twitter_inactive_transmission_interval), 
+				BeaconApp.getInstance().getResources().getInteger(R.integer.default_twitter_inactive_transmission_interval));
 	}
 	
 	public static final long getTwitterActiveTransmissionInterval(){
-		SharedPreferences sharedPref = SignalApp.getInstance().getSharedPreferences(SignalApp.getInstance().getString(R.string.beacon_pref), 
+		SharedPreferences sharedPref = BeaconApp.getInstance().getSharedPreferences(BeaconApp.getInstance().getString(R.string.beacon_pref), 
 				Context.MODE_PRIVATE);
-		return sharedPref.getLong(SignalApp.getInstance().getString(R.string.beacon_twitter_active_transmission_interval), 
-				SignalApp.getInstance().getResources().getInteger(R.integer.default_twitter_active_transmission_interval));
+		return sharedPref.getLong(BeaconApp.getInstance().getString(R.string.beacon_twitter_active_transmission_interval), 
+				BeaconApp.getInstance().getResources().getInteger(R.integer.default_twitter_active_transmission_interval));
 	}
 	
 	public static final long getActiveTransmissionInterval(){
